@@ -131,6 +131,18 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+                    <compilerArgs>
+                        <arg>--add-reads</arg>
+                        <arg>com.example.ceragen_2=ALL-UNNAMED</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <argLine>--add-reads com.example.ceragen_2=ALL-UNNAMED --add-opens com.example.ceragen_2/com.example.ceragen_2.service=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -149,6 +161,10 @@
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
+                            <options>
+                                <option>--add-reads</option>
+                                <option>com.example.ceragen_2=ALL-UNNAMED</option>
+                            </options>
                         </configuration>
                     </execution>
                 </executions>

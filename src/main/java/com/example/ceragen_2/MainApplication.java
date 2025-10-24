@@ -1,6 +1,7 @@
 package com.example.ceragen_2;
 
 import com.example.ceragen_2.config.DatabaseConfig;
+import com.example.ceragen_2.service.ViewNavigator;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -12,8 +13,13 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         logger.info("Iniciando aplicación Ceragen");
-        primaryStage.setTitle("Ceragen");
-        // TODO: Configurar la vista inicial
+
+        primaryStage.setTitle("Ceragen - Sistema de Gestión Médica");
+
+        ViewNavigator navigator = ViewNavigator.getInstance();
+        navigator.setPrimaryStage(primaryStage);
+        navigator.showLogin();
+
         primaryStage.show();
         logger.info("Aplicación iniciada correctamente");
     }
@@ -21,7 +27,6 @@ public class MainApplication extends Application {
     @Override
     public void stop() {
         logger.info("Cerrando aplicación");
-        // Cerrar conexiones de base de datos si es necesario
         DatabaseConfig.getInstance().closeConnection();
         logger.info("Aplicación cerrada");
     }

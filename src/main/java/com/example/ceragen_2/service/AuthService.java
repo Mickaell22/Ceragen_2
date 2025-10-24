@@ -1,0 +1,87 @@
+package com.example.ceragen_2.service;
+
+import com.example.ceragen_2.config.DatabaseConfig;
+import com.example.ceragen_2.util.PasswordUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class AuthService {
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    private static AuthService instance;
+    private String currentUsername;
+    private String currentUserRole;
+    private Integer currentUserId;
+
+    private AuthService() {}
+
+    public static AuthService getInstance() {
+        if (instance == null) {
+            synchronized (AuthService.class) {
+                if (instance == null) {
+                    instance = new AuthService();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public boolean login(String username, String password) {
+        String query = "SELECT id, username, password, rol, activo FROM usuarios WHERE username = ? AND activo = TRUE";
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String hashedPassword = rs.getString("password");
+
+                if (PasswordUtil.verifyPassword(password, hashedPassword)) {
+                    currentUserId = rs.getInt("id");
+                    currentUsername = rs.getString("username");
+                    currentUserRole = rs.getString("rol");
+
+                    logger.info("Usuario autenticado: {} - Rol: {}", currentUsername, currentUserRole);
+                    return true;
+                } else {
+                    logger.warn("Contraseña incorrecta para usuario: {}", username);
+                }
+            } else {
+                logger.warn("Usuario no encontrado o inactivo: {}", username);
+            }
+        } catch (SQLException e) {
+            logger.error("Error al autenticar usuario: {}", username, e);
+        }
+
+        return false;
+    }
+
+    public void logout() {
+        logger.info("Usuario desconectado: {}", currentUsername);
+        currentUserId = null;
+        currentUsername = null;
+        currentUserRole = null;
+    }
+
+    public boolean isAuthenticated() {
+        return currentUsername != null;
+    }
+
+    public String getCurrentUsername() {
+        return currentUsername;
+    }
+
+    public String getCurrentUserRole() {
+        return currentUserRole;
+    }
+
+    public Integer getCurrentUserId() {
+        return currentUserId;
+    }
+}

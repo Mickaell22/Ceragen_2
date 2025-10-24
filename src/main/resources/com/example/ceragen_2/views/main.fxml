@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.ceragen_2.controller.MainController"
+            prefHeight="768.0" prefWidth="1366.0">
+
+    <!-- Navbar Izquierdo -->
+    <left>
+        <VBox spacing="5.0" style="-fx-background-color: #2c3e50; -fx-pref-width: 250;">
+            <padding>
+                <Insets top="20.0" bottom="20.0"/>
+            </padding>
+
+            <!-- Header del Navbar -->
+            <VBox alignment="CENTER" spacing="5.0" style="-fx-padding: 0 0 20 0;">
+                <Text text="Ceragen" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-fill: white;"/>
+                <Text fx:id="userLabel" style="-fx-font-size: 12px; -fx-fill: #bdc3c7;"/>
+                <Separator style="-fx-background-color: #34495e;">
+                    <VBox.margin>
+                        <Insets top="10.0"/>
+                    </VBox.margin>
+                </Separator>
+            </VBox>
+
+            <!-- Botones de Navegación -->
+            <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+                <Button fx:id="btnUsuarios" text="Usuarios" onAction="#navigateToUsuarios"
+                        styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: center-left; -fx-pref-width: 250; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 10 20;">
+                </Button>
+
+                <Button fx:id="btnPacientes" text="Pacientes" onAction="#navigateToPacientes"
+                        styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: center-left; -fx-pref-width: 250; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 10 20;">
+                </Button>
+
+                <Button fx:id="btnProfesionales" text="Profesionales" onAction="#navigateToProfesionales"
+                        styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: center-left; -fx-pref-width: 250; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 10 20;">
+                </Button>
+
+                <Button fx:id="btnEspecialidades" text="Especialidades" onAction="#navigateToEspecialidades"
+                        styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: center-left; -fx-pref-width: 250; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 10 20;">
+                </Button>
+
+                <Button fx:id="btnCitas" text="Citas" onAction="#navigateToCitas"
+                        styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: center-left; -fx-pref-width: 250; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 10 20;">
+                </Button>
+
+                <Button fx:id="btnFacturacion" text="Facturación" onAction="#navigateToFacturacion"
+                        styleClass="nav-button" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: center-left; -fx-pref-width: 250; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 10 20;">
+                </Button>
+            </VBox>
+
+            <!-- Botón de Cerrar Sesión -->
+            <Button fx:id="btnLogout" text="Cerrar Sesión" onAction="#handleLogout"
+                    style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-pref-width: 210; -fx-pref-height: 40; -fx-font-size: 14px; -fx-background-radius: 5; -fx-cursor: hand;">
+                <VBox.margin>
+                    <Insets left="20.0" right="20.0" top="20.0"/>
+                </VBox.margin>
+            </Button>
+        </VBox>
+    </left>
+
+    <!-- Área de Contenido -->
+    <center>
+        <StackPane fx:id="contentArea" style="-fx-background-color: #ecf0f1;">
+            <VBox alignment="CENTER" spacing="20.0">
+                <Text text="Bienvenido a Ceragen" style="-fx-font-size: 32px; -fx-fill: #2c3e50;"/>
+                <Text text="Seleccione un módulo del menú lateral" style="-fx-font-size: 16px; -fx-fill: #7f8c8d;"/>
+            </VBox>
+        </StackPane>
+    </center>
+</BorderPane>
