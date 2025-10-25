@@ -95,7 +95,7 @@ public class MainController {
     @FXML
     private void navigateToCitas() {
         logger.info("Navegando a módulo Citas");
-        // TODO: Cargar vista de citas en contentArea
+        cargarVista("/com/example/ceragen_2/views/citas.fxml");
     }
 
     @FXML
