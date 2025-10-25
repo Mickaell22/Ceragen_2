@@ -22,4 +22,5 @@ module com.example.ceragen_2 {
     exports com.example.ceragen_2.util;
     exports com.example.ceragen_2.controller;
     exports com.example.ceragen_2.service;
+    exports com.example.ceragen_2.model;
 }

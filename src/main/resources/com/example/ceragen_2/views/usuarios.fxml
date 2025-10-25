@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.ceragen_2.controller.UsuariosController"
+      spacing="0" style="-fx-background-color: #ecf0f1;">
+
+    <!-- Header -->
+    <HBox style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #bdc3c7; -fx-border-width: 0 0 1 0;">
+        <Text text="Gestión de Usuarios" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-fill: #2c3e50;"/>
+    </HBox>
+
+    <!-- TabPane -->
+    <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" style="-fx-background-color: #ecf0f1;">
+
+        <!-- Tab Listar -->
+        <Tab text="Listar">
+            <VBox spacing="15" style="-fx-padding: 20;">
+
+                <!-- Filtros -->
+                <HBox spacing="15" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 5;">
+                    <VBox spacing="5">
+                        <Text text="Buscar por Username" style="-fx-font-size: 12px; -fx-fill: #7f8c8d;"/>
+                        <TextField fx:id="txtBuscar" promptText="Ingrese username..." prefWidth="250"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Text text="Filtrar por Rol" style="-fx-font-size: 12px; -fx-fill: #7f8c8d;"/>
+                        <ComboBox fx:id="cmbRolFiltro" prefWidth="150">
+                            <items>
+                                <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                    <java.lang.String fx:value="TODOS"/>
+                                    <java.lang.String fx:value="ADMIN"/>
+                                    <java.lang.String fx:value="RECEPCIONISTA"/>
+                                    <java.lang.String fx:value="MEDICO"/>
+                                </javafx.collections.FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Text text="Estado" style="-fx-font-size: 12px; -fx-fill: #7f8c8d;"/>
+                        <ComboBox fx:id="cmbActivoFiltro" prefWidth="150">
+                            <items>
+                                <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                    <java.lang.String fx:value="TODOS"/>
+                                    <java.lang.String fx:value="ACTIVO"/>
+                                    <java.lang.String fx:value="INACTIVO"/>
+                                </javafx.collections.FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <VBox spacing="5" alignment="BOTTOM_RIGHT">
+                        <Text text=" " style="-fx-font-size: 12px;"/>
+                        <Button text="Buscar" onAction="#handleBuscar"
+                                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 120; -fx-pref-height: 35; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                    </VBox>
+
+                    <VBox spacing="5" alignment="BOTTOM_RIGHT">
+                        <Text text=" " style="-fx-font-size: 12px;"/>
+                        <Button text="Limpiar" onAction="#handleLimpiarFiltros"
+                                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-pref-width: 120; -fx-pref-height: 35; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Tabla de Usuarios con indicador de carga -->
+                <StackPane VBox.vgrow="ALWAYS">
+                    <TableView fx:id="tableUsuarios" style="-fx-background-color: white; -fx-background-radius: 5;">
+                        <columns>
+                            <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+                            <TableColumn fx:id="colUsername" text="Username" prefWidth="200"/>
+                            <TableColumn fx:id="colRol" text="Rol" prefWidth="150"/>
+                            <TableColumn fx:id="colActivo" text="Estado" prefWidth="120"/>
+                            <TableColumn fx:id="colFechaCreacion" text="Fecha Creación" prefWidth="180"/>
+                            <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="350"/>
+                        </columns>
+                    </TableView>
+
+                    <!-- Indicador de carga -->
+                    <VBox fx:id="loadingIndicator" alignment="CENTER" spacing="15"
+                          style="-fx-background-color: rgba(255, 255, 255, 0.9);" visible="false">
+                        <ProgressIndicator prefWidth="60" prefHeight="60"/>
+                        <Text text="Cargando datos..." style="-fx-font-size: 16px; -fx-fill: #2c3e50; -fx-font-weight: bold;"/>
+                    </VBox>
+                </StackPane>
+
+                <!-- Paginación -->
+                <HBox spacing="15" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 5;">
+                    <Button fx:id="btnPrimera" text="Primera" onAction="#handlePrimeraPagina"
+                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 100; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                    <Button fx:id="btnAnterior" text="Anterior" onAction="#handlePaginaAnterior"
+                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 100; -fx-cursor: hand; -fx-background-radius: 5;"/>
+
+                    <Text fx:id="txtPaginacion" text="Página 1 de 1" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+
+                    <Button fx:id="btnSiguiente" text="Siguiente" onAction="#handlePaginaSiguiente"
+                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 100; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                    <Button fx:id="btnUltima" text="Última" onAction="#handleUltimaPagina"
+                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 100; -fx-cursor: hand; -fx-background-radius: 5;"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <VBox spacing="5" alignment="CENTER_RIGHT">
+                        <Text text="Registros por página" style="-fx-font-size: 12px; -fx-fill: #7f8c8d;"/>
+                        <ComboBox fx:id="cmbRegistrosPorPagina" prefWidth="80" onAction="#handleCambioRegistrosPorPagina">
+                            <items>
+                                <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                    <java.lang.String fx:value="10"/>
+                                    <java.lang.String fx:value="25"/>
+                                    <java.lang.String fx:value="50"/>
+                                    <java.lang.String fx:value="100"/>
+                                </javafx.collections.FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+                </HBox>
+
+            </VBox>
+        </Tab>
+
+        <!-- Tab Crear -->
+        <Tab text="Crear" fx:id="tabCrear">
+            <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
+                <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 10; -fx-max-width: 600;">
+                    <Text text="Crear Nuevo Usuario" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #2c3e50;"/>
+
+                    <VBox spacing="8">
+                        <Text text="Username" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                        <TextField fx:id="txtCrearUsername" promptText="Ingrese username..."
+                                   style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Text text="Contraseña" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                        <PasswordField fx:id="txtCrearPassword" promptText="Ingrese contraseña..."
+                                       style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Text text="Confirmar Contraseña" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                        <PasswordField fx:id="txtCrearPasswordConfirm" promptText="Confirme la contraseña..."
+                                       style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Text text="Rol" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                        <ComboBox fx:id="cmbCrearRol" prefWidth="540"
+                                  style="-fx-pref-height: 40; -fx-font-size: 14px;">
+                            <items>
+                                <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                    <java.lang.String fx:value="ADMIN"/>
+                                    <java.lang.String fx:value="RECEPCIONISTA"/>
+                                    <java.lang.String fx:value="MEDICO"/>
+                                </javafx.collections.FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+
+                    <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                        <Button text="Crear Usuario" onAction="#handleCrearUsuario"
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-pref-width: 180; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                        <Button text="Limpiar Campos" onAction="#handleLimpiarFormCrear"
+                                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-pref-width: 180; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </Tab>
+
+        <!-- Tab Editar -->
+        <Tab text="Editar" fx:id="tabEditar" disable="true">
+            <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
+                <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 10; -fx-max-width: 600;">
+                    <Text text="Editar Usuario" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #2c3e50;"/>
+
+                    <VBox spacing="8">
+                        <Text text="ID" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                        <TextField fx:id="txtEditarId" editable="false"
+                                   style="-fx-pref-height: 40; -fx-font-size: 14px; -fx-background-color: #ecf0f1;"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Text text="Username" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                        <TextField fx:id="txtEditarUsername" promptText="Ingrese username..."
+                                   style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Text text="Rol" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                        <ComboBox fx:id="cmbEditarRol" prefWidth="540"
+                                  style="-fx-pref-height: 40; -fx-font-size: 14px;">
+                            <items>
+                                <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                    <java.lang.String fx:value="ADMIN"/>
+                                    <java.lang.String fx:value="RECEPCIONISTA"/>
+                                    <java.lang.String fx:value="MEDICO"/>
+                                </javafx.collections.FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Text text="Estado" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                        <ComboBox fx:id="cmbEditarActivo" prefWidth="540"
+                                  style="-fx-pref-height: 40; -fx-font-size: 14px;">
+                            <items>
+                                <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                    <java.lang.String fx:value="ACTIVO"/>
+                                    <java.lang.String fx:value="INACTIVO"/>
+                                </javafx.collections.FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+
+                    <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                        <Button text="Actualizar Usuario" onAction="#handleActualizarUsuario"
+                                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-pref-width: 180; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                        <Button text="Cancelar" onAction="#handleCancelarEdicion"
+                                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-pref-width: 180; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </Tab>
+
+    </TabPane>
+
+</VBox>
