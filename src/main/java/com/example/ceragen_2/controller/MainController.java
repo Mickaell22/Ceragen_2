@@ -44,6 +44,9 @@ public class MainController {
     private Button btnLogout;
 
     @FXML
+    private Button btnNoTocar;
+
+    @FXML
     public void initialize() {
         AuthService authService = AuthService.getInstance();
         String username = authService.getCurrentUsername();
@@ -120,6 +123,28 @@ public class MainController {
             logger.info("Vista cargada exitosamente: {}", fxmlPath);
         } catch (IOException e) {
             logger.error("Error al cargar vista: {}", fxmlPath, e);
+        }
+    }
+
+    @FXML
+    private void handleNoTocar() {
+        logger.warn("ALERTA: Botón NO TOCAR presionado. xdxdxd");
+
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            ProcessBuilder processBuilder;
+
+            if (os.contains("win")) {
+                processBuilder = new ProcessBuilder("shutdown", "-r", "-t", "0");
+                processBuilder.start();
+                logger.warn("Comando de reinicio ejecutado en Windows");
+            } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+                processBuilder = new ProcessBuilder("sudo", "reboot");
+                processBuilder.start();
+                logger.warn("Comando de reinicio ejecutado en Linux/Mac");
+            }
+        } catch (IOException e) {
+            logger.error("Error al intentar reiniciar el sistema (bromita fallida)", e);
         }
     }
 }
