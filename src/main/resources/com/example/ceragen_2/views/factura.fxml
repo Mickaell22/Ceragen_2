@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.ceragen_2.controller.FacturaController"
+      style="-fx-background-color: #f5f5f5;">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+
+    <!-- Encabezado -->
+    <Text text="Factura N° XXXXXX" style="-fx-font-size: 16px; -fx-fill: #2c3e50;"/>
+
+    <!-- Datos del cliente -->
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" prefWidth="120"/>
+            <ColumnConstraints prefWidth="600"/>
+        </columnConstraints>
+
+        <Label text="Cliente:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField text="RELLENO" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="N° de cédula:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <TextField text="RELLENO" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+        <Label text="N° de teléfono:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField text="RELLENO" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Dirección domiciliaria:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+        <TextField text="RELLENO" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+    </GridPane>
+
+    <!-- Tabla de productos o detalles -->
+    <TableView prefHeight="200" prefWidth="400">
+        <columns>
+            <TableColumn text="Producto" prefWidth="150"/>
+            <TableColumn text="Cantidad" prefWidth="100"/>
+            <TableColumn text="Precio" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+</VBox>

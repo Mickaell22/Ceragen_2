@@ -105,6 +105,7 @@ public class MainController {
     private void navigateToFacturacion() {
         logger.info("Navegando a módulo Facturación");
         // TODO: Cargar vista de facturación en contentArea
+        cargarVista("/com/example/ceragen_2/views/factura.fxml");
     }
 
     @FXML
