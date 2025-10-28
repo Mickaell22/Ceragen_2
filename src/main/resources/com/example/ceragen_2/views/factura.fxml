@@ -5,71 +5,111 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+<VBox alignment="TOP_CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.ceragen_2.controller.FacturaController"
-      style="-fx-background-color: #f5f5f5;">
+      styleClass="bg-light"
+      stylesheets="@../css/styles.css">
     <padding>
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
     </padding>
 
-    <!-- Encabezado -->
-    <Text text="Factura N° XXXXXX" style="-fx-font-size: 16px; -fx-fill: #2c3e50;"/>
+    <!-- Card contenedor principal -->
+    <VBox spacing="20.0" styleClass="card-lg" style="-fx-max-width: 900; -fx-alignment: TOP_CENTER;">
 
-    <!-- Datos del cliente -->
-    <GridPane hgap="10" vgap="10">
-        <columnConstraints>
-            <ColumnConstraints halignment="RIGHT" prefWidth="120"/>
-            <ColumnConstraints prefWidth="600"/>
-        </columnConstraints>
+        <!-- Encabezado CERAGEN 2 -->
+        <Text text="CERAGEN 2" styleClass="title-xl" style="-fx-text-alignment: center;"/>
 
-        <Label text="Cliente:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField text="RELLENO" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <!-- Número de Factura -->
+        <Text fx:id="txtFacturaNumero" text="Factura N° XXXXXX" styleClass="subtitle" style="-fx-font-size: 16px; -fx-text-alignment: center;"/>
 
-        <Label text="N° de cédula:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-        <TextField text="RELLENO" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+        <!-- Primera fila: Fecha y Ciudad -->
+        <HBox spacing="20" alignment="CENTER">
+            <HBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="Fecha de realización:" styleClass="text-primary-dark-control" minWidth="150"/>
+                <TextField fx:id="txtFechaRealizacion" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+            </HBox>
 
-        <Label text="N° de teléfono:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextField text="RELLENO" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <HBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="Ciudad:" styleClass="text-primary-dark-control" minWidth="100"/>
+                <TextField fx:id="txtCiudad" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </HBox>
 
-        <Label text="Dirección domiciliaria:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-        <TextField text="RELLENO" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
-    </GridPane>
+        <!-- Segunda fila: Cliente y Cédula -->
+        <HBox spacing="20" alignment="CENTER">
+            <HBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="Cliente:" styleClass="text-primary-dark-control" minWidth="150"/>
+                <TextField fx:id="txtCliente" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+            </HBox>
 
-    <!-- Tabla de productos o detalles -->
-   <!-- #0B4B59
-        #0D6973
-        #37A6A6
-        #7ED9D0
-        #D5F2ED
-   -->
-    <TableView fx:id="tableProducts" prefHeight="200" prefWidth="400" style="-fx-background-color: #D5F2ED;">
-        <columns>
-            <TableColumn style="-fx-background-color: #7ED9D0;" text="Producto/Servicio" prefWidth="250"/>
-            <TableColumn style="-fx-background-color: #7ED9D0;" text="Precio" prefWidth="150"/>
-            <TableColumn style="-fx-background-color: #7ED9D0;" text="Cantidad" prefWidth="150"/>
-            <TableColumn style="-fx-background-color: #7ED9D0;" text="Total" prefWidth="150"/>
-        </columns>
+            <HBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="N° de cédula:" styleClass="text-primary-dark-control" minWidth="100"/>
+                <TextField fx:id="txtCedula" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </HBox>
 
-    </TableView>
+        <!-- Tercera fila: Teléfono y Dirección -->
+        <HBox spacing="20" alignment="CENTER">
+            <HBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="N° de teléfono:" styleClass="text-primary-dark-control" minWidth="150"/>
+                <TextField fx:id="txtTelefono" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+            </HBox>
 
-    <!-- Datos de la compra -->
-    <GridPane hgap="10" vgap="10">
-        <columnConstraints>
-            <ColumnConstraints halignment="RIGHT" prefWidth="120"/>
-            <ColumnConstraints prefWidth="600"/>
-        </columnConstraints>
+            <HBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="Dirección domiciliaria:" styleClass="text-primary-dark-control" minWidth="100"/>
+                <TextField fx:id="txtDireccion" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </HBox>
 
-        <Label text="Subtotal:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField text="RELLENO" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <!-- Tabla de productos/servicios -->
+        <TableView fx:id="tableProducts" prefHeight="250" styleClass="table-view">
+            <columns>
+                <TableColumn fx:id="colProducto" text="Producto/Servicio" prefWidth="350"/>
+                <TableColumn fx:id="colPrecio" text="Precio" prefWidth="150"/>
+                <TableColumn fx:id="colCantidad" text="Cantidad" prefWidth="150"/>
+                <TableColumn fx:id="colTotal" text="Total" prefWidth="150"/>
+            </columns>
+            <placeholder>
+                <Label text="Tabla sin contenido" styleClass="text-neutral-medium"/>
+            </placeholder>
+        </TableView>
 
-        <Label text="IVA:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-        <TextField text="RELLENO" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+        <!-- Resumen financiero -->
+        <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+            <HBox spacing="10">
+                <Label text="Subtotal:" styleClass="text-primary-dark-control"/>
+                <TextField fx:id="txtSubtotal" editable="false" styleClass="disabled-field" prefWidth="150"/>
+            </HBox>
 
-        <Label text="Descuento:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextField text="RELLENO" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="..." styleClass="text-primary-dark-control"/>
 
-        <Label text="Total a pagar:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-        <TextField text="RELLENO" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
-    </GridPane>
+            <HBox spacing="10">
+                <Label text="IVA:" styleClass="text-primary-dark-control"/>
+                <TextField fx:id="txtIva" editable="false" styleClass="disabled-field" prefWidth="150"/>
+            </HBox>
+
+            <HBox spacing="10">
+                <Label text="Descuento:" styleClass="text-primary-dark-control"/>
+                <TextField fx:id="txtDescuento" editable="false" styleClass="disabled-field" prefWidth="150"/>
+            </HBox>
+        </HBox>
+
+        <!-- Total a pagar -->
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Label text="Total a pagar:" styleClass="text-primary-dark-control" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+            <TextField fx:id="txtTotal" editable="false" styleClass="disabled-field"
+                       style="-fx-font-weight: bold; -fx-font-size: 16px;" prefWidth="150"/>
+        </HBox>
+
+        <!-- Botones de acción -->
+        <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+            <Button fx:id="btnVolver" text="Volver" onAction="#handleVolver"
+                    styleClass="btn, btn-secondary"
+                    style="-fx-pref-width: 150; -fx-pref-height: 40;"/>
+            <Button fx:id="btnAnular" text="Anular" onAction="#handleAnular"
+                    styleClass="btn, btn-danger"
+                    style="-fx-pref-width: 150; -fx-pref-height: 40;"/>
+        </HBox>
+    </VBox>
 
 </VBox>
