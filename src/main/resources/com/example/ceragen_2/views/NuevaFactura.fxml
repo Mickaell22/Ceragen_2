@@ -52,14 +52,15 @@
     </GridPane>
 
     <!-- Tabla de productos o detalles -->
-   <!--
-   COLORES
-   #265C4B
-    #146551
-    #007566
-    #589A8D
-    #8FC1B5
-   -->
+    <!--
+    COLORES
+    #265C4B
+     #146551
+     #007566
+     #589A8D
+     #8FC1B5
+    -->
+    <Button text="Agregar servicio"></Button>
     <TableView fx:id="tableProducts" prefHeight="200" prefWidth="400" style="-fx-background-color: #D5F2ED;">
         <columns>
             <TableColumn style="-fx-background-color: #7ED9D0;" text="Producto/Servicio" prefWidth="250"/>
@@ -90,7 +91,7 @@
         <TextField text="RELLENO" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
     </GridPane>
 
-    <Button text="Volver" style="-fx-background-color: DANGER;"></Button>
-    <Button text="Anular" style="-fx-background-color: WARNING;"></Button>
+    <Button text="Guardar" style="-fx-background-color: DANGER;"></Button>
+    <Button text="Cancelar" style="-fx-background-color: WARNING;"></Button>
 
 </VBox>
