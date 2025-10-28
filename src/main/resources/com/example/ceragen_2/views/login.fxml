@@ -7,27 +7,24 @@
 
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.ceragen_2.controller.LoginController"
-      style="-fx-background-color: #f5f5f5;">
+      styleClass="login-container"
+      stylesheets="@../css/styles.css">
     <padding>
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
     </padding>
 
-    <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 30;">
-        <effect>
-            <javafx.scene.effect.DropShadow radius="10" offsetY="2" color="#00000033"/>
-        </effect>
-
-        <Text text="Ceragen" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-fill: #2c3e50;"/>
-        <Text text="Sistema de Gestión Médica" style="-fx-font-size: 14px; -fx-fill: #7f8c8d;"/>
+    <VBox alignment="CENTER" spacing="10.0" styleClass="login-card, shadow">
+        <Text text="Ceragen" styleClass="title-xxl"/>
+        <Text text="Sistema de Gestión Médica" styleClass="subtitle"/>
 
         <VBox spacing="5.0" style="-fx-padding: 20 0 0 0;">
-            <Label text="Usuario" style="-fx-font-size: 12px; -fx-text-fill: #34495e;"/>
+            <Label text="Usuario" styleClass="text-neutral-dark-control" style="-fx-font-size: 12px;"/>
             <TextField fx:id="usernameField" promptText="Ingrese su usuario"
                        style="-fx-pref-width: 280; -fx-pref-height: 35;"/>
         </VBox>
 
         <VBox spacing="5.0">
-            <Label text="Contraseña" style="-fx-font-size: 12px; -fx-text-fill: #34495e;"/>
+            <Label text="Contraseña" styleClass="text-neutral-dark-control" style="-fx-font-size: 12px;"/>
             <PasswordField fx:id="passwordField" promptText="Ingrese su contraseña"
                           style="-fx-pref-width: 280; -fx-pref-height: 35;"/>
         </VBox>
@@ -35,7 +32,6 @@
         <Label fx:id="errorLabel" textFill="red" style="-fx-font-size: 12px;" visible="false"/>
 
         <Button fx:id="loginButton" text="Iniciar Sesión" onAction="#handleLogin"
-                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 280; -fx-pref-height: 40; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;"
                 styleClass="login-button">
             <VBox.margin>
                 <Insets top="10.0"/>

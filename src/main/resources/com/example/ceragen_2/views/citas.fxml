@@ -7,34 +7,35 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.ceragen_2.controller.CitasController"
-      spacing="0" style="-fx-background-color: #ecf0f1;">
+      spacing="0" styleClass="content-area"
+      stylesheets="@../css/styles.css">
 
     <!-- Header -->
-    <HBox style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #bdc3c7; -fx-border-width: 0 0 1 0;">
-        <Text text="Gestión de Citas" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-fill: #2c3e50;"/>
+    <HBox styleClass="page-header">
+        <Text text="Gestión de Citas" styleClass="title-xl"/>
     </HBox>
 
     <!-- TabPane -->
-    <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" style="-fx-background-color: #ecf0f1;">
+    <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" styleClass="content-area">
 
         <!-- Tab Listar -->
         <Tab text="Listar">
             <VBox spacing="15" style="-fx-padding: 20;">
 
                 <!-- Filtros -->
-                <HBox spacing="15" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 5;">
+                <HBox spacing="15" styleClass="card">
                     <VBox spacing="5">
-                        <Text text="Paciente" style="-fx-font-size: 12px; -fx-fill: #7f8c8d;"/>
+                        <Text text="Paciente" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
                         <ComboBox fx:id="cmbPacienteFiltro" prefWidth="200"/>
                     </VBox>
 
                     <VBox spacing="5">
-                        <Text text="Profesional" style="-fx-font-size: 12px; -fx-fill: #7f8c8d;"/>
+                        <Text text="Profesional" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
                         <ComboBox fx:id="cmbProfesionalFiltro" prefWidth="200"/>
                     </VBox>
 
                     <VBox spacing="5">
-                        <Text text="Estado" style="-fx-font-size: 12px; -fx-fill: #7f8c8d;"/>
+                        <Text text="Estado" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
                         <ComboBox fx:id="cmbEstadoFiltro" prefWidth="150">
                             <items>
                                 <javafx.collections.FXCollections fx:factory="observableArrayList">
@@ -53,19 +54,21 @@
                     <VBox spacing="5" alignment="BOTTOM_RIGHT">
                         <Text text=" " style="-fx-font-size: 12px;"/>
                         <Button text="Buscar" onAction="#handleBuscar"
-                                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 120; -fx-pref-height: 35; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                                styleClass="btn, btn-primary"
+                                style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
                     </VBox>
 
                     <VBox spacing="5" alignment="BOTTOM_RIGHT">
                         <Text text=" " style="-fx-font-size: 12px;"/>
                         <Button text="Limpiar" onAction="#handleLimpiarFiltros"
-                                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-pref-width: 120; -fx-pref-height: 35; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                                styleClass="btn, btn-secondary"
+                                style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
                     </VBox>
                 </HBox>
 
                 <!-- Tabla de Citas con indicador de carga -->
                 <StackPane VBox.vgrow="ALWAYS">
-                    <TableView fx:id="tableCitas" style="-fx-background-color: white; -fx-background-radius: 5;">
+                    <TableView fx:id="tableCitas" styleClass="table-view">
                         <columns>
                             <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
                             <TableColumn fx:id="colPaciente" text="Paciente" prefWidth="200"/>
@@ -79,30 +82,30 @@
 
                     <!-- Indicador de carga -->
                     <VBox fx:id="loadingIndicator" alignment="CENTER" spacing="15"
-                          style="-fx-background-color: rgba(255, 255, 255, 0.9);" visible="false">
+                          styleClass="loading-overlay" visible="false">
                         <ProgressIndicator prefWidth="60" prefHeight="60"/>
-                        <Text text="Cargando datos..." style="-fx-font-size: 16px; -fx-fill: #2c3e50; -fx-font-weight: bold;"/>
+                        <Text text="Cargando datos..." styleClass="title-lg"/>
                     </VBox>
                 </StackPane>
 
                 <!-- Paginación -->
-                <HBox spacing="15" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 5;">
+                <HBox spacing="15" alignment="CENTER" styleClass="card">
                     <Button fx:id="btnPrimera" text="Primera" onAction="#handlePrimeraPagina"
-                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 100; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                            styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
                     <Button fx:id="btnAnterior" text="Anterior" onAction="#handlePaginaAnterior"
-                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 100; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                            styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
 
-                    <Text fx:id="txtPaginacion" text="Página 1 de 1" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                    <Text fx:id="txtPaginacion" text="Página 1 de 1" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
 
                     <Button fx:id="btnSiguiente" text="Siguiente" onAction="#handlePaginaSiguiente"
-                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 100; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                            styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
                     <Button fx:id="btnUltima" text="Última" onAction="#handleUltimaPagina"
-                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 100; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                            styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
 
                     <Region HBox.hgrow="ALWAYS"/>
 
                     <VBox spacing="5" alignment="CENTER_RIGHT">
-                        <Text text="Registros por página" style="-fx-font-size: 12px; -fx-fill: #7f8c8d;"/>
+                        <Text text="Registros por página" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
                         <ComboBox fx:id="cmbRegistrosPorPagina" prefWidth="80" onAction="#handleCambioRegistrosPorPagina">
                             <items>
                                 <javafx.collections.FXCollections fx:factory="observableArrayList">
@@ -120,44 +123,46 @@
 
         <!-- Tab Crear -->
         <Tab text="Crear" fx:id="tabCrear">
-            <ScrollPane fitToWidth="true" style="-fx-background-color: #ecf0f1;">
+            <ScrollPane fitToWidth="true" styleClass="content-area">
                 <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
-                    <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 10; -fx-max-width: 700;">
-                        <Text text="Crear Nueva Cita" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #2c3e50;"/>
+                    <VBox spacing="20" styleClass="card-lg" style="-fx-max-width: 700;">
+                        <Text text="Crear Nueva Cita" styleClass="title-lg"/>
 
                         <VBox spacing="8">
-                            <Text text="Paciente" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                            <Text text="Paciente" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <ComboBox fx:id="cmbCrearPaciente" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                         </VBox>
 
                         <VBox spacing="8">
-                            <Text text="Profesional" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                            <Text text="Profesional" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <ComboBox fx:id="cmbCrearProfesional" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                         </VBox>
 
                         <HBox spacing="15">
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                <Text text="Fecha" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                                <Text text="Fecha" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <DatePicker fx:id="dpCrearFecha" prefWidth="312" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
 
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                <Text text="Hora (HH:mm)" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                                <Text text="Hora (HH:mm)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <TextField fx:id="txtCrearHora" promptText="Ej: 14:30" prefWidth="312" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
                         </HBox>
 
                         <VBox spacing="8">
-                            <Text text="Motivo de Consulta" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                            <Text text="Motivo de Consulta" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <TextArea fx:id="txtCrearMotivo" promptText="Ingrese el motivo de la consulta..." prefRowCount="4"
                                      style="-fx-font-size: 14px;" wrapText="true"/>
                         </VBox>
 
                         <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
                             <Button text="Crear Cita" onAction="#handleCrearCita"
-                                    style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-pref-width: 180; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                                    styleClass="btn, btn-success"
+                                    style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
                             <Button text="Limpiar Campos" onAction="#handleLimpiarFormCrear"
-                                    style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-pref-width: 180; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                                    styleClass="btn, btn-secondary"
+                                    style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
                         </HBox>
                     </VBox>
                 </VBox>
@@ -166,45 +171,46 @@
 
         <!-- Tab Editar -->
         <Tab text="Editar" fx:id="tabEditar" disable="true">
-            <ScrollPane fitToWidth="true" style="-fx-background-color: #ecf0f1;">
+            <ScrollPane fitToWidth="true" styleClass="content-area">
                 <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
-                    <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 10; -fx-max-width: 700;">
-                        <Text text="Editar Cita" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #2c3e50;"/>
+                    <VBox spacing="20" styleClass="card-lg" style="-fx-max-width: 700;">
+                        <Text text="Editar Cita" styleClass="title-lg"/>
 
                         <VBox spacing="8">
-                            <Text text="ID" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
-                            <TextField fx:id="txtEditarId" editable="false" style="-fx-pref-height: 40; -fx-font-size: 14px; -fx-background-color: #ecf0f1;"/>
+                            <Text text="ID" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtEditarId" editable="false" styleClass="disabled-field"
+                                       style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                         </VBox>
 
                         <VBox spacing="8">
-                            <Text text="Paciente" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                            <Text text="Paciente" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <ComboBox fx:id="cmbEditarPaciente" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                         </VBox>
 
                         <VBox spacing="8">
-                            <Text text="Profesional" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                            <Text text="Profesional" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <ComboBox fx:id="cmbEditarProfesional" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                         </VBox>
 
                         <HBox spacing="15">
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                <Text text="Fecha" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                                <Text text="Fecha" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <DatePicker fx:id="dpEditarFecha" prefWidth="312" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
 
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                <Text text="Hora (HH:mm)" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                                <Text text="Hora (HH:mm)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <TextField fx:id="txtEditarHora" promptText="Ej: 14:30" prefWidth="312" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
                         </HBox>
 
                         <VBox spacing="8">
-                            <Text text="Motivo de Consulta" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                            <Text text="Motivo de Consulta" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <TextArea fx:id="txtEditarMotivo" prefRowCount="3" style="-fx-font-size: 14px;" wrapText="true"/>
                         </VBox>
 
                         <VBox spacing="8">
-                            <Text text="Estado" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                            <Text text="Estado" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <ComboBox fx:id="cmbEditarEstado" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;">
                                 <items>
                                     <javafx.collections.FXCollections fx:factory="observableArrayList">
@@ -218,15 +224,17 @@
                         </VBox>
 
                         <VBox spacing="8">
-                            <Text text="Observaciones" style="-fx-font-size: 14px; -fx-fill: #2c3e50;"/>
+                            <Text text="Observaciones" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <TextArea fx:id="txtEditarObservaciones" prefRowCount="3" style="-fx-font-size: 14px;" wrapText="true"/>
                         </VBox>
 
                         <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
                             <Button text="Actualizar Cita" onAction="#handleActualizarCita"
-                                    style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-pref-width: 180; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                                    styleClass="btn, btn-warning"
+                                    style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
                             <Button text="Cancelar" onAction="#handleCancelarEdicion"
-                                    style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-pref-width: 180; -fx-pref-height: 45; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 5;"/>
+                                    styleClass="btn, btn-secondary"
+                                    style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
                         </HBox>
                     </VBox>
                 </VBox>
