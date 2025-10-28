@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.ceragen_2.controller.FacturaController"
+      style="-fx-background-color: #f5f5f5;">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+
+    <!-- Encabezado -->
+    <Text text="Factura N° XXXXXX" style="-fx-font-size: 16px; -fx-fill: #2c3e50;"/>
+
+    <!-- Datos del cliente -->
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" prefWidth="120"/>
+            <ColumnConstraints prefWidth="600"/>
+        </columnConstraints>
+
+        <Label text="Cliente:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField text="RELLENO" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="N° de cédula:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <TextField text="RELLENO" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+        <Label text="N° de teléfono:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField text="RELLENO" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Dirección domiciliaria:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+        <TextField text="RELLENO" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+    </GridPane>
+
+    <!-- Tabla de productos o detalles -->
+   <!-- #0B4B59
+        #0D6973
+        #37A6A6
+        #7ED9D0
+        #D5F2ED
+   -->
+    <TableView fx:id="tableProducts" prefHeight="200" prefWidth="400" style="-fx-background-color: #D5F2ED;">
+        <columns>
+            <TableColumn style="-fx-background-color: #7ED9D0;" text="Producto/Servicio" prefWidth="250"/>
+            <TableColumn style="-fx-background-color: #7ED9D0;" text="Precio" prefWidth="150"/>
+            <TableColumn style="-fx-background-color: #7ED9D0;" text="Cantidad" prefWidth="150"/>
+            <TableColumn style="-fx-background-color: #7ED9D0;" text="Total" prefWidth="150"/>
+        </columns>
+
+    </TableView>
+
+    <!-- Datos de la compra -->
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" prefWidth="120"/>
+            <ColumnConstraints prefWidth="600"/>
+        </columnConstraints>
+
+        <Label text="Subtotal:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField text="RELLENO" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="IVA:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <TextField text="RELLENO" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+        <Label text="Descuento:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField text="RELLENO" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Total a pagar:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+        <TextField text="RELLENO" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+    </GridPane>
+
+</VBox>
