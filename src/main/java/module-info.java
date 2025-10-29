@@ -13,6 +13,8 @@ module com.example.ceragen_2 {
     requires io.github.cdimascio.dotenv.java;
     requires org.slf4j;
     requires ch.qos.logback.classic;
+    requires jbcrypt;
+    requires java.desktop;
 
     opens com.example.ceragen_2 to javafx.fxml;
     opens com.example.ceragen_2.controller to javafx.fxml;
