@@ -5,111 +5,225 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+<VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.ceragen_2.controller.FacturaController"
-      styleClass="bg-light"
+      spacing="0" styleClass="content-area"
       stylesheets="@../css/styles.css">
     <padding>
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
     </padding>
 
-    <!-- Card contenedor principal -->
-    <VBox spacing="20.0" styleClass="card-lg" style="-fx-max-width: 900; -fx-alignment: TOP_CENTER;">
+    <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" styleClass="content-area">
+        <Tab text="Listar">
 
-        <!-- Encabezado CERAGEN 2 -->
-        <Text text="CERAGEN 2" styleClass="title-xl" style="-fx-text-alignment: center;"/>
+        </Tab>
+        <Tab text="Nueva">
+                <!-- Card contenedor principal -->
+                <VBox  spacing="15" style="-fx-padding: 20;">
 
-        <!-- Número de Factura -->
-        <Text fx:id="txtFacturaNumero" text="Factura N° XXXXXX" styleClass="subtitle" style="-fx-font-size: 16px; -fx-text-alignment: center;"/>
+                    <!-- Encabezado CERAGEN 2 -->
+                    <Text fx:id="txtTituloFacturaNueva" text="CERAGEN 2" styleClass="title-xl" style="-fx-text-alignment: center;"/>
 
-        <!-- Primera fila: Fecha y Ciudad -->
-        <HBox spacing="20" alignment="CENTER">
-            <HBox spacing="10" HBox.hgrow="ALWAYS">
-                <Label text="Fecha de realización:" styleClass="text-primary-dark-control" minWidth="150"/>
-                <TextField fx:id="txtFechaRealizacion" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
-            </HBox>
+                    <!-- Número de Factura -->
+                    <Text fx:id="txtNumeroFacturaNueva" text="Factura N° XXXXXX" styleClass="subtitle" style="-fx-font-size: 16px; -fx-text-alignment: center;"/>
 
-            <HBox spacing="10" HBox.hgrow="ALWAYS">
-                <Label text="Ciudad:" styleClass="text-primary-dark-control" minWidth="100"/>
-                <TextField fx:id="txtCiudad" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
-            </HBox>
-        </HBox>
+                    <!-- Primera fila: Fecha y Ciudad -->
+                    <HBox spacing="20" alignment="CENTER">
+                        <HBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="Fecha de realización:" styleClass="text-primary-dark-control" minWidth="150"/>
+                            <TextField fx:id="txtFechaRealizacionNuevaFactura" HBox.hgrow="ALWAYS"/>
+                            <!-- editable="true" styleClass="disabled-field" -->
+                        </HBox>
 
-        <!-- Segunda fila: Cliente y Cédula -->
-        <HBox spacing="20" alignment="CENTER">
-            <HBox spacing="10" HBox.hgrow="ALWAYS">
-                <Label text="Cliente:" styleClass="text-primary-dark-control" minWidth="150"/>
-                <TextField fx:id="txtCliente" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
-            </HBox>
+                        <HBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="Ciudad:" styleClass="text-primary-dark-control" minWidth="100"/>
+                            <TextField fx:id="txtCiudadNuevaFactura" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </HBox>
 
-            <HBox spacing="10" HBox.hgrow="ALWAYS">
-                <Label text="N° de cédula:" styleClass="text-primary-dark-control" minWidth="100"/>
-                <TextField fx:id="txtCedula" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
-            </HBox>
-        </HBox>
+                    <!-- Segunda fila: Cliente y Cédula -->
+                    <HBox spacing="20" alignment="CENTER">
+                        <HBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="Cliente:" styleClass="text-primary-dark-control" minWidth="150"/>
+                            <TextField fx:id="txtClienteNuevaFactura" HBox.hgrow="ALWAYS"/>
+                        </HBox>
 
-        <!-- Tercera fila: Teléfono y Dirección -->
-        <HBox spacing="20" alignment="CENTER">
-            <HBox spacing="10" HBox.hgrow="ALWAYS">
-                <Label text="N° de teléfono:" styleClass="text-primary-dark-control" minWidth="150"/>
-                <TextField fx:id="txtTelefono" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
-            </HBox>
+                        <HBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="N° de cédula:" styleClass="text-primary-dark-control" minWidth="100"/>
+                            <TextField fx:id="txtCedulaNuevaFactura" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </HBox>
 
-            <HBox spacing="10" HBox.hgrow="ALWAYS">
-                <Label text="Dirección domiciliaria:" styleClass="text-primary-dark-control" minWidth="100"/>
-                <TextField fx:id="txtDireccion" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
-            </HBox>
-        </HBox>
+                    <!-- Tercera fila: Teléfono y Dirección -->
+                    <HBox spacing="20" alignment="CENTER">
+                        <HBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="N° de teléfono:" styleClass="text-primary-dark-control" minWidth="150"/>
+                            <TextField fx:id="txtTelefonoNuevaFactura" HBox.hgrow="ALWAYS"/>
+                        </HBox>
 
-        <!-- Tabla de productos/servicios -->
-        <TableView fx:id="tableProducts" prefHeight="250" styleClass="table-view">
-            <columns>
-                <TableColumn fx:id="colProducto" text="Producto/Servicio" prefWidth="350"/>
-                <TableColumn fx:id="colPrecio" text="Precio" prefWidth="150"/>
-                <TableColumn fx:id="colCantidad" text="Cantidad" prefWidth="150"/>
-                <TableColumn fx:id="colTotal" text="Total" prefWidth="150"/>
-            </columns>
-            <placeholder>
-                <Label text="Tabla sin contenido" styleClass="text-neutral-medium"/>
-            </placeholder>
-        </TableView>
+                        <HBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="Dirección domiciliaria:" styleClass="text-primary-dark-control" minWidth="100"/>
+                            <TextField fx:id="txtDireccionNuevaFactura" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </HBox>
 
-        <!-- Resumen financiero -->
-        <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
-            <HBox spacing="10">
-                <Label text="Subtotal:" styleClass="text-primary-dark-control"/>
-                <TextField fx:id="txtSubtotal" editable="false" styleClass="disabled-field" prefWidth="150"/>
-            </HBox>
+                    <Button text="Agregar cita"></Button>
+                    <!-- Tabla de productos/servicios -->
+                    <HBox>
+                        <TableView fx:id="tableProductsNuevaFactura" prefHeight="250" styleClass="table-view">
+                            <columns>
+                                <TableColumn fx:id="colProductoNuevaFactura" text="Producto/Servicio" prefWidth="350"/>
+                                <TableColumn fx:id="colEspecialidadNuevaFactura" text="Especialidad" prefWidth="150"/>
+                                <TableColumn fx:id="colPrecioNuevaFactura" text="Precio" prefWidth="150"/>
+                                <TableColumn fx:id="colCantidadNuevaFactura" text="Cantidad" prefWidth="150"/>
+                                <TableColumn fx:id="colTotalNuevaFactura" text="Total" prefWidth="150"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="Tabla sin contenido" styleClass="text-neutral-medium"/>
+                            </placeholder>
+                        </TableView>
+                    </HBox>
 
-            <Label text="..." styleClass="text-primary-dark-control"/>
+                    <!-- Resumen financiero -->
+                    <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+                        <HBox spacing="10">
+                            <Label text="Subtotal:" styleClass="text-primary-dark-control"/>
+                            <TextField fx:id="txtSubtotalNuevaFactura" editable="false" prefWidth="150"/>
+                        </HBox>
 
-            <HBox spacing="10">
-                <Label text="IVA:" styleClass="text-primary-dark-control"/>
-                <TextField fx:id="txtIva" editable="false" styleClass="disabled-field" prefWidth="150"/>
-            </HBox>
+                        <Label text="..." styleClass="text-primary-dark-control"/>
 
-            <HBox spacing="10">
-                <Label text="Descuento:" styleClass="text-primary-dark-control"/>
-                <TextField fx:id="txtDescuento" editable="false" styleClass="disabled-field" prefWidth="150"/>
-            </HBox>
-        </HBox>
+                        <HBox spacing="10">
+                            <Label text="IVA:" styleClass="text-primary-dark-control"/>
+                            <TextField fx:id="txtIvaNuevaFactura" editable="false" prefWidth="150"/>
+                        </HBox>
 
-        <!-- Total a pagar -->
-        <HBox spacing="10" alignment="CENTER_RIGHT">
-            <Label text="Total a pagar:" styleClass="text-primary-dark-control" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-            <TextField fx:id="txtTotal" editable="false" styleClass="disabled-field"
-                       style="-fx-font-weight: bold; -fx-font-size: 16px;" prefWidth="150"/>
-        </HBox>
+                        <HBox spacing="10">
+                            <Label text="Descuento:" styleClass="text-primary-dark-control"/>
+                            <TextField fx:id="txtDescuentoNuevaFactura" editable="false" prefWidth="150"/>
+                        </HBox>
+                    </HBox>
 
-        <!-- Botones de acción -->
-        <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
-            <Button fx:id="btnVolver" text="Volver" onAction="#handleVolver"
-                    styleClass="btn, btn-secondary"
-                    style="-fx-pref-width: 150; -fx-pref-height: 40;"/>
-            <Button fx:id="btnAnular" text="Anular" onAction="#handleAnular"
-                    styleClass="btn, btn-danger"
-                    style="-fx-pref-width: 150; -fx-pref-height: 40;"/>
-        </HBox>
-    </VBox>
+                    <!-- Total a pagar -->
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Label text="Total a pagar:" styleClass="text-primary-dark-control" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                        <TextField fx:id="txtTotalNuevaFactura" editable="false" styleClass="disabled-field"
+                                   style="-fx-font-weight: bold; -fx-font-size: 16px;" prefWidth="150"/>
+                    </HBox>
+
+                    <!-- Botones de acción -->
+                    <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                        <Button fx:id="btnGuardarNuevaFactura" text="Guardar"
+                                styleClass="btn, btn-primary"
+                                style="-fx-pref-width: 150; -fx-pref-height: 40;"/>
+                        <Button fx:id="btnCancelarNuevaFactura" text="Cancelar"
+                                styleClass="btn, btn-danger"
+                                style="-fx-pref-width: 150; -fx-pref-height: 40;"/>
+                    </HBox>
+                </VBox>
+
+        </Tab>
+        <Tab text="Ver">
+            <VBox spacing="15" style="-fx-padding: 20;">
+
+                <!-- Encabezado CERAGEN 2 -->
+                <Text text="CERAGEN 2" styleClass="title-xl" style="-fx-text-alignment: center;"/>
+
+                <!-- Número de Factura -->
+                <Text fx:id="txtFacturaNumero" text="Factura N° XXXXXX" styleClass="subtitle" style="-fx-font-size: 16px; -fx-text-alignment: center;"/>
+
+                <!-- Primera fila: Fecha y Ciudad -->
+                <HBox spacing="20" alignment="CENTER">
+                    <HBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label text="Fecha de realización:" styleClass="text-primary-dark-control" minWidth="150"/>
+                        <TextField fx:id="txtFechaRealizacion" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <HBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label text="Ciudad:" styleClass="text-primary-dark-control" minWidth="100"/>
+                        <TextField fx:id="txtCiudad" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </HBox>
+
+                <!-- Segunda fila: Cliente y Cédula -->
+                <HBox spacing="20" alignment="CENTER">
+                    <HBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label text="Cliente:" styleClass="text-primary-dark-control" minWidth="150"/>
+                        <TextField fx:id="txtCliente" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <HBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label text="N° de cédula:" styleClass="text-primary-dark-control" minWidth="100"/>
+                        <TextField fx:id="txtCedula" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </HBox>
+
+                <!-- Tercera fila: Teléfono y Dirección -->
+                <HBox spacing="20" alignment="CENTER">
+                    <HBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label text="N° de teléfono:" styleClass="text-primary-dark-control" minWidth="150"/>
+                        <TextField fx:id="txtTelefono" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <HBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label text="Dirección domiciliaria:" styleClass="text-primary-dark-control" minWidth="100"/>
+                        <TextField fx:id="txtDireccion" editable="false" styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </HBox>
+
+                <!-- Tabla de productos/servicios -->
+                <TableView fx:id="tableProducts" prefHeight="250" styleClass="table-view">
+                    <columns>
+                        <TableColumn fx:id="colProducto" text="Producto/Servicio" prefWidth="350"/>
+                        <TableColumn fx:id="colPrecio" text="Precio" prefWidth="150"/>
+                        <TableColumn fx:id="colCantidad" text="Cantidad" prefWidth="150"/>
+                        <TableColumn fx:id="colTotal" text="Total" prefWidth="150"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Tabla sin contenido" styleClass="text-neutral-medium"/>
+                    </placeholder>
+                </TableView>
+
+                <!-- Resumen financiero -->
+                <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+                    <HBox spacing="10">
+                        <Label text="Subtotal:" styleClass="text-primary-dark-control"/>
+                        <TextField fx:id="txtSubtotal" editable="false" styleClass="disabled-field" prefWidth="150"/>
+                    </HBox>
+
+                    <Label text="..." styleClass="text-primary-dark-control"/>
+
+                    <HBox spacing="10">
+                        <Label text="IVA:" styleClass="text-primary-dark-control"/>
+                        <TextField fx:id="txtIva" editable="false" styleClass="disabled-field" prefWidth="150"/>
+                    </HBox>
+
+                    <HBox spacing="10">
+                        <Label text="Descuento:" styleClass="text-primary-dark-control"/>
+                        <TextField fx:id="txtDescuento" editable="false" styleClass="disabled-field" prefWidth="150"/>
+                    </HBox>
+                </HBox>
+
+                <!-- Total a pagar -->
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Label text="Total a pagar:" styleClass="text-primary-dark-control" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                    <TextField fx:id="txtTotal" editable="false" styleClass="disabled-field"
+                               style="-fx-font-weight: bold; -fx-font-size: 16px;" prefWidth="150"/>
+                </HBox>
+
+                <!-- Botones de acción -->
+                <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                    <Button fx:id="btnVolver" text="Volver"
+                            styleClass="btn, btn-secondary"
+                            style="-fx-pref-width: 150; -fx-pref-height: 40;"/>
+                    <Button fx:id="btnAnular" text="Anular"
+                            styleClass="btn, btn-danger"
+                            style="-fx-pref-width: 150; -fx-pref-height: 40;"/>
+                </HBox>
+            </VBox>
+
+        </Tab>
+
+    </TabPane>
 
 </VBox>
