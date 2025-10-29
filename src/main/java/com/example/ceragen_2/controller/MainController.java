@@ -84,7 +84,7 @@ public class MainController {
     @FXML
     private void navigateToPacientes() {
         logger.info("Navegando a módulo Pacientes");
-        // TODO: Cargar vista de pacientes en contentArea
+        cargarVista("/com/example/ceragen_2/views/pacientes.fxml");
     }
 
     @FXML

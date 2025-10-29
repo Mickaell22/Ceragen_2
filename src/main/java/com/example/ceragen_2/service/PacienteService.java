@@ -108,4 +108,206 @@ public class PacienteService {
 
         return null;
     }
+
+    /**
+     * Lista pacientes con paginación y filtros
+     */
+    public List<Paciente> getPacientes(int offset, int limit, String searchText, String generoFilter) {
+        List<Paciente> pacientes = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT id, cedula, nombres, apellidos, fecha_nacimiento, genero, telefono, email, direccion, grupo_sanguineo, alergias, fecha_registro " +
+                "FROM pacientes WHERE 1=1");
+
+        if (searchText != null && !searchText.trim().isEmpty()) {
+            sql.append(" AND (cedula LIKE ? OR nombres LIKE ? OR apellidos LIKE ?)");
+        }
+        if (generoFilter != null && !generoFilter.equals("TODOS")) {
+            sql.append(" AND genero = ?");
+        }
+
+        sql.append(" ORDER BY fecha_registro DESC LIMIT ? OFFSET ?");
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+            if (searchText != null && !searchText.trim().isEmpty()) {
+                String like = "%" + searchText + "%";
+                stmt.setString(paramIndex++, like);
+                stmt.setString(paramIndex++, like);
+                stmt.setString(paramIndex++, like);
+            }
+            if (generoFilter != null && !generoFilter.equals("TODOS")) {
+                stmt.setString(paramIndex++, generoFilter);
+            }
+
+            stmt.setInt(paramIndex++, limit);
+            stmt.setInt(paramIndex, offset);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Paciente p = new Paciente();
+                p.setId(rs.getInt("id"));
+                p.setCedula(rs.getString("cedula"));
+                p.setNombres(rs.getString("nombres"));
+                p.setApellidos(rs.getString("apellidos"));
+                Date fn = rs.getDate("fecha_nacimiento");
+                if (fn != null) p.setFechaNacimiento(fn.toLocalDate());
+                p.setGenero(rs.getString("genero"));
+                p.setTelefono(rs.getString("telefono"));
+                p.setEmail(rs.getString("email"));
+                p.setDireccion(rs.getString("direccion"));
+                p.setGrupoSanguineo(rs.getString("grupo_sanguineo"));
+                p.setAlergias(rs.getString("alergias"));
+                Timestamp fr = rs.getTimestamp("fecha_registro");
+                if (fr != null) p.setFechaRegistro(fr.toLocalDateTime());
+                pacientes.add(p);
+            }
+            logger.info("Se obtuvieron {} pacientes (paginado)", pacientes.size());
+        } catch (SQLException e) {
+            logger.error("Error al obtener pacientes", e);
+        }
+        return pacientes;
+    }
+
+    /**
+     * Cuenta pacientes con filtros
+     */
+    public int countPacientes(String searchText, String generoFilter) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM pacientes WHERE 1=1");
+        if (searchText != null && !searchText.trim().isEmpty()) {
+            sql.append(" AND (cedula LIKE ? OR nombres LIKE ? OR apellidos LIKE ?)");
+        }
+        if (generoFilter != null && !generoFilter.equals("TODOS")) {
+            sql.append(" AND genero = ?");
+        }
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            if (searchText != null && !searchText.trim().isEmpty()) {
+                String like = "%" + searchText + "%";
+                stmt.setString(paramIndex++, like);
+                stmt.setString(paramIndex++, like);
+                stmt.setString(paramIndex++, like);
+            }
+            if (generoFilter != null && !generoFilter.equals("TODOS")) {
+                stmt.setString(paramIndex++, generoFilter);
+            }
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            logger.error("Error al contar pacientes", e);
+        }
+        return 0;
+    }
+
+    /**
+     * Crea un nuevo paciente
+     */
+    public boolean crearPaciente(Paciente p) {
+        String sql = "INSERT INTO pacientes (cedula, nombres, apellidos, fecha_nacimiento, genero, telefono, email, direccion, grupo_sanguineo, alergias) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, p.getCedula());
+            stmt.setString(2, p.getNombres());
+            stmt.setString(3, p.getApellidos());
+            if (p.getFechaNacimiento() != null) {
+                stmt.setDate(4, Date.valueOf(p.getFechaNacimiento()));
+            } else {
+                stmt.setNull(4, Types.DATE);
+            }
+            stmt.setString(5, p.getGenero());
+            stmt.setString(6, p.getTelefono());
+            stmt.setString(7, p.getEmail());
+            stmt.setString(8, p.getDireccion());
+            stmt.setString(9, p.getGrupoSanguineo());
+            stmt.setString(10, p.getAlergias());
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            logger.error("Error al crear paciente", e);
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza un paciente
+     */
+    public boolean actualizarPaciente(Paciente p) {
+        String sql = "UPDATE pacientes SET cedula = ?, nombres = ?, apellidos = ?, fecha_nacimiento = ?, genero = ?, telefono = ?, email = ?, direccion = ?, grupo_sanguineo = ?, alergias = ? WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, p.getCedula());
+            stmt.setString(2, p.getNombres());
+            stmt.setString(3, p.getApellidos());
+            if (p.getFechaNacimiento() != null) {
+                stmt.setDate(4, Date.valueOf(p.getFechaNacimiento()));
+            } else {
+                stmt.setNull(4, Types.DATE);
+            }
+            stmt.setString(5, p.getGenero());
+            stmt.setString(6, p.getTelefono());
+            stmt.setString(7, p.getEmail());
+            stmt.setString(8, p.getDireccion());
+            stmt.setString(9, p.getGrupoSanguineo());
+            stmt.setString(10, p.getAlergias());
+            stmt.setInt(11, p.getId());
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            logger.error("Error al actualizar paciente", e);
+            return false;
+        }
+    }
+
+    /**
+     * Elimina un paciente
+     */
+    public boolean eliminarPaciente(Integer id) {
+        String sql = "DELETE FROM pacientes WHERE id = ?";
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            logger.error("Error al eliminar paciente", e);
+            return false;
+        }
+    }
+
+    /**
+     * Verifica si existe cédula
+     */
+    public boolean existeCedula(String cedula) {
+        String sql = "SELECT COUNT(*) FROM pacientes WHERE cedula = ?";
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, cedula);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            logger.error("Error al verificar cedula", e);
+        }
+        return false;
+    }
+
+    /**
+     * Verifica si existe cédula excluyendo un ID
+     */
+    public boolean existeCedulaExceptoId(String cedula, Integer idExcluir) {
+        String sql = "SELECT COUNT(*) FROM pacientes WHERE cedula = ? AND id <> ?";
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, cedula);
+            stmt.setInt(2, idExcluir);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            logger.error("Error al verificar cedula (excluir id)", e);
+        }
+        return false;
+    }
 }
