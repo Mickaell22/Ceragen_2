@@ -87,20 +87,32 @@ CREATE TABLE IF NOT EXISTS citas (
     INDEX idx_estado (estado)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table: facturas
+-- Tabla de facturas principales (nuevo)
 CREATE TABLE IF NOT EXISTS facturas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     numero_factura VARCHAR(50) UNIQUE NOT NULL,
-    cita_id INT NOT NULL,
     paciente_id INT NOT NULL,
-    monto_total DECIMAL(10,2) NOT NULL,
-    estado ENUM('PENDIENTE', 'PAGADA', 'ANULADA') DEFAULT 'PENDIENTE',
-    metodo_pago ENUM('EFECTIVO', 'TARJETA', 'TRANSFERENCIA'),
     fecha_emision DATETIME DEFAULT CURRENT_TIMESTAMP,
-    fecha_pago DATETIME NULL,
-    FOREIGN KEY (cita_id) REFERENCES citas(id),
+    ciudad VARCHAR(100),
+    subtotal DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    iva DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    descuento DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    metodo_pago ENUM('EFECTIVO', 'TARJETA', 'TRANSFERENCIA', 'OTRO') DEFAULT 'EFECTIVO',
+    estado ENUM('ACTIVA', 'ANULADA') DEFAULT 'ACTIVA',
     FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE,
     INDEX idx_numero_factura (numero_factura),
-    INDEX idx_estado (estado),
-    INDEX idx_fecha_emision (fecha_emision)
+    INDEX idx_estado (estado)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS detalle_factura (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    factura_id INT NOT NULL,
+    cita_id INT NULL,
+    descripcion VARCHAR(255),
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    cantidad INT NOT NULL DEFAULT 1,
+    total DECIMAL(10,2) GENERATED ALWAYS AS (precio_unitario * cantidad) STORED,
+    FOREIGN KEY (factura_id) REFERENCES facturas(id) ON DELETE CASCADE,
+    FOREIGN KEY (cita_id) REFERENCES citas(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

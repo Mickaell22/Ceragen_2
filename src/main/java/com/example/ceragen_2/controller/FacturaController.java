@@ -72,12 +72,19 @@ public class FacturaController {
 
         // Inicializar fecha actual
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        txtFechaRealizacionFacturaNueva.setText(LocalDate.now().format(formatter));
         txtFechaRealizacion.setText(LocalDate.now().format(formatter));
 
         // Inicializar ciudad por defecto
+        txtCiudadFacturaNueva.setText("Guayaquil-Ecuador");
         txtCiudad.setText("Guayaquil-Ecuador");
 
         // Inicializar valores por defecto
+        txtSubtotalFacturaNueva.setText("$0.00");
+        txtIvaFacturaNueva.setText("$0.00");
+        txtDescuentoFacturaNueva.setText("$0.00");
+        txtTotalFacturaNueva.setText("$0.00");
+
         txtSubtotal.setText("$0.00");
         txtIva.setText("$0.00");
         txtDescuento.setText("$0.00");
@@ -149,6 +156,12 @@ public class FacturaController {
                 logger.info("Anulación cancelada por el usuario");
             }
         });
+    }
+
+    private void crearFactura(String numeroFactura, String cliente, String cedula,
+                              String telefono, String direccion, String ciudad,
+                              double subtotal, double iva, double descuento, double total){
+
     }
 
 
