@@ -79,4 +79,33 @@ public class PacienteService {
 
         return null;
     }
+
+    /**
+     * Obtiene un paciente por cedula
+     */
+    public Paciente getPacienteByCedula(String cedula) {
+        String sql = "SELECT id, cedula, nombres, apellidos, telefono, email FROM pacientes WHERE cedula = ?";
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cedula);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Paciente paciente = new Paciente();
+                paciente.setId(rs.getInt("id"));
+                paciente.setCedula(rs.getString("cedula"));
+                paciente.setNombres(rs.getString("nombres"));
+                paciente.setApellidos(rs.getString("apellidos"));
+                paciente.setTelefono(rs.getString("telefono"));
+                paciente.setEmail(rs.getString("email"));
+                return paciente;
+            }
+        } catch (SQLException e) {
+            logger.error("Error al obtener paciente por cedula", e);
+        }
+
+        return null;
+    }
 }

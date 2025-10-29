@@ -40,12 +40,13 @@ public class CitasController {
     private int totalPaginas = 0;
 
     @FXML private TabPane tabPane;
-    @FXML private Tab tabCrear;
     @FXML private Tab tabEditar;
 
     // Filtros
     @FXML private ComboBox<Paciente> cmbPacienteFiltro;
+    @FXML private TextField txtFiltroCedulaPaciente;
     @FXML private ComboBox<Profesional> cmbProfesionalFiltro;
+    @FXML private TextField txtFiltroCedulaProfesional;
     @FXML private ComboBox<String> cmbEstadoFiltro;
 
     // Tabla
@@ -67,26 +68,28 @@ public class CitasController {
     @FXML private ComboBox<String> cmbRegistrosPorPagina;
     @FXML private VBox loadingIndicator;
 
-    // Formulario Crear
-    @FXML private ComboBox<Paciente> cmbCrearPaciente;
-    @FXML private ComboBox<Profesional> cmbCrearProfesional;
-    @FXML private DatePicker dpCrearFecha;
-    @FXML private TextField txtCrearHora;
-    @FXML private TextArea txtCrearMotivo;
-
     // Formulario Editar
     @FXML private TextField txtEditarId;
     @FXML private ComboBox<Paciente> cmbEditarPaciente;
+    @FXML private TextField txtEditarCedulaPaciente;
     @FXML private ComboBox<Profesional> cmbEditarProfesional;
+    @FXML private TextField txtEditarCedulaProfesional;
     @FXML private DatePicker dpEditarFecha;
     @FXML private TextField txtEditarHora;
     @FXML private TextArea txtEditarMotivo;
     @FXML private ComboBox<String> cmbEditarEstado;
     @FXML private TextArea txtEditarObservaciones;
 
+    // Vista Horario
+    @FXML private DatePicker dpFechaHorario;
+    @FXML private TextField txtHorarioCedulaProfesional;
+    @FXML private Label lblHorarioProfesional;
+    @FXML private VBox vboxHorario;
+
     private Cita citaEnEdicion;
     private List<Paciente> listaPacientes;
     private List<Profesional> listaProfesionales;
+    private Profesional profesionalSeleccionadoHorario;
 
     @FXML
     public void initialize() {
@@ -94,6 +97,7 @@ public class CitasController {
         configurarTabla();
         configurarFiltros();
         configurarPaginacion();
+        configurarVistaHorario();
         cargarCatalogos();
     }
 
@@ -149,6 +153,10 @@ public class CitasController {
         cmbRegistrosPorPagina.setValue("10");
     }
 
+    private void configurarVistaHorario() {
+        dpFechaHorario.setValue(LocalDate.now());
+    }
+
     private void cargarCatalogos() {
         Task<CatalogosResult> task = new Task<>() {
             @Override
@@ -168,9 +176,7 @@ public class CitasController {
             cmbPacienteFiltro.setItems(FXCollections.observableArrayList(listaPacientes));
             cmbProfesionalFiltro.setItems(FXCollections.observableArrayList(listaProfesionales));
 
-            // Configurar ComboBox de formularios
-            cmbCrearPaciente.setItems(FXCollections.observableArrayList(listaPacientes));
-            cmbCrearProfesional.setItems(FXCollections.observableArrayList(listaProfesionales));
+            // Configurar ComboBox de formulario editar
             cmbEditarPaciente.setItems(FXCollections.observableArrayList(listaPacientes));
             cmbEditarProfesional.setItems(FXCollections.observableArrayList(listaProfesionales));
 
@@ -248,15 +254,11 @@ public class CitasController {
     }
 
     @FXML
-    private void handleBuscar() {
-        paginaActual = 0;
-        cargarDatos();
-    }
-
-    @FXML
     private void handleLimpiarFiltros() {
         cmbPacienteFiltro.setValue(null);
         cmbProfesionalFiltro.setValue(null);
+        txtFiltroCedulaPaciente.clear();
+        txtFiltroCedulaProfesional.clear();
         cmbEstadoFiltro.setValue("TODOS");
         paginaActual = 0;
         cargarDatos();
@@ -297,88 +299,13 @@ public class CitasController {
         cargarDatos();
     }
 
-    @FXML
-    private void handleCrearCita() {
-        final Paciente paciente = cmbCrearPaciente.getValue();
-        final Profesional profesional = cmbCrearProfesional.getValue();
-        final LocalDate fecha = dpCrearFecha.getValue();
-        final String horaStr = txtCrearHora.getText().trim();
-        final String motivo = txtCrearMotivo.getText().trim();
-
-        if (paciente == null || profesional == null || fecha == null || horaStr.isEmpty() || motivo.isEmpty()) {
-            mostrarAlerta("Error", "Todos los campos son obligatorios", Alert.AlertType.ERROR);
-            return;
-        }
-
-        LocalTime hora;
-        try {
-            hora = LocalTime.parse(horaStr, TIME_FORMATTER);
-        } catch (DateTimeParseException e) {
-            mostrarAlerta("Error", "Formato de hora inválido. Use HH:mm (ej: 14:30)", Alert.AlertType.ERROR);
-            return;
-        }
-
-        final LocalDateTime fechaHora = LocalDateTime.of(fecha, hora);
-
-        loadingIndicator.setVisible(true);
-
-        Task<Boolean> task = new Task<>() {
-            @Override
-            protected Boolean call() {
-                if (citaService.existeConflictoHorario(profesional.getId(), fechaHora, null)) {
-                    return null;
-                }
-                return citaService.crearCita(paciente.getId(), profesional.getId(), fechaHora, motivo);
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            Boolean exito = task.getValue();
-            loadingIndicator.setVisible(false);
-
-            if (exito == null) {
-                mostrarAlerta("Error", "Ya existe una cita para este profesional en ese horario", Alert.AlertType.ERROR);
-            } else if (exito) {
-                logger.info("Cita creada exitosamente");
-                mostrarAlerta("Éxito", "Cita creada exitosamente", Alert.AlertType.INFORMATION);
-                limpiarFormularioCrear();
-                cargarDatos();
-                tabPane.getSelectionModel().select(0);
-            } else {
-                logger.error("Error al crear cita");
-                mostrarAlerta("Error", "No se pudo crear la cita", Alert.AlertType.ERROR);
-            }
-        });
-
-        task.setOnFailed(event -> {
-            logger.error("Error al crear cita", task.getException());
-            loadingIndicator.setVisible(false);
-            mostrarAlerta("Error", "No se pudo crear la cita", Alert.AlertType.ERROR);
-        });
-
-        new Thread(task).start();
-    }
-
-    @FXML
-    private void handleLimpiarFormCrear() {
-        limpiarFormularioCrear();
-    }
-
-    private void limpiarFormularioCrear() {
-        cmbCrearPaciente.setValue(null);
-        cmbCrearProfesional.setValue(null);
-        dpCrearFecha.setValue(null);
-        txtCrearHora.clear();
-        txtCrearMotivo.clear();
-    }
-
     private void abrirEdicion(Cita cita) {
         logger.info("Abriendo edición para cita ID: {}", cita.getId());
         citaEnEdicion = cita;
 
         txtEditarId.setText(cita.getId().toString());
 
-        // Buscar y seleccionar paciente
+        // Buscar y seleccionar paciente en ComboBox
         for (Paciente p : listaPacientes) {
             if (p.getId().equals(cita.getPacienteId())) {
                 cmbEditarPaciente.setValue(p);
@@ -386,7 +313,7 @@ public class CitasController {
             }
         }
 
-        // Buscar y seleccionar profesional
+        // Buscar y seleccionar profesional en ComboBox
         for (Profesional p : listaProfesionales) {
             if (p.getId().equals(cita.getProfesionalId())) {
                 cmbEditarProfesional.setValue(p);
@@ -581,13 +508,239 @@ public class CitasController {
         }
     }
 
-    private static class CatalogosResult {
-        List<Paciente> pacientes;
-        List<Profesional> profesionales;
+    // Métodos de búsqueda por cédula para filtros
+    @FXML
+    private void handleBuscar() {
+        paginaActual = 0;
+        cargarDatos();
+    }
 
-        CatalogosResult(List<Paciente> pacientes, List<Profesional> profesionales) {
-            this.pacientes = pacientes;
-            this.profesionales = profesionales;
+    @FXML
+    private void handleBuscarPacienteFiltro() {
+        String cedula = txtFiltroCedulaPaciente.getText().trim();
+        if (cedula.isEmpty()) {
+            mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
+            return;
         }
+
+        Paciente paciente = pacienteService.getPacienteByCedula(cedula);
+        if (paciente != null) {
+            cmbPacienteFiltro.setValue(paciente);
+            mostrarAlerta("Éxito", "Paciente encontrado: " + paciente.getNombreCompleto(), Alert.AlertType.INFORMATION);
+        } else {
+            mostrarAlerta("Error", "No se encontró paciente con cédula: " + cedula, Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void handleBuscarProfesionalFiltro() {
+        String cedula = txtFiltroCedulaProfesional.getText().trim();
+        if (cedula.isEmpty()) {
+            mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
+            return;
+        }
+
+        Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
+        if (profesional != null) {
+            cmbProfesionalFiltro.setValue(profesional);
+            mostrarAlerta("Éxito", "Profesional encontrado: " + profesional.getNombreCompleto(), Alert.AlertType.INFORMATION);
+        } else {
+            mostrarAlerta("Error", "No se encontró profesional con cédula: " + cedula, Alert.AlertType.ERROR);
+        }
+    }
+
+    // Métodos de búsqueda para formulario Editar
+    @FXML
+    private void handleBuscarPacienteEditar() {
+        String cedula = txtEditarCedulaPaciente.getText().trim();
+        if (cedula.isEmpty()) {
+            mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
+            return;
+        }
+
+        Paciente paciente = pacienteService.getPacienteByCedula(cedula);
+        if (paciente != null) {
+            cmbEditarPaciente.setValue(paciente);
+            mostrarAlerta("Éxito", "Paciente encontrado: " + paciente.getNombreCompleto(), Alert.AlertType.INFORMATION);
+        } else {
+            mostrarAlerta("Error", "No se encontró paciente con cédula: " + cedula, Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void handleBuscarProfesionalEditar() {
+        String cedula = txtEditarCedulaProfesional.getText().trim();
+        if (cedula.isEmpty()) {
+            mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
+            return;
+        }
+
+        Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
+        if (profesional != null) {
+            cmbEditarProfesional.setValue(profesional);
+            mostrarAlerta("Éxito", "Profesional encontrado: " + profesional.getNombreCompleto(), Alert.AlertType.INFORMATION);
+        } else {
+            mostrarAlerta("Error", "No se encontró profesional con cédula: " + cedula, Alert.AlertType.ERROR);
+        }
+    }
+
+    // Métodos para vista de horario
+    @FXML
+    private void handleSemanaAnterior() {
+        dpFechaHorario.setValue(dpFechaHorario.getValue().minusWeeks(1));
+        cargarVistaHorario();
+    }
+
+    @FXML
+    private void handleSemanaSiguiente() {
+        dpFechaHorario.setValue(dpFechaHorario.getValue().plusWeeks(1));
+        cargarVistaHorario();
+    }
+
+    @FXML
+    private void handleIrHoy() {
+        dpFechaHorario.setValue(LocalDate.now());
+        cargarVistaHorario();
+    }
+
+    @FXML
+    private void handleActualizarHorario() {
+        String cedula = txtHorarioCedulaProfesional.getText().trim();
+        if (!cedula.isEmpty()) {
+            Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
+            if (profesional != null) {
+                profesionalSeleccionadoHorario = profesional;
+                lblHorarioProfesional.setText(profesional.getNombreCompleto());
+            } else {
+                mostrarAlerta("Advertencia", "No se encontró profesional con cédula: " + cedula, Alert.AlertType.WARNING);
+                profesionalSeleccionadoHorario = null;
+                lblHorarioProfesional.setText("No encontrado");
+            }
+        } else {
+            profesionalSeleccionadoHorario = null;
+            lblHorarioProfesional.setText("Todos");
+        }
+        cargarVistaHorario();
+    }
+
+    private void cargarVistaHorario() {
+        LocalDate fechaSeleccionada = dpFechaHorario.getValue();
+        if (fechaSeleccionada == null) {
+            fechaSeleccionada = LocalDate.now();
+            dpFechaHorario.setValue(fechaSeleccionada);
+        }
+
+        // Obtener el inicio de la semana (lunes)
+        LocalDate inicioSemana = fechaSeleccionada.with(java.time.DayOfWeek.MONDAY);
+        LocalDate finSemana = inicioSemana.plusDays(6);
+
+        // Cargar citas de la semana
+        Integer profesionalId = profesionalSeleccionadoHorario != null ? profesionalSeleccionadoHorario.getId() : null;
+
+        Task<List<Cita>> task = new Task<>() {
+            @Override
+            protected List<Cita> call() {
+                LocalDateTime fechaInicio = inicioSemana.atStartOfDay();
+                LocalDateTime fechaFin = finSemana.atTime(23, 59, 59);
+                return citaService.getCitas(0, 1000, null, profesionalId, null, fechaInicio, fechaFin);
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            List<Cita> citas = task.getValue();
+            generarVistaHorario(inicioSemana, finSemana, citas);
+        });
+
+        task.setOnFailed(event -> {
+            logger.error("Error al cargar vista de horario", task.getException());
+            mostrarAlerta("Error", "No se pudo cargar la vista de horario", Alert.AlertType.ERROR);
+        });
+
+        new Thread(task).start();
+    }
+
+    private void generarVistaHorario(LocalDate inicioSemana, LocalDate finSemana, List<Cita> citas) {
+        vboxHorario.getChildren().clear();
+
+        // Crear encabezado con días de la semana
+        HBox encabezado = new HBox(5);
+        encabezado.setStyle("-fx-padding: 10; -fx-background-color: #34495e;");
+
+        Text lblHora = new Text("Hora");
+        lblHora.setStyle("-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;");
+        lblHora.setWrappingWidth(60);
+        encabezado.getChildren().add(lblHora);
+
+        DateTimeFormatter diaFormatter = DateTimeFormatter.ofPattern("EEE dd/MM");
+        for (int i = 0; i < 7; i++) {
+            LocalDate dia = inicioSemana.plusDays(i);
+            Text lblDia = new Text(dia.format(diaFormatter));
+            lblDia.setStyle("-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-text-alignment: center;");
+            lblDia.setWrappingWidth(140);
+            encabezado.getChildren().add(lblDia);
+        }
+
+        vboxHorario.getChildren().add(encabezado);
+
+        // Generar filas de horas (8:00 AM - 6:00 PM)
+        for (int hora = 8; hora <= 18; hora++) {
+            HBox filaHora = new HBox(5);
+            filaHora.setStyle("-fx-padding: 5; -fx-border-color: #ecf0f1; -fx-border-width: 0 0 1 0;");
+
+            Text lblHoraTexto = new Text(String.format("%02d:00", hora));
+            lblHoraTexto.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
+            lblHoraTexto.setWrappingWidth(60);
+            filaHora.getChildren().add(lblHoraTexto);
+
+            final int horaFinal = hora;
+            for (int i = 0; i < 7; i++) {
+                LocalDate dia = inicioSemana.plusDays(i);
+                VBox celda = new VBox(3);
+                celda.setStyle("-fx-padding: 5; -fx-border-color: #ecf0f1; -fx-border-width: 0 1 0 0; -fx-background-color: white; -fx-pref-width: 140; -fx-min-height: 60;");
+
+                // Buscar citas para esta hora y día
+                List<Cita> citasEnHora = citas.stream()
+                    .filter(c -> {
+                        if (c.getFechaHora() == null) return false;
+                        return c.getFechaHora().toLocalDate().equals(dia) &&
+                               c.getFechaHora().getHour() == horaFinal;
+                    })
+                    .toList();
+
+                for (Cita cita : citasEnHora) {
+                    VBox citaBox = new VBox(2);
+                    citaBox.setStyle(getEstiloSegunEstado(cita.getEstado()) + "-fx-padding: 5; -fx-background-radius: 3; -fx-cursor: hand;");
+
+                    Text txtHora = new Text(cita.getFechaHora().toLocalTime().format(TIME_FORMATTER));
+                    txtHora.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-fill: white;");
+
+                    Text txtPaciente = new Text(cita.getPacienteNombre());
+                    txtPaciente.setStyle("-fx-font-size: 10px; -fx-fill: white;");
+                    txtPaciente.setWrappingWidth(120);
+
+                    citaBox.getChildren().addAll(txtHora, txtPaciente);
+                    citaBox.setOnMouseClicked(e -> abrirEdicion(cita));
+
+                    celda.getChildren().add(citaBox);
+                }
+
+                filaHora.getChildren().add(celda);
+            }
+
+            vboxHorario.getChildren().add(filaHora);
+        }
+    }
+
+    private String getEstiloSegunEstado(String estado) {
+        return switch (estado) {
+            case "PENDIENTE" -> "-fx-background-color: #3498db; ";
+            case "CONFIRMADA" -> "-fx-background-color: #27ae60; ";
+            case "ATENDIDA" -> "-fx-background-color: #9b59b6; ";
+            case "CANCELADA" -> "-fx-background-color: #95a5a6; ";
+            default -> "-fx-background-color: #7f8c8d; ";
+        };
+    }
+
+    private record CatalogosResult(List<Paciente> pacientes, List<Profesional> profesionales) {
     }
 }

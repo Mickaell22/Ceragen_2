@@ -90,4 +90,39 @@ public class ProfesionalService {
 
         return null;
     }
+
+    /**
+     * Obtiene un profesional por cedula
+     */
+    public Profesional getProfesionalByCedula(String cedula) {
+        String sql = "SELECT p.id, p.cedula, p.nombres, p.apellidos, p.telefono, p.email, p.numero_licencia, " +
+                     "e.nombre as especialidad_nombre " +
+                     "FROM profesionales p " +
+                     "LEFT JOIN especialidades e ON p.especialidad_id = e.id " +
+                     "WHERE p.cedula = ? AND p.activo = TRUE";
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cedula);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Profesional profesional = new Profesional();
+                profesional.setId(rs.getInt("id"));
+                profesional.setCedula(rs.getString("cedula"));
+                profesional.setNombres(rs.getString("nombres"));
+                profesional.setApellidos(rs.getString("apellidos"));
+                profesional.setTelefono(rs.getString("telefono"));
+                profesional.setEmail(rs.getString("email"));
+                profesional.setNumeroLicencia(rs.getString("numero_licencia"));
+                profesional.setEspecialidadNombre(rs.getString("especialidad_nombre"));
+                return profesional;
+            }
+        } catch (SQLException e) {
+            logger.error("Error al obtener profesional por cedula", e);
+        }
+
+        return null;
+    }
 }

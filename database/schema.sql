@@ -1,8 +1,13 @@
 -- Database Schema for Ceragen System
--- Run this script to create all necessary tables
+-- This script will DROP and recreate the entire database
+
+-- Drop and create database
+DROP DATABASE IF EXISTS railway;
+CREATE DATABASE railway CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE railway;
 
 -- Table: usuarios
-CREATE TABLE IF NOT EXISTS usuarios (
+CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL COMMENT 'bcrypt hashed password',
@@ -12,7 +17,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table: especialidades
-CREATE TABLE IF NOT EXISTS especialidades (
+CREATE TABLE especialidades (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
@@ -21,7 +26,7 @@ CREATE TABLE IF NOT EXISTS especialidades (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table: pacientes
-CREATE TABLE IF NOT EXISTS pacientes (
+CREATE TABLE pacientes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cedula VARCHAR(20) UNIQUE NOT NULL,
     nombres VARCHAR(100) NOT NULL,
@@ -39,7 +44,7 @@ CREATE TABLE IF NOT EXISTS pacientes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table: documentos_paciente
-CREATE TABLE IF NOT EXISTS documentos_paciente (
+CREATE TABLE documentos_paciente (
     id INT AUTO_INCREMENT PRIMARY KEY,
     paciente_id INT NOT NULL,
     nombre_archivo VARCHAR(255) NOT NULL,
@@ -51,7 +56,7 @@ CREATE TABLE IF NOT EXISTS documentos_paciente (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table: profesionales
-CREATE TABLE IF NOT EXISTS profesionales (
+CREATE TABLE profesionales (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cedula VARCHAR(20) UNIQUE NOT NULL,
     nombres VARCHAR(100) NOT NULL,
@@ -70,7 +75,7 @@ CREATE TABLE IF NOT EXISTS profesionales (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table: citas
-CREATE TABLE IF NOT EXISTS citas (
+CREATE TABLE citas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     paciente_id INT NOT NULL,
     profesional_id INT NOT NULL,
@@ -87,8 +92,8 @@ CREATE TABLE IF NOT EXISTS citas (
     INDEX idx_estado (estado)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabla de facturas principales (nuevo)
-CREATE TABLE IF NOT EXISTS facturas (
+-- Table: facturas
+CREATE TABLE facturas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     numero_factura VARCHAR(50) UNIQUE NOT NULL,
     paciente_id INT NOT NULL,
@@ -105,7 +110,8 @@ CREATE TABLE IF NOT EXISTS facturas (
     INDEX idx_estado (estado)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS detalle_factura (
+-- Table: detalle_factura
+CREATE TABLE detalle_factura (
     id INT AUTO_INCREMENT PRIMARY KEY,
     factura_id INT NOT NULL,
     cita_id INT NULL,

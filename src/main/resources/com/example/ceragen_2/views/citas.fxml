@@ -23,48 +23,63 @@
             <VBox spacing="15" style="-fx-padding: 20;">
 
                 <!-- Filtros -->
-                <HBox spacing="15" styleClass="card">
-                    <VBox spacing="5">
-                        <Text text="Paciente" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
-                        <ComboBox fx:id="cmbPacienteFiltro" prefWidth="200"/>
-                    </VBox>
+                <VBox spacing="10" styleClass="card">
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <VBox spacing="5">
+                            <Text text="Paciente" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
+                            <ComboBox fx:id="cmbPacienteFiltro" prefWidth="200" style="-fx-pref-height: 35;"/>
+                        </VBox>
 
-                    <VBox spacing="5">
-                        <Text text="Profesional" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
-                        <ComboBox fx:id="cmbProfesionalFiltro" prefWidth="200"/>
-                    </VBox>
+                        <VBox spacing="5" alignment="BOTTOM_LEFT">
+                            <Text text="O buscar por cédula" styleClass="text-neutral-medium" style="-fx-font-size: 11px;"/>
+                            <HBox spacing="5">
+                                <TextField fx:id="txtFiltroCedulaPaciente" promptText="Cédula..." prefWidth="120" style="-fx-pref-height: 35;"/>
+                                <Button text="Buscar" onAction="#handleBuscarPacienteFiltro"
+                                        styleClass="btn, btn-secondary"
+                                        style="-fx-pref-width: 80; -fx-pref-height: 35;"/>
+                            </HBox>
+                        </VBox>
 
-                    <VBox spacing="5">
-                        <Text text="Estado" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
-                        <ComboBox fx:id="cmbEstadoFiltro" prefWidth="150">
-                            <items>
-                                <javafx.collections.FXCollections fx:factory="observableArrayList">
-                                    <java.lang.String fx:value="TODOS"/>
-                                    <java.lang.String fx:value="PENDIENTE"/>
-                                    <java.lang.String fx:value="CONFIRMADA"/>
-                                    <java.lang.String fx:value="ATENDIDA"/>
-                                    <java.lang.String fx:value="CANCELADA"/>
-                                </javafx.collections.FXCollections>
-                            </items>
-                        </ComboBox>
-                    </VBox>
+                        <VBox spacing="5">
+                            <Text text="Profesional" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
+                            <ComboBox fx:id="cmbProfesionalFiltro" prefWidth="200" style="-fx-pref-height: 35;"/>
+                        </VBox>
 
-                    <Region HBox.hgrow="ALWAYS"/>
+                        <VBox spacing="5" alignment="BOTTOM_LEFT">
+                            <Text text="O buscar por cédula" styleClass="text-neutral-medium" style="-fx-font-size: 11px;"/>
+                            <HBox spacing="5">
+                                <TextField fx:id="txtFiltroCedulaProfesional" promptText="Cédula..." prefWidth="120" style="-fx-pref-height: 35;"/>
+                                <Button text="Buscar" onAction="#handleBuscarProfesionalFiltro"
+                                        styleClass="btn, btn-secondary"
+                                        style="-fx-pref-width: 80; -fx-pref-height: 35;"/>
+                            </HBox>
+                        </VBox>
 
-                    <VBox spacing="5" alignment="BOTTOM_RIGHT">
-                        <Text text=" " style="-fx-font-size: 12px;"/>
+                        <VBox spacing="5">
+                            <Text text="Estado" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
+                            <ComboBox fx:id="cmbEstadoFiltro" prefWidth="120" style="-fx-pref-height: 35;">
+                                <items>
+                                    <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                        <java.lang.String fx:value="TODOS"/>
+                                        <java.lang.String fx:value="PENDIENTE"/>
+                                        <java.lang.String fx:value="CONFIRMADA"/>
+                                        <java.lang.String fx:value="ATENDIDA"/>
+                                        <java.lang.String fx:value="CANCELADA"/>
+                                    </javafx.collections.FXCollections>
+                                </items>
+                            </ComboBox>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
                         <Button text="Buscar" onAction="#handleBuscar"
                                 styleClass="btn, btn-primary"
                                 style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
-                    </VBox>
-
-                    <VBox spacing="5" alignment="BOTTOM_RIGHT">
-                        <Text text=" " style="-fx-font-size: 12px;"/>
                         <Button text="Limpiar" onAction="#handleLimpiarFiltros"
                                 styleClass="btn, btn-secondary"
                                 style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
-                    </VBox>
-                </HBox>
+                    </HBox>
+                </VBox>
 
                 <!-- Tabla de Citas con indicador de carga -->
                 <StackPane VBox.vgrow="ALWAYS">
@@ -121,6 +136,77 @@
             </VBox>
         </Tab>
 
+        <!-- Tab Vista Horario -->
+        <Tab text="Vista Horario">
+            <VBox spacing="15" style="-fx-padding: 20;">
+
+                <!-- Controles de navegación de fecha -->
+                <HBox spacing="15" styleClass="card" alignment="CENTER">
+                    <Button text="&lt;&lt; Semana Anterior" onAction="#handleSemanaAnterior"
+                            styleClass="btn, btn-primary"
+                            style="-fx-pref-width: 160; -fx-pref-height: 35;"/>
+
+                    <DatePicker fx:id="dpFechaHorario" prefWidth="150" style="-fx-pref-height: 35;"/>
+
+                    <Button text="Hoy" onAction="#handleIrHoy"
+                            styleClass="btn, btn-secondary"
+                            style="-fx-pref-width: 100; -fx-pref-height: 35;"/>
+
+                    <Button text="Semana Siguiente &gt;&gt;" onAction="#handleSemanaSiguiente"
+                            styleClass="btn, btn-primary"
+                            style="-fx-pref-width: 160; -fx-pref-height: 35;"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <VBox spacing="5">
+                        <Text text="Filtrar por Profesional" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
+                        <HBox spacing="5">
+                            <TextField fx:id="txtHorarioCedulaProfesional" promptText="Cedula..." prefWidth="120" style="-fx-pref-height: 35;"/>
+                            <Label fx:id="lblHorarioProfesional" text="Todos" styleClass="text-primary-dark"
+                                   style="-fx-font-size: 11px; -fx-padding: 8; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 120;"/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="5" alignment="BOTTOM_RIGHT">
+                        <Text text=" " style="-fx-font-size: 12px;"/>
+                        <Button text="Actualizar" onAction="#handleActualizarHorario"
+                                styleClass="btn, btn-success"
+                                style="-fx-pref-width: 100; -fx-pref-height: 35;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Grid de horarios -->
+                <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS" style="-fx-background-color: white;">
+                    <VBox fx:id="vboxHorario" spacing="0" style="-fx-padding: 10;">
+                        <!-- El contenido del horario se generará dinámicamente -->
+                        <Text text="Cargando horario..." styleClass="text-neutral-medium" style="-fx-font-size: 14px; -fx-padding: 20;"/>
+                    </VBox>
+                </ScrollPane>
+
+                <!-- Leyenda de estados -->
+                <HBox spacing="20" styleClass="card" alignment="CENTER">
+                    <Text text="Leyenda:" styleClass="text-primary-dark" style="-fx-font-size: 13px; -fx-font-weight: bold;"/>
+                    <HBox spacing="5" alignment="CENTER">
+                        <Label text="  " style="-fx-background-color: #3498db; -fx-background-radius: 3; -fx-pref-width: 20; -fx-pref-height: 20;"/>
+                        <Text text="Pendiente" style="-fx-font-size: 12px;"/>
+                    </HBox>
+                    <HBox spacing="5" alignment="CENTER">
+                        <Label text="  " style="-fx-background-color: #27ae60; -fx-background-radius: 3; -fx-pref-width: 20; -fx-pref-height: 20;"/>
+                        <Text text="Confirmada" style="-fx-font-size: 12px;"/>
+                    </HBox>
+                    <HBox spacing="5" alignment="CENTER">
+                        <Label text="  " style="-fx-background-color: #9b59b6; -fx-background-radius: 3; -fx-pref-width: 20; -fx-pref-height: 20;"/>
+                        <Text text="Atendida" style="-fx-font-size: 12px;"/>
+                    </HBox>
+                    <HBox spacing="5" alignment="CENTER">
+                        <Label text="  " style="-fx-background-color: #95a5a6; -fx-background-radius: 3; -fx-pref-width: 20; -fx-pref-height: 20;"/>
+                        <Text text="Cancelada" style="-fx-font-size: 12px;"/>
+                    </HBox>
+                </HBox>
+
+            </VBox>
+        </Tab>
+
         <!-- Tab Editar -->
         <Tab text="Editar" fx:id="tabEditar" disable="true">
             <ScrollPane fitToWidth="true" styleClass="content-area">
@@ -137,11 +223,25 @@
                         <VBox spacing="8">
                             <Text text="Paciente" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <ComboBox fx:id="cmbEditarPaciente" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                            <HBox spacing="10" style="-fx-padding: 5 0 0 0;">
+                                <Text text="O buscar por cédula:" styleClass="text-neutral-medium" style="-fx-font-size: 12px; -fx-padding: 8 0 0 0;"/>
+                                <TextField fx:id="txtEditarCedulaPaciente" promptText="Ingrese cédula..." prefWidth="150" style="-fx-pref-height: 35; -fx-font-size: 13px;"/>
+                                <Button text="Buscar" onAction="#handleBuscarPacienteEditar"
+                                        styleClass="btn, btn-secondary"
+                                        style="-fx-pref-width: 80; -fx-pref-height: 35;"/>
+                            </HBox>
                         </VBox>
 
                         <VBox spacing="8">
                             <Text text="Profesional" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <ComboBox fx:id="cmbEditarProfesional" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                            <HBox spacing="10" style="-fx-padding: 5 0 0 0;">
+                                <Text text="O buscar por cédula:" styleClass="text-neutral-medium" style="-fx-font-size: 12px; -fx-padding: 8 0 0 0;"/>
+                                <TextField fx:id="txtEditarCedulaProfesional" promptText="Ingrese cédula..." prefWidth="150" style="-fx-pref-height: 35; -fx-font-size: 13px;"/>
+                                <Button text="Buscar" onAction="#handleBuscarProfesionalEditar"
+                                        styleClass="btn, btn-secondary"
+                                        style="-fx-pref-width: 80; -fx-pref-height: 35;"/>
+                            </HBox>
                         </VBox>
 
                         <HBox spacing="15">
