@@ -29,6 +29,9 @@ public class MainController {
     private Button btnPacientes;
 
     @FXML
+    private Button btnClientes;
+
+    @FXML
     private Button btnProfesionales;
 
     @FXML
@@ -60,6 +63,7 @@ public class MainController {
     private void setupHoverEffects() {
         addHoverEffect(btnUsuarios);
         addHoverEffect(btnPacientes);
+        addHoverEffect(btnClientes);
         addHoverEffect(btnProfesionales);
         addHoverEffect(btnEspecialidades);
         addHoverEffect(btnCitas);
@@ -81,6 +85,12 @@ public class MainController {
     private void navigateToPacientes() {
         logger.info("Navegando a módulo Pacientes");
         // TODO: Cargar vista de pacientes en contentArea
+    }
+
+    @FXML
+    private void navigateToClientes() {
+        logger.info("Navegando a módulo Clientes");
+        cargarVista("/com/example/ceragen_2/views/clientes.fxml");
     }
 
     @FXML

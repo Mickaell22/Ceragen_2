@@ -36,6 +36,9 @@
                 <Button fx:id="btnPacientes" text="Pacientes" onAction="#navigateToPacientes"
                         styleClass="nav-button"/>
 
+                <Button fx:id="btnClientes" text="Clientes" onAction="#navigateToClientes"
+                        styleClass="nav-button"/>
+
                 <Button fx:id="btnProfesionales" text="Profesionales" onAction="#navigateToProfesionales"
                         styleClass="nav-button"/>
 

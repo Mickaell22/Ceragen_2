@@ -55,6 +55,20 @@ CREATE TABLE documentos_paciente (
     INDEX idx_paciente (paciente_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Table: clientes
+CREATE TABLE clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cedula VARCHAR(20) UNIQUE NOT NULL,
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    telefono VARCHAR(20),
+    email VARCHAR(100),
+    direccion TEXT,
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_cedula (cedula),
+    INDEX idx_nombre_completo (nombres, apellidos)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Table: profesionales
 CREATE TABLE profesionales (
     id INT AUTO_INCREMENT PRIMARY KEY,
