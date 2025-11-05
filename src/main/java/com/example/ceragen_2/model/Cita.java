@@ -1,5 +1,6 @@
 package com.example.ceragen_2.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Cita {
@@ -11,6 +12,7 @@ public class Cita {
     private String estado;
     private String observaciones;
     private LocalDateTime fechaCreacion;
+    private BigDecimal costo; // Nuevo campo
 
     // Para mostrar datos relacionados en la tabla
     private String pacienteNombre;
@@ -29,6 +31,24 @@ public class Cita {
         this.estado = estado;
         this.observaciones = observaciones;
         this.fechaCreacion = fechaCreacion;
+    }
+
+    //constructor agg por marco
+    public Cita(Integer pacienteId, Integer profesionalId, LocalDateTime fechaHora,
+                String motivo) {
+        this.pacienteId = pacienteId;
+        this.profesionalId = profesionalId;
+        this.fechaHora = fechaHora;
+        this.motivo = motivo;
+    }
+
+    public Cita(Integer pacienteId, Integer profesionalId, LocalDateTime fechaHora,
+                String motivo, BigDecimal costo) {
+        this.pacienteId = pacienteId;
+        this.profesionalId = profesionalId;
+        this.fechaHora = fechaHora;
+        this.motivo = motivo;
+        this.costo = costo;
     }
 
     // Getters y Setters
@@ -110,6 +130,14 @@ public class Cita {
 
     public void setProfesionalNombre(String profesionalNombre) {
         this.profesionalNombre = profesionalNombre;
+    }
+
+    public BigDecimal getCosto() {
+        return costo;
+    }
+
+    public void setCosto(BigDecimal costo) {
+        this.costo = costo;
     }
 
     @Override

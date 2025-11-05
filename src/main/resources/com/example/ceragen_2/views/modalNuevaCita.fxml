@@ -6,50 +6,48 @@
 <?import javafx.scene.text.Text?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.ceragen_2.controller.CitasController"
-      spacing="0" styleClass="content-area"
+      fx:controller="com.example.ceragen_2.controller.CrearCitaController"
+      spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;"
       stylesheets="@../css/styles.css">
-<!--  Crear -->
-        <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
-            <VBox spacing="20" styleClass="card-lg" style="-fx-max-width: 700;">
-                <Text text="Crear Nueva Cita" styleClass="title-lg"/>
 
-                <VBox spacing="8">
-                    <Text text="Paciente" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                    <ComboBox fx:id="cmbCrearPaciente" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
-                </VBox>
+    <VBox styleClass="card-lg" style="-fx-max-width: 700;">
+        <Text text="Crear Nueva Cita" styleClass="title-lg"/>
 
-                <VBox spacing="8">
-                    <Text text="Profesional" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                    <ComboBox fx:id="cmbCrearProfesional" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
-                </VBox>
-
-                <HBox spacing="15">
-                    <VBox spacing="8" HBox.hgrow="ALWAYS">
-                        <Text text="Fecha" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                        <DatePicker fx:id="dpCrearFecha" prefWidth="312" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
-                    </VBox>
-
-                    <VBox spacing="8" HBox.hgrow="ALWAYS">
-                        <Text text="Hora (HH:mm)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                        <TextField fx:id="txtCrearHora" promptText="Ej: 14:30" prefWidth="312" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
-                    </VBox>
-                </HBox>
-
-                <VBox spacing="8">
-                    <Text text="Motivo de Consulta" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                    <TextArea fx:id="txtCrearMotivo" promptText="Ingrese el motivo de la consulta..." prefRowCount="4"
-                              style="-fx-font-size: 14px;" wrapText="true"/>
-                </VBox>
-
-                <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
-                    <Button text="Crear Cita"
-                            styleClass="btn, btn-success"
-                            style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
-                    <Button text="Limpiar Campos"
-                            styleClass="btn, btn-secondary"
-                            style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
-                </HBox>
-            </VBox>
+        <VBox spacing="8">
+            <Text text="Paciente" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+            <ComboBox fx:id="cmbCrearPaciente" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
         </VBox>
+
+        <VBox spacing="8">
+            <Text text="Profesional" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+            <ComboBox fx:id="cmbCrearProfesional" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <HBox spacing="15">
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Text text="Fecha" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                <DatePicker fx:id="dpCrearFecha" prefWidth="312" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+            </VBox>
+
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Text text="Hora (HH:mm)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                <TextField fx:id="txtCrearHora" promptText="Ej: 14:30" prefWidth="312" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="8">
+            <Text text="Motivo de Consulta" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+            <TextArea fx:id="txtCrearMotivo" promptText="Ingrese el motivo de la consulta..." prefRowCount="4"
+                      style="-fx-font-size: 14px;" wrapText="true"/>
+        </VBox>
+
+        <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+            <Button text="Crear Cita" onAction="#handleCrearCita"
+                    styleClass="btn, btn-success"
+                    style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
+            <Button text="Limpiar Campos" onAction="#handleLimpiar"
+                    styleClass="btn, btn-secondary"
+                    style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
+        </HBox>
+    </VBox>
 </VBox>

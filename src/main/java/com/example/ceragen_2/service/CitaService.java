@@ -5,6 +5,7 @@ import com.example.ceragen_2.model.Cita;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -177,8 +178,9 @@ public class CitaService {
     /**
      * Crea una nueva cita
      */
-    public boolean crearCita(Integer pacienteId, Integer profesionalId, LocalDateTime fechaHora, String motivo) {
-        String sql = "INSERT INTO citas (paciente_id, profesional_id, fecha_hora, motivo, estado) VALUES (?, ?, ?, ?, 'PENDIENTE')";
+    public boolean crearCita(Integer pacienteId, Integer profesionalId, LocalDateTime fechaHora,
+                             String motivo, BigDecimal costo, Integer facturaId) {
+        String sql = "INSERT INTO citas (paciente_id, profesional_id, fecha_hora, motivo, costo, estado, factura_id) VALUES (?, ?, ?, ?, ?, 'CONFIRMADA', ?)";
 
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -187,13 +189,15 @@ public class CitaService {
             stmt.setInt(2, profesionalId);
             stmt.setTimestamp(3, Timestamp.valueOf(fechaHora));
             stmt.setString(4, motivo);
+            stmt.setBigDecimal(5, costo);
+            stmt.setInt(6, facturaId);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Cita creada para paciente ID: {}, profesional ID: {}", pacienteId, profesionalId);
+            logger.info("Cita creada para paciente ID: {}, factura ID: {}", pacienteId, facturaId);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al crear cita", e);
+            logger.error("Error al crear cita con factura", e);
             return false;
         }
     }

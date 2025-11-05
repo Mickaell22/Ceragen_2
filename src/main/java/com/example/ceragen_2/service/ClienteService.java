@@ -24,9 +24,37 @@ public class ClienteService {
     }
 
     /**
-     * Obtiene todos los clientes
+     * Obtiene todos los clientes para ComboBox (solo información básica)
      */
     public List<Cliente> getAllClientes() {
+        List<Cliente> clientes = new ArrayList<>();
+        String sql = "SELECT id, cedula, nombres, apellidos FROM clientes ORDER BY nombres, apellidos";
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Cliente cliente = new Cliente();
+                cliente.setId(rs.getInt("id"));
+                cliente.setCedula(rs.getString("cedula"));
+                cliente.setNombres(rs.getString("nombres"));
+                cliente.setApellidos(rs.getString("apellidos"));
+                clientes.add(cliente);
+            }
+
+            logger.info("Se obtuvieron {} clientes", clientes.size());
+        } catch (SQLException e) {
+            logger.error("Error al obtener clientes", e);
+        }
+
+        return clientes;
+    }
+
+    /**
+     * Obtiene todos los clientes con información completa
+     */
+    public List<Cliente> getAllClientesCompletos() {
         List<Cliente> clientes = new ArrayList<>();
         String sql = "SELECT id, cedula, nombres, apellidos, telefono, email, direccion, fecha_registro " +
                      "FROM clientes ORDER BY nombres, apellidos";
@@ -40,9 +68,9 @@ public class ClienteService {
                 clientes.add(cliente);
             }
 
-            logger.info("Se obtuvieron {} clientes", clientes.size());
+            logger.info("Se obtuvieron {} clientes completos", clientes.size());
         } catch (SQLException e) {
-            logger.error("Error al obtener clientes", e);
+            logger.error("Error al obtener clientes completos", e);
         }
 
         return clientes;
@@ -230,9 +258,15 @@ public class ClienteService {
         cliente.setEmail(rs.getString("email"));
         cliente.setDireccion(rs.getString("direccion"));
 
-        Timestamp timestamp = rs.getTimestamp("fecha_registro");
-        if (timestamp != null) {
-            cliente.setFechaRegistro(timestamp.toLocalDateTime());
+        // Manejo opcional de fecha_registro si existe en la base de datos
+        try {
+            Timestamp timestamp = rs.getTimestamp("fecha_registro");
+            if (timestamp != null) {
+                cliente.setFechaRegistro(timestamp.toLocalDateTime());
+            }
+        } catch (SQLException e) {
+            // Si la columna no existe, simplemente continuamos
+            logger.debug("Columna fecha_registro no encontrada, continuando...");
         }
 
         return cliente;

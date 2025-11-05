@@ -88,7 +88,7 @@ CREATE TABLE profesionales (
     INDEX idx_activo (activo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table: citas
+-- Table: citas (nuevo campo precio)
 CREATE TABLE citas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     paciente_id INT NOT NULL,
@@ -96,6 +96,7 @@ CREATE TABLE citas (
     fecha_hora DATETIME NOT NULL,
     motivo TEXT,
     estado ENUM('PENDIENTE', 'CONFIRMADA', 'ATENDIDA', 'CANCELADA') DEFAULT 'PENDIENTE',
+    costo DECIMAL(10,2),
     observaciones TEXT,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE,
@@ -106,11 +107,22 @@ CREATE TABLE citas (
     INDEX idx_estado (estado)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cedula VARCHAR(20) UNIQUE NOT NULL,
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    telefono VARCHAR(20),
+    email VARCHAR(100),
+    direccion TEXT,
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Table: facturas
-CREATE TABLE facturas (
+CREATE TABLE IF NOT EXISTS facturas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     numero_factura VARCHAR(50) UNIQUE NOT NULL,
-    paciente_id INT NOT NULL,
+    cliente_id INT NOT NULL,
     fecha_emision DATETIME DEFAULT CURRENT_TIMESTAMP,
     ciudad VARCHAR(100),
     subtotal DECIMAL(10,2) NOT NULL DEFAULT 0.00,
@@ -119,20 +131,21 @@ CREATE TABLE facturas (
     total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     metodo_pago ENUM('EFECTIVO', 'TARJETA', 'TRANSFERENCIA', 'OTRO') DEFAULT 'EFECTIVO',
     estado ENUM('ACTIVA', 'ANULADA') DEFAULT 'ACTIVA',
-    FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE,
+    FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE,
     INDEX idx_numero_factura (numero_factura),
     INDEX idx_estado (estado)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table: detalle_factura
-CREATE TABLE detalle_factura (
+CREATE TABLE IF NOT EXISTS detalle_factura (
     id INT AUTO_INCREMENT PRIMARY KEY,
     factura_id INT NOT NULL,
     cita_id INT NULL,
-    descripcion VARCHAR(255),
     precio_unitario DECIMAL(10,2) NOT NULL,
     cantidad INT NOT NULL DEFAULT 1,
     total DECIMAL(10,2) GENERATED ALWAYS AS (precio_unitario * cantidad) STORED,
     FOREIGN KEY (factura_id) REFERENCES facturas(id) ON DELETE CASCADE,
     FOREIGN KEY (cita_id) REFERENCES citas(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+

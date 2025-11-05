@@ -45,44 +45,31 @@
                     <HBox spacing="20" alignment="CENTER">
                         <HBox spacing="10" HBox.hgrow="ALWAYS">
                             <Label text="Cliente:" styleClass="text-primary-dark-control" minWidth="150"/>
-                            <TextField fx:id="txtClienteFacturaNueva" HBox.hgrow="ALWAYS"/>
-                        </HBox>
-
-                        <HBox spacing="10" HBox.hgrow="ALWAYS">
-                            <Label text="N° de cédula:" styleClass="text-primary-dark-control" minWidth="100"/>
-                            <TextField fx:id="txtCedulaFacturaNueva" HBox.hgrow="ALWAYS"/>
+                            <ComboBox fx:id="cmbClienteFacturaNueva" prefWidth="150"/>
                         </HBox>
                     </HBox>
 
-                    <!-- Tercera fila: Teléfono y Dirección -->
-                    <HBox spacing="20" alignment="CENTER">
-                        <HBox spacing="10" HBox.hgrow="ALWAYS">
-                            <Label text="N° de teléfono:" styleClass="text-primary-dark-control" minWidth="150"/>
-                            <TextField fx:id="txtTelefonoFacturaNueva" HBox.hgrow="ALWAYS"/>
-                        </HBox>
-
-                        <HBox spacing="10" HBox.hgrow="ALWAYS">
-                            <Label text="Dirección domiciliaria:" styleClass="text-primary-dark-control" minWidth="100"/>
-                            <TextField fx:id="txtDireccionFacturaNueva" HBox.hgrow="ALWAYS"/>
-                        </HBox>
+                    <!-- Botón para agregar cita -->
+                    <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-padding: 10 0;">
+                        <Button text="Agregar Cita" onAction="#handleModal"
+                                styleClass="btn, btn-success"
+                                style="-fx-pref-width: 150; -fx-pref-height: 35;"/>
                     </HBox>
 
-                    <Button text="Agregar cita"></Button>
-                    <!-- Tabla de productos/servicios -->
-                    <HBox>
-                        <TableView fx:id="tableProductsFacturaNueva" prefHeight="250" styleClass="table-view">
-                            <columns>
-                                <TableColumn fx:id="colProductoFacturaNueva" text="Producto/Servicio" prefWidth="350"/>
-                                <TableColumn fx:id="colEspecialidadFacturaNueva" text="Especialidad" prefWidth="150"/>
-                                <TableColumn fx:id="colPrecioFacturaNueva" text="Precio" prefWidth="150"/>
-                                <TableColumn fx:id="colCantidadFacturaNueva" text="Cantidad" prefWidth="150"/>
-                                <TableColumn fx:id="colTotalFacturaNueva" text="Total" prefWidth="150"/>
-                            </columns>
-                            <placeholder>
-                                <Label text="Tabla sin contenido" styleClass="text-neutral-medium"/>
-                            </placeholder>
-                        </TableView>
-                    </HBox>
+                    <!-- Tabla de CITAS -->
+                    <TableView fx:id="tableCitasFactura" prefHeight="250" styleClass="table-view">
+                        <columns>
+                            <TableColumn fx:id="colCitaPaciente" text="Paciente" prefWidth="200"/>
+                            <TableColumn fx:id="colCitaProfesional" text="Profesional" prefWidth="200"/>
+                            <TableColumn fx:id="colCitaFecha" text="Fecha y Hora" prefWidth="150"/>
+                            <TableColumn fx:id="colCitaMotivo" text="Motivo" prefWidth="250"/>
+                            <TableColumn fx:id="colCitaCosto" text="Costo" prefWidth="100"/>
+                            <TableColumn fx:id="colCitaAcciones" text="Acciones" prefWidth="100"/>
+                        </columns>
+                        <placeholder>
+                            <Label text="No hay citas agregadas. Haga clic en 'Agregar Cita'." styleClass="text-neutral-medium"/>
+                        </placeholder>
+                    </TableView>
 
                     <!-- Resumen financiero -->
                     <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
@@ -107,7 +94,7 @@
 
                         <HBox spacing="10">
                             <Label text="Método de pago:" styleClass="text-primary-dark-control"/>
-                            <ComboBox fx:id="txtMetodoPagoFacturaNueva" editable="false" prefWidth="150"/>
+                            <ComboBox fx:id="cmbMetodoPagoFacturaNueva" prefWidth="150"/>
                         </HBox>
                     </HBox>
 
@@ -121,7 +108,7 @@
                     <!-- Botones de acción -->
                     <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
                         <Button fx:id="btnGuardarNuevaFactura" text="Guardar"
-                                styleClass="btn, btn-primary"
+                                styleClass="btn, btn-primary" onAction="#handleCrearFactura"
                                 style="-fx-pref-width: 150; -fx-pref-height: 40;"/>
                         <Button fx:id="btnCancelarNuevaFactura" text="Cancelar"
                                 styleClass="btn, btn-danger"
