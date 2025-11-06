@@ -28,7 +28,7 @@ public class ProfesionalService {
      */
     public List<Profesional> getAllProfesionales() {
         List<Profesional> profesionales = new ArrayList<>();
-        String sql = "SELECT p.id, p.cedula, p.nombres, p.apellidos, e.nombre as especialidad_nombre " +
+        String sql = "SELECT p.id, p.cedula, p.nombres, p.apellidos, p.especialidad_id, e.nombre as especialidad_nombre " +
                      "FROM profesionales p " +
                      "LEFT JOIN especialidades e ON p.especialidad_id = e.id " +
                      "WHERE p.activo = TRUE " +
@@ -45,6 +45,7 @@ public class ProfesionalService {
                 profesional.setNombres(rs.getString("nombres"));
                 profesional.setApellidos(rs.getString("apellidos"));
                 profesional.setEspecialidadNombre(rs.getString("especialidad_nombre"));
+                profesional.setEspecialidadId(rs.getInt("especialidad_id"));
                 profesionales.add(profesional);
             }
 

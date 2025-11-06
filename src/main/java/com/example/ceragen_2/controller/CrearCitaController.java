@@ -107,30 +107,46 @@ public class CrearCitaController {
             LocalDateTime fechaHora = LocalDateTime.of(fecha, hora);
             String motivo = txtCrearMotivo.getText().trim();
 
-            // Obtener el costo de la especialidad del profesional
+            // DEBUG: Mostrar todos los valores
+            //logger.info("DEBUG - Paciente ID: {}", paciente != null ? paciente.getId() : "NULL");
+            //logger.info("DEBUG - Profesional ID: {}", profesional != null ? profesional.getId() : "NULL");
+            //logger.info("DEBUG - Profesional Especialidad: {}", profesional != null ? profesional.getEspecialidadId() : "NULL");
+            //logger.info("DEBUG - FechaHora: {}", fechaHora);
+            //logger.info("DEBUG - Motivo: {}", motivo);
+
+            // Obtener el costo de la especialidad
             EspecialidadService especialidadService = EspecialidadService.getInstance();
+            //logger.info("DEBUG - EspecialidadService: {}", especialidadService != null ? "especialidadService Activo" : "NULL");
+            //logger.info("DEBUG - profesional: {}", profesional != null ? "existe profesional" : "NULL");
+            //logger.info("DEBUG - ID de la especialidad: {}", profesional.getEspecialidadId() != null ? "existe especialidad" : "NULL");
             Especialidad especialidad = especialidadService.getEspecialidadById(profesional.getEspecialidadId());
+
+            //logger.info("DEBUG - Especialidad: {}", especialidad != null ? especialidad.getNombre() : "NULL");
+            //logger.info("DEBUG - Costo: {}", especialidad != null ? especialidad.getCostoConsulta() : "NULL");
 
             if (especialidad == null) {
                 mostrarAlerta("Error", "No se pudo obtener el costo de la especialidad");
                 return;
             }
 
-            // Crear nueva cita con el costo de la especialidad
+            // Crear nueva cita
             Cita nuevaCita = new Cita();
             nuevaCita.setPacienteId(paciente.getId());
             nuevaCita.setProfesionalId(profesional.getId());
             nuevaCita.setFechaHora(fechaHora);
             nuevaCita.setMotivo(motivo);
-            nuevaCita.setEstado("PENDIENTE");
+            nuevaCita.setCosto(especialidad.getCostoConsulta());
             nuevaCita.setPacienteNombre(paciente.getNombreCompleto());
             nuevaCita.setProfesionalNombre(profesional.getNombreCompleto());
-            nuevaCita.setCosto(especialidad.getCostoConsulta()); // Asignar costo de la especialidad
+
+            // DEBUG: Verificar la cita creada
+            logger.info("DEBUG - Cita creada - PacienteID: {}, ProfesionalID: {}, Costo: {}",
+                    nuevaCita.getPacienteId(), nuevaCita.getProfesionalId(), nuevaCita.getCosto());
 
             // Agregar cita a la factura
             if (facturaController != null) {
                 facturaController.agregarCita(nuevaCita);
-                logger.info("Cita agregada a la factura. Costo: {}", nuevaCita.getCosto());
+                logger.info("Cita agregada exitosamente a la factura");
             } else {
                 logger.error("No hay referencia a FacturaController");
                 mostrarAlerta("Error", "No se pudo conectar con la factura");
@@ -138,15 +154,14 @@ public class CrearCitaController {
             }
 
             // Mostrar éxito y cerrar
-            mostrarAlerta("Éxito", "Cita creada correctamente\nProfesional: " + profesional.getNombreCompleto() +
-                    "\nEspecialidad: " + especialidad.getNombre() +
-                    "\nCosto: $" + nuevaCita.getCosto());
+            mostrarAlerta("Éxito", "Cita creada correctamente\nCosto: $" + nuevaCita.getCosto());
             cerrarVentana();
 
         } catch (DateTimeParseException e) {
+            logger.error("Error de formato de hora: {}", e.getMessage());
             mostrarAlerta("Error", "Formato de hora inválido. Use HH:mm (ej: 14:30)");
         } catch (Exception e) {
-            logger.error("Error al crear cita", e);
+            logger.error("Error detallado al crear cita:", e);
             mostrarAlerta("Error", "No se pudo crear la cita: " + e.getMessage());
         }
     }
