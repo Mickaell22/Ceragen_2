@@ -123,7 +123,7 @@ public class ClienteController {
         Task<List<Cliente>> task = new Task<>() {
             @Override
             protected List<Cliente> call() {
-                return clienteService.getAllClientes();
+                return clienteService.getAllClientesCompletos();
             }
         };
 
