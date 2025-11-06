@@ -88,37 +88,7 @@ CREATE TABLE profesionales (
     INDEX idx_activo (activo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table: citas (nuevo campo precio)
-CREATE TABLE citas (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    paciente_id INT NOT NULL,
-    profesional_id INT NOT NULL,
-    fecha_hora DATETIME NOT NULL,
-    motivo TEXT,
-    estado ENUM('PENDIENTE', 'CONFIRMADA', 'ATENDIDA', 'CANCELADA') DEFAULT 'PENDIENTE',
-    costo DECIMAL(10,2),
-    observaciones TEXT,
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE,
-    FOREIGN KEY (profesional_id) REFERENCES profesionales(id),
-    INDEX idx_paciente (paciente_id),
-    INDEX idx_profesional (profesional_id),
-    INDEX idx_fecha_hora (fecha_hora),
-    INDEX idx_estado (estado)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS clientes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    cedula VARCHAR(20) UNIQUE NOT NULL,
-    nombres VARCHAR(100) NOT NULL,
-    apellidos VARCHAR(100) NOT NULL,
-    telefono VARCHAR(20),
-    email VARCHAR(100),
-    direccion TEXT,
-    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Table: facturas
+-- Table: facturas (debe crearse antes de citas)
 CREATE TABLE IF NOT EXISTS facturas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     numero_factura VARCHAR(50) UNIQUE NOT NULL,
@@ -136,8 +106,30 @@ CREATE TABLE IF NOT EXISTS facturas (
     INDEX idx_estado (estado)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Table: citas (nuevo campo precio y factura_id)
+CREATE TABLE citas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    paciente_id INT NOT NULL,
+    profesional_id INT NOT NULL,
+    fecha_hora DATETIME NOT NULL,
+    motivo TEXT,
+    estado ENUM('PENDIENTE', 'CONFIRMADA', 'ATENDIDA', 'CANCELADA') DEFAULT 'CONFIRMADA',
+    costo DECIMAL(10,2),
+    factura_id INT NOT NULL,
+    observaciones TEXT,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE,
+    FOREIGN KEY (profesional_id) REFERENCES profesionales(id),
+    FOREIGN KEY (factura_id) REFERENCES facturas(id) ON DELETE CASCADE,
+    INDEX idx_paciente (paciente_id),
+    INDEX idx_profesional (profesional_id),
+    INDEX idx_fecha_hora (fecha_hora),
+    INDEX idx_estado (estado),
+    INDEX idx_factura (factura_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Table: detalle_factura
-CREATE TABLE IF NOT EXISTS detalle_factura (
+CREATE TABLE detalle_factura (
     id INT AUTO_INCREMENT PRIMARY KEY,
     factura_id INT NOT NULL,
     cita_id INT NULL,
@@ -147,5 +139,4 @@ CREATE TABLE IF NOT EXISTS detalle_factura (
     FOREIGN KEY (factura_id) REFERENCES facturas(id) ON DELETE CASCADE,
     FOREIGN KEY (cita_id) REFERENCES citas(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 

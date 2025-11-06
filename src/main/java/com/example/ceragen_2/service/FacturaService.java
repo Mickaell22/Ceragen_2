@@ -94,19 +94,20 @@ public class FacturaService {
             int facturaId = generatedKeys.getInt(1);
             logger.info("Factura creada correctamente. ID: {}, Número: {}", facturaId, numeroFactura);
 
-            // 2. Crear cada cita usando CitaService
+            // 2. Crear cada cita usando CitaService con la misma conexion (misma transaccion)
             CitaService citaService = CitaService.getInstance();
             int citasCreadas = 0;
 
             for (Cita cita : citas) {
-                // Usar el método actualizado de CitaService que incluye facturaId
+                // Usar el método que acepta la conexión para mantener la transacción
                 boolean citaCreada = citaService.crearCita(
+                        conn,  // Pasar la misma conexión para mantener la transacción
                         cita.getPacienteId(),
                         cita.getProfesionalId(),
                         cita.getFechaHora(),
                         cita.getMotivo(),
                         cita.getCosto(),
-                        facturaId  // Pasar el ID de la factura
+                        facturaId
                 );
 
                 if (!citaCreada) {

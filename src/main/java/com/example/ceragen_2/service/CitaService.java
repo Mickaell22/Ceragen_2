@@ -203,6 +203,27 @@ public class CitaService {
     }
 
     /**
+     * Crea una nueva cita usando una conexion existente (para transacciones)
+     */
+    public boolean crearCita(Connection conn, Integer pacienteId, Integer profesionalId,
+                             LocalDateTime fechaHora, String motivo, BigDecimal costo, Integer facturaId) throws SQLException {
+        String sql = "INSERT INTO citas (paciente_id, profesional_id, fecha_hora, motivo, costo, estado, factura_id) VALUES (?, ?, ?, ?, ?, 'CONFIRMADA', ?)";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, pacienteId);
+            stmt.setInt(2, profesionalId);
+            stmt.setTimestamp(3, Timestamp.valueOf(fechaHora));
+            stmt.setString(4, motivo);
+            stmt.setBigDecimal(5, costo);
+            stmt.setInt(6, facturaId);
+
+            int rowsAffected = stmt.executeUpdate();
+            logger.info("Cita creada para paciente ID: {}, factura ID: {}", pacienteId, facturaId);
+            return rowsAffected > 0;
+        }
+    }
+
+    /**
      * Actualiza una cita existente
      */
     public boolean actualizarCita(Integer id, Integer pacienteId, Integer profesionalId,
