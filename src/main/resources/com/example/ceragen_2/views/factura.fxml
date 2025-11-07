@@ -18,6 +18,7 @@
 
         </Tab>
         <Tab text="Nueva">
+            <ScrollPane fitToWidth="true">
                 <!-- Card contenedor principal -->
                 <VBox  spacing="15" style="-fx-padding: 20;">
 
@@ -57,7 +58,7 @@
                     </HBox>
 
                     <!-- Tabla de CITAS -->
-                    <TableView fx:id="tableCitasFactura" prefHeight="250" styleClass="table-view">
+                    <TableView fx:id="tableCitasFactura" styleClass="table-view" prefHeight="250" VBox.vgrow="ALWAYS">
                         <columns>
                             <TableColumn fx:id="colCitaPaciente" text="Paciente" prefWidth="200"/>
                             <TableColumn fx:id="colCitaProfesional" text="Profesional" prefWidth="200"/>
@@ -115,7 +116,7 @@
                                 style="-fx-pref-width: 150; -fx-pref-height: 40;"/>
                     </HBox>
                 </VBox>
-
+            </ScrollPane>
         </Tab>
         <Tab text="Ver">
             <VBox spacing="15" style="-fx-padding: 20;">

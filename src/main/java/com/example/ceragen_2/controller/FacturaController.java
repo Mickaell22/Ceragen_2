@@ -185,6 +185,8 @@ public class FacturaController {
 
     private void actualizarTablaCitas() {
         tableCitasFactura.getItems().setAll(listaCitas);
+        // Forzar actualización del layout
+        tableCitasFactura.requestLayout();
         logger.info("Tabla de citas actualizada con {} citas", listaCitas.size());
     }
 
@@ -369,31 +371,41 @@ public class FacturaController {
         int fctIdCliente = cmbClienteFacturaNueva.getValue().getId();
         String fctCiudad = txtCiudadFacturaNueva.getText().trim();
 
-        // Quitar el símbolo $ antes de parsear
-        double fctSubtotal = Double.parseDouble(txtSubtotalFacturaNueva.getText().replace("$", "").trim());
-        double fctIva = Double.parseDouble(txtIvaFacturaNueva.getText().replace("$", "").trim());
-        double fctDescuento = Double.parseDouble(txtDescuentoFacturaNueva.getText().replace("$", "").trim());
-        double fctTotal = Double.parseDouble(txtTotalFacturaNueva.getText().replace("$", "").trim());
+        try {
+            // USAR EL MISMO MÉTODO limpiarNumero() que en validarCampos()
+            double fctSubtotal = Double.parseDouble(limpiarNumero(txtSubtotalFacturaNueva.getText()));
+            double fctIva = Double.parseDouble(limpiarNumero(txtIvaFacturaNueva.getText()));
+            double fctDescuento = Double.parseDouble(limpiarNumero(txtDescuentoFacturaNueva.getText()));
+            double fctTotal = Double.parseDouble(limpiarNumero(txtTotalFacturaNueva.getText()));
 
-        String metodoPago = cmbMetodoPagoFacturaNueva.getValue();
+            String metodoPago = cmbMetodoPagoFacturaNueva.getValue();
 
-        // Usar el nuevo método que crea factura con citas
-        Integer facturaId = FacturaService.getInstance().crearFactura(
-                fctIdCliente, fctCiudad, fctSubtotal, fctIva, fctDescuento, fctTotal,
-                metodoPago, listaCitas
-        );
+            // DEBUG: Verificar los valores que se enviarán al servicio
+            logger.info("DEBUG - Enviando al servicio - Subtotal: {}, IVA: {}, Descuento: {}, Total: {}",
+                    fctSubtotal, fctIva, fctDescuento, fctTotal);
 
-        if (facturaId != null) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Factura creada");
-            alert.setHeaderText(null);
-            alert.setContentText("Factura creada correctamente con " + listaCitas.size() + " citas.\nID de Factura: " + facturaId);
-            alert.showAndWait();
+            // Usar el nuevo método que crea factura con citas
+            Integer facturaId = FacturaService.getInstance().crearFactura(
+                    fctIdCliente, fctCiudad, fctSubtotal, fctIva, fctDescuento, fctTotal,
+                    metodoPago, listaCitas
+            );
 
-            // Limpiar el formulario después de crear
-            limpiarFormulario();
-        } else {
-            mostrarAlerta("Error", "No se pudo crear la factura.");
+            if (facturaId != null) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Factura creada");
+                alert.setHeaderText(null);
+                alert.setContentText("Factura creada correctamente con " + listaCitas.size() + " citas.\nID de Factura: " + facturaId);
+                alert.showAndWait();
+
+                // Limpiar el formulario después de crear
+                limpiarFormulario();
+            } else {
+                mostrarAlerta("Error", "No se pudo crear la factura.");
+            }
+
+        } catch (NumberFormatException e) {
+            logger.error("Error en handleCrearFactura al parsear números: {}", e.getMessage());
+            mostrarAlerta("Error", "Error interno al procesar los valores numéricos.");
         }
     }
 
@@ -432,11 +444,18 @@ public class FacturaController {
 
         // Resto de validaciones...
         String ciudad = txtCiudadFacturaNueva.getText().trim();
-        String subtotal = txtSubtotalFacturaNueva.getText().replace("$", "").trim();
-        String iva = txtIvaFacturaNueva.getText().replace("$", "").trim();
-        String descuento = txtDescuentoFacturaNueva.getText().replace("$", "").trim();
-        String total = txtTotalFacturaNueva.getText().replace("$", "").trim();
+
+        // Limpiar los valores numéricos de símbolos y caracteres no numéricos
+        String subtotal = limpiarNumero(txtSubtotalFacturaNueva.getText());
+        String iva = limpiarNumero(txtIvaFacturaNueva.getText());
+        String descuento = limpiarNumero(txtDescuentoFacturaNueva.getText());
+        String total = limpiarNumero(txtTotalFacturaNueva.getText());
+
         String metodoPago = cmbMetodoPagoFacturaNueva.getValue();
+
+        // DEBUG: Mostrar valores limpios
+        logger.info("DEBUG - Valores limpios - Subtotal: '{}', IVA: '{}', Descuento: '{}', Total: '{}'",
+                subtotal, iva, descuento, total);
 
         // Validaciones básicas vacíos
         if (ciudad.isEmpty()) {
@@ -471,11 +490,24 @@ public class FacturaController {
             Double.parseDouble(descuento);
             Double.parseDouble(total);
         } catch (NumberFormatException e) {
-            mostrarAlerta("Valor inválido", "Subtotal, IVA, descuento y total deben ser números.");
+            logger.error("Error al parsear números - Subtotal: {}, IVA: {}, Descuento: {}, Total: {}",
+                    subtotal, iva, descuento, total);
+            mostrarAlerta("Valor inválido", "Subtotal, IVA, descuento y total deben ser números válidos.");
             return false;
         }
 
         return true;
+    }
+
+    // Método auxiliar para limpiar números
+    private String limpiarNumero(String texto) {
+        if (texto == null || texto.trim().isEmpty()) {
+            return "";
+        }
+        // Remover símbolos de moneda, comas y espacios
+        return texto.replace("$", "")
+                .replace(",", ".")
+                .trim();
     }
 
 

@@ -260,3 +260,19 @@
 .content-area {
     -fx-background-color: -neutral-lighter;
 }
+
+/* Hacer tabla responsive */
+.table-view {
+    -fx-max-height: infinity;
+}
+
+/* Ajustar altura de filas */
+.table-row-cell {
+    -fx-cell-size: 35px;
+}
+
+/* Placeholder cuando no hay datos */
+.table-view .placeholder .label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+}
