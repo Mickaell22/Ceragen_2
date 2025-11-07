@@ -5,6 +5,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.ceragen_2.controller.FacturaController"
       spacing="0" styleClass="content-area"
@@ -15,7 +17,43 @@
 
     <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" styleClass="content-area">
         <Tab text="Listar">
+            <ScrollPane fitToWidth="true">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <Text text="Listado de Facturas" styleClass="title-lg"/>
 
+                    <!-- Filtros -->
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <Label text="Filtrar por estado:" styleClass="text-primary-dark-control"/>
+                        <ComboBox fx:id="cmbFiltroEstado" prefWidth="150">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="TODAS"/>
+                                    <String fx:value="ACTIVA"/>
+                                    <String fx:value="ANULADA"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Button text="Buscar" onAction="#handleBuscarFacturas"
+                                styleClass="btn, btn-primary"
+                                style="-fx-pref-width: 100; -fx-pref-height: 35;"/>
+                    </HBox>
+
+                    <!-- Tabla de Facturas -->
+                    <TableView fx:id="tableFacturas" styleClass="table-view" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colNumeroFactura" text="N° Factura" prefWidth="120"/>
+                            <TableColumn fx:id="colCliente" text="Cliente" prefWidth="200"/>
+                            <TableColumn fx:id="colFecha" text="Fecha Emisión" prefWidth="150"/>
+                            <TableColumn fx:id="colTotalAPagar" text="Total" prefWidth="100"/>
+                            <TableColumn fx:id="colEstado" text="Estado" prefWidth="100"/>
+                            <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="150"/>
+                        </columns>
+                        <placeholder>
+                            <Label text="No hay facturas registradas." styleClass="text-neutral-medium"/>
+                        </placeholder>
+                    </TableView>
+                </VBox>
+            </ScrollPane>
         </Tab>
         <Tab text="Nueva">
             <ScrollPane fitToWidth="true">

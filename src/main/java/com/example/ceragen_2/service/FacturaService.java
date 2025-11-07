@@ -1,12 +1,14 @@
 package com.example.ceragen_2.service;
 
-
 import com.example.ceragen_2.config.DatabaseConfig;
 import com.example.ceragen_2.model.Cita;
+import com.example.ceragen_2.model.Factura;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FacturaService {
@@ -43,9 +45,9 @@ public class FacturaService {
      * Retorna null si hubo un error.
      */
     public Integer crearFactura(int clienteId, String ciudad,
-                                        double subtotal, double iva,
-                                        double descuento, double total,
-                                        String metodoPago, List<Cita> citas) {
+                                double subtotal, double iva,
+                                double descuento, double total,
+                                String metodoPago, List<Cita> citas) {
 
         Connection conn = null;
         PreparedStatement stmtFactura = null;
@@ -145,5 +147,259 @@ public class FacturaService {
                 }
             } catch (SQLException ignored) {}
         }
+    }
+
+    /**
+     * Obtiene todas las facturas con información resumida para el listado
+     */
+    public List<Factura> getAllFacturasResumen() {
+        List<Factura> facturas = new ArrayList<>();
+        // CORREGIDO: Usar CONCAT para unir nombres y apellidos
+        String sql = """
+            SELECT 
+                f.id,
+                f.numero_factura,
+                f.fecha_emision,
+                f.total,
+                f.estado,
+                CONCAT(c.nombres, ' ', c.apellidos) AS cliente_nombre
+            FROM facturas f
+            INNER JOIN clientes c ON f.cliente_id = c.id
+            ORDER BY f.fecha_emision DESC
+            """;
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Factura factura = new Factura();
+                factura.setId(rs.getInt("id"));
+                factura.setNumeroFactura(rs.getString("numero_factura"));
+
+                Timestamp fechaEmision = rs.getTimestamp("fecha_emision");
+                if (fechaEmision != null) {
+                    factura.setFechaEmision(fechaEmision.toLocalDateTime());
+                }
+
+                factura.setTotal(rs.getDouble("total"));
+                factura.setEstado(rs.getString("estado"));
+                factura.setPacienteNombre(rs.getString("cliente_nombre"));
+
+                facturas.add(factura);
+            }
+
+            logger.info("Se obtuvieron {} facturas", facturas.size());
+
+        } catch (SQLException e) {
+            logger.error("Error al obtener todas las facturas", e);
+        }
+
+        return facturas;
+    }
+
+    /**
+     * Obtiene facturas filtradas por estado
+     */
+    public List<Factura> getFacturasPorEstado(String estado) {
+        List<Factura> facturas = new ArrayList<>();
+        // CORREGIDO: Usar CONCAT para unir nombres y apellidos
+        String sql = """
+            SELECT 
+                f.id,
+                f.numero_factura,
+                f.fecha_emision,
+                f.total,
+                f.estado,
+                CONCAT(c.nombres, ' ', c.apellidos) AS cliente_nombre
+            FROM facturas f
+            INNER JOIN clientes c ON f.cliente_id = c.id
+            WHERE f.estado = ?
+            ORDER BY f.fecha_emision DESC
+            """;
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, estado);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Factura factura = new Factura();
+                    factura.setId(rs.getInt("id"));
+                    factura.setNumeroFactura(rs.getString("numero_factura"));
+
+                    Timestamp fechaEmision = rs.getTimestamp("fecha_emision");
+                    if (fechaEmision != null) {
+                        factura.setFechaEmision(fechaEmision.toLocalDateTime());
+                    }
+
+                    factura.setTotal(rs.getDouble("total"));
+                    factura.setEstado(rs.getString("estado"));
+                    factura.setPacienteNombre(rs.getString("cliente_nombre"));
+
+                    facturas.add(factura);
+                }
+            }
+
+            logger.info("Se obtuvieron {} facturas con estado: {}", facturas.size(), estado);
+
+        } catch (SQLException e) {
+            logger.error("Error al obtener facturas por estado: {}", estado, e);
+        }
+
+        return facturas;
+    }
+
+    /**
+     * Anula una factura cambiando su estado a 'ANULADA'
+     */
+    public boolean anularFactura(Integer facturaId) {
+        String sql = "UPDATE facturas SET estado = 'ANULADA' WHERE id = ? AND estado = 'ACTIVA'";
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, facturaId);
+            int rowsAffected = stmt.executeUpdate();
+
+            boolean exito = rowsAffected > 0;
+            if (exito) {
+                logger.info("Factura anulada exitosamente. ID: {}", facturaId);
+            } else {
+                logger.warn("No se pudo anular la factura. ID: {} (posiblemente ya estaba anulada o no existe)", facturaId);
+            }
+
+            return exito;
+
+        } catch (SQLException e) {
+            logger.error("Error al anular factura ID: {}", facturaId, e);
+            return false;
+        }
+    }
+
+    /**
+     * Obtiene una factura completa por su ID (incluyendo detalles)
+     */
+    public Factura getFacturaById(Integer facturaId) {
+        // CORREGIDO: Usar CONCAT para unir nombres y apellidos
+        String sql = """
+            SELECT 
+                f.id,
+                f.numero_factura,
+                f.cliente_id,
+                f.fecha_emision,
+                f.ciudad,
+                f.subtotal,
+                f.iva,
+                f.descuento,
+                f.total,
+                f.metodo_pago,
+                f.estado,
+                CONCAT(c.nombres, ' ', c.apellidos) AS cliente_nombre,
+                c.cedula,
+                c.telefono,
+                c.direccion
+            FROM facturas f
+            INNER JOIN clientes c ON f.cliente_id = c.id
+            WHERE f.id = ?
+            """;
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, facturaId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Factura factura = new Factura();
+                    factura.setId(rs.getInt("id"));
+                    factura.setNumeroFactura(rs.getString("numero_factura"));
+                    factura.setPacienteId(rs.getInt("cliente_id"));
+
+                    Timestamp fechaEmision = rs.getTimestamp("fecha_emision");
+                    if (fechaEmision != null) {
+                        factura.setFechaEmision(fechaEmision.toLocalDateTime());
+                    }
+
+                    factura.setCiudad(rs.getString("ciudad"));
+                    factura.setSubtotal(rs.getDouble("subtotal"));
+                    factura.setIva(rs.getDouble("iva"));
+                    factura.setDescuento(rs.getDouble("descuento"));
+                    factura.setTotal(rs.getDouble("total"));
+                    factura.setMetodoPago(rs.getString("metodo_pago"));
+                    factura.setEstado(rs.getString("estado"));
+                    factura.setPacienteNombre(rs.getString("cliente_nombre"));
+
+                    logger.info("Factura encontrada. ID: {}, Número: {}", facturaId, factura.getNumeroFactura());
+                    return factura;
+                }
+            }
+
+        } catch (SQLException e) {
+            logger.error("Error al obtener factura por ID: {}", facturaId, e);
+        }
+
+        logger.warn("Factura no encontrada. ID: {}", facturaId);
+        return null;
+    }
+
+    /**
+     * Obtiene los detalles de una factura (citas asociadas)
+     */
+    public List<Cita> getCitasPorFactura(Integer facturaId) {
+        List<Cita> citas = new ArrayList<>();
+        String sql = """
+            SELECT 
+                c.id,
+                c.paciente_id,
+                c.profesional_id,
+                c.fecha_hora,
+                c.motivo,
+                c.costo,
+                c.estado,
+                CONCAT(p.nombres, ' ', p.apellidos) AS paciente_nombre,
+                CONCAT(prof.nombres, ' ', prof.apellidos) AS profesional_nombre
+            FROM citas c
+            INNER JOIN pacientes p ON c.paciente_id = p.id
+            INNER JOIN profesionales prof ON c.profesional_id = prof.id
+            WHERE c.factura_id = ?
+            ORDER BY c.fecha_hora
+            """;
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, facturaId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Cita cita = new Cita();
+                    cita.setId(rs.getInt("id"));
+                    cita.setPacienteId(rs.getInt("paciente_id"));
+                    cita.setProfesionalId(rs.getInt("profesional_id"));
+
+                    Timestamp fechaHora = rs.getTimestamp("fecha_hora");
+                    if (fechaHora != null) {
+                        cita.setFechaHora(fechaHora.toLocalDateTime());
+                    }
+
+                    cita.setMotivo(rs.getString("motivo"));
+                    cita.setCosto(rs.getBigDecimal("costo"));
+                    cita.setEstado(rs.getString("estado"));
+                    cita.setPacienteNombre(rs.getString("paciente_nombre"));
+                    cita.setProfesionalNombre(rs.getString("profesional_nombre"));
+
+                    citas.add(cita);
+                }
+            }
+
+            logger.info("Se obtuvieron {} citas para factura ID: {}", citas.size(), facturaId);
+
+        } catch (SQLException e) {
+            logger.error("Error al obtener citas por factura ID: {}", facturaId, e);
+        }
+
+        return citas;
     }
 }

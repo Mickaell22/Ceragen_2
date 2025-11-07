@@ -1,4 +1,5 @@
 package com.example.ceragen_2.controller;
+
 import com.example.ceragen_2.model.*;
 import com.example.ceragen_2.service.*;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,10 +15,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +34,12 @@ public class FacturaController {
 
     private List<Cliente> listaClientes;
     private List<Cita> listaCitas;
+    private List<Factura> listaFacturas; // AÑADIDO: Variable faltante
 
-    //CAMPOS PARA CREACION DE FACTURA
+    // AÑADIDO: TabPane principal
+    @FXML private TabPane tabPane;
+
+    // CAMPOS PARA CREACION DE FACTURA
     // Encabezado
     @FXML private Text txtNumeroFacturaNueva;
     // Primera fila
@@ -59,8 +64,7 @@ public class FacturaController {
     @FXML private Button btnGuardarNuevaFactura;
     @FXML private Button btnCancelarNuevaFactura;
 
-
-    //CAMPOS PARA VISTA DE FACTURA
+    // CAMPOS PARA VISTA DE FACTURA
     // Encabezado
     @FXML private Text txtFacturaNumero;
     // Primera fila
@@ -87,6 +91,17 @@ public class FacturaController {
     @FXML private Button btnVolver;
     @FXML private Button btnAnular;
 
+    // Campos para el tab Listar
+    @FXML private TableView<Factura> tableFacturas;
+    @FXML private TableColumn<Factura, String> colNumeroFactura;
+    @FXML private TableColumn<Factura, String> colCliente;
+    @FXML private TableColumn<Factura, String> colFecha;
+    @FXML private TableColumn<Factura, String> colTotalAPagar;
+    @FXML private TableColumn<Factura, String> colEstado;
+    @FXML private TableColumn<Factura, Void> colAcciones;
+
+    @FXML private ComboBox<String> cmbFiltroEstado; // CORREGIDO: Especificar tipo
+
     // Formulario Crear
     @FXML private ComboBox<Paciente> cmbCrearPaciente;
     @FXML private ComboBox<Profesional> cmbCrearProfesional;
@@ -97,10 +112,18 @@ public class FacturaController {
     @FXML
     public void initialize() {
         logger.info("Inicializando FacturaController");
-        // Inicializar la lista de citas
+        // Inicializar las listas
         listaCitas = new ArrayList<>();
+        listaFacturas = new ArrayList<>(); // AÑADIDO: Inicializar lista de facturas
+
         cargarCatalogos();
         configurarTablaCitas();
+        configurarTablaFacturas();
+        cargarFacturas();
+
+        // AÑADIDO: Configurar ComboBox de filtro
+        cmbFiltroEstado.setItems(FXCollections.observableArrayList("TODAS", "ACTIVA", "ANULADA"));
+        cmbFiltroEstado.setValue("TODAS");
 
         // Inicializar fecha actual
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -121,10 +144,211 @@ public class FacturaController {
         txtIva.setText("$0.00");
         txtDescuento.setText("$0.00");
         txtTotal.setText("$0.00");
-
     }
+
     private record CatalogosResult(List<Cliente> clientes) {
     }
+
+    private void configurarTablaFacturas() {
+        // Configurar columnas
+        colNumeroFactura.setCellValueFactory(data ->
+                new SimpleStringProperty(data.getValue().getNumeroFactura()));
+
+        colCliente.setCellValueFactory(data ->
+                new SimpleStringProperty(data.getValue().getPacienteNombre()));
+
+        colFecha.setCellValueFactory(data -> {
+            if (data.getValue().getFechaEmision() != null) {
+                return new SimpleStringProperty(
+                        data.getValue().getFechaEmision().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                );
+            }
+            return new SimpleStringProperty("");
+        });
+
+        // CORREGIDO: Usar colTotalAPagar en lugar de colTotal
+        colTotalAPagar.setCellValueFactory(data -> {
+            if (data.getValue().getTotal() != null) {
+                return new SimpleStringProperty(String.format("$%.2f", data.getValue().getTotal()));
+            }
+            return new SimpleStringProperty("$0.00");
+        });
+
+        colEstado.setCellValueFactory(data ->
+                new SimpleStringProperty(data.getValue().getEstado()));
+
+        // Columna de acciones
+        colAcciones.setCellFactory(param -> new TableCell<>() {
+            private final Button btnVer = new Button("Ver");
+            private final Button btnAnular = new Button("Anular");
+            private final HBox pane = new HBox(5, btnVer, btnAnular);
+
+            {
+                pane.setAlignment(Pos.CENTER);
+
+                btnVer.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
+                btnAnular.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
+
+                btnVer.setOnAction(event -> {
+                    Factura factura = getTableView().getItems().get(getIndex());
+                    verFactura(factura.getId());
+                });
+
+                btnAnular.setOnAction(event -> {
+                    Factura factura = getTableView().getItems().get(getIndex());
+                    anularFactura(factura.getId());
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Factura factura = getTableView().getItems().get(getIndex());
+                    // Solo mostrar botón Anular si la factura está activa
+                    btnAnular.setDisable(!"ACTIVA".equals(factura.getEstado()));
+                    setGraphic(pane);
+                }
+            }
+        });
+    }
+
+    private void cargarFacturas() {
+        Task<List<Factura>> task = new Task<>() {
+            @Override
+            protected List<Factura> call() {
+                return FacturaService.getInstance().getAllFacturasResumen();
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            listaFacturas = task.getValue();
+            actualizarTablaFacturas();
+            logger.info("Se cargaron {} facturas", listaFacturas.size());
+        });
+
+        task.setOnFailed(event -> {
+            logger.error("Error al cargar facturas", task.getException());
+            mostrarAlerta("Error", "No se pudieron cargar las facturas");
+        });
+
+        new Thread(task).start();
+    }
+
+    private void actualizarTablaFacturas() {
+        tableFacturas.getItems().setAll(listaFacturas);
+    }
+
+    @FXML
+    private void handleBuscarFacturas() {
+        String estadoFiltro = cmbFiltroEstado.getValue();
+
+        Task<List<Factura>> task = new Task<>() {
+            @Override
+            protected List<Factura> call() {
+                if (estadoFiltro == null || "TODAS".equals(estadoFiltro)) {
+                    return FacturaService.getInstance().getAllFacturasResumen();
+                } else {
+                    return FacturaService.getInstance().getFacturasPorEstado(estadoFiltro);
+                }
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            listaFacturas = task.getValue();
+            actualizarTablaFacturas();
+            logger.info("Filtro aplicado: {} facturas encontradas", listaFacturas.size());
+        });
+
+        task.setOnFailed(event -> {
+            logger.error("Error al filtrar facturas", task.getException());
+            mostrarAlerta("Error", "No se pudieron filtrar las facturas");
+        });
+
+        new Thread(task).start();
+    }
+
+    private void verFactura(Integer facturaId) {
+        logger.info("Abriendo vista de factura ID: {}", facturaId);
+        // Cambiar al tab "Ver" y cargar los datos de la factura
+        tabPane.getSelectionModel().select(2); // Índice del tab "Ver"
+        cargarDatosFacturaCompleta(facturaId);
+    }
+
+    private void anularFactura(Integer facturaId) {
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Anular Factura");
+        confirmacion.setHeaderText("¿Está seguro de anular esta factura?");
+        confirmacion.setContentText("Esta acción no se puede deshacer.");
+
+        confirmacion.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                Task<Boolean> task = new Task<>() {
+                    @Override
+                    protected Boolean call() {
+                        return FacturaService.getInstance().anularFactura(facturaId);
+                    }
+                };
+
+                task.setOnSucceeded(event -> {
+                    boolean exito = task.getValue();
+                    if (exito) {
+                        logger.info("Factura anulada exitosamente. ID: {}", facturaId);
+                        mostrarAlerta("Éxito", "Factura anulada correctamente");
+                        cargarFacturas(); // Recargar la lista
+                    } else {
+                        mostrarAlerta("Error", "No se pudo anular la factura");
+                    }
+                });
+
+                task.setOnFailed(event -> {
+                    logger.error("Error al anular factura", task.getException());
+                    mostrarAlerta("Error", "Error al anular la factura");
+                });
+
+                new Thread(task).start();
+            }
+        });
+    }
+
+    private void cargarDatosFacturaCompleta(Integer facturaId) {
+        // TODO: Implementar la carga de datos completos de la factura en el tab "Ver"
+        logger.info("Cargando datos completos de factura ID: {}", facturaId);
+
+        // Ejemplo de implementación:
+        Task<Factura> task = new Task<>() {
+            @Override
+            protected Factura call() {
+                return FacturaService.getInstance().getFacturaById(facturaId);
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            Factura factura = task.getValue();
+            if (factura != null) {
+                // Cargar datos en los campos del tab "Ver"
+                txtFacturaNumero.setText("Factura N° " + factura.getNumeroFactura());
+                txtFechaRealizacion.setText(factura.getFechaEmision().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                txtCiudad.setText(factura.getCiudad());
+                txtSubtotal.setText(String.format("$%.2f", factura.getSubtotal()));
+                txtIva.setText(String.format("$%.2f", factura.getIva()));
+                txtDescuento.setText(String.format("$%.2f", factura.getDescuento()));
+                txtTotal.setText(String.format("$%.2f", factura.getTotal()));
+                // ... cargar más campos según sea necesario
+            }
+        });
+
+        task.setOnFailed(event -> {
+            logger.error("Error al cargar factura completa", task.getException());
+            mostrarAlerta("Error", "No se pudieron cargar los datos de la factura");
+        });
+
+        new Thread(task).start();
+    }
+
+    // ... (el resto de los métodos se mantienen igual)
 
     private void configurarTablaCitas() {
         // Configurar las columnas existentes...
