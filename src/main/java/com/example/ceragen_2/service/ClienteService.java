@@ -28,7 +28,7 @@ public class ClienteService {
      */
     public List<Cliente> getAllClientes() {
         List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT id, cedula, nombres, apellidos FROM clientes ORDER BY nombres, apellidos";
+        String sql = "SELECT id, cedula, nombres, apellidos FROM clientes WHERE activo = TRUE ORDER BY nombres, apellidos";
 
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -56,8 +56,8 @@ public class ClienteService {
      */
     public List<Cliente> getAllClientesCompletos() {
         List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT id, cedula, nombres, apellidos, telefono, email, direccion, fecha_registro " +
-                     "FROM clientes ORDER BY nombres, apellidos";
+        String sql = "SELECT id, cedula, nombres, apellidos, telefono, email, direccion, activo, fecha_registro " +
+                     "FROM clientes WHERE activo = TRUE ORDER BY nombres, apellidos";
 
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -80,8 +80,8 @@ public class ClienteService {
      * Obtiene un cliente por ID
      */
     public Cliente getClienteById(Integer id) {
-        String sql = "SELECT id, cedula, nombres, apellidos, telefono, email, direccion, fecha_registro " +
-                     "FROM clientes WHERE id = ?";
+        String sql = "SELECT id, cedula, nombres, apellidos, telefono, email, direccion, activo, fecha_registro " +
+                     "FROM clientes WHERE id = ? AND activo = TRUE";
 
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -104,8 +104,8 @@ public class ClienteService {
      * Obtiene un cliente por cedula
      */
     public Cliente getClienteByCedula(String cedula) {
-        String sql = "SELECT id, cedula, nombres, apellidos, telefono, email, direccion, fecha_registro " +
-                     "FROM clientes WHERE cedula = ?";
+        String sql = "SELECT id, cedula, nombres, apellidos, telefono, email, direccion, activo, fecha_registro " +
+                     "FROM clientes WHERE cedula = ? AND activo = TRUE";
 
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -191,10 +191,10 @@ public class ClienteService {
     }
 
     /**
-     * Elimina un cliente por ID
+     * Elimina un cliente por ID (eliminación lógica)
      */
     public boolean eliminarCliente(Integer id) {
-        String sql = "DELETE FROM clientes WHERE id = ?";
+        String sql = "UPDATE clientes SET activo = FALSE WHERE id = ?";
 
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -203,11 +203,11 @@ public class ClienteService {
             int affectedRows = stmt.executeUpdate();
 
             if (affectedRows > 0) {
-                logger.info("Cliente eliminado exitosamente con ID: {}", id);
+                logger.info("Cliente desactivado exitosamente con ID: {}", id);
                 return true;
             }
         } catch (SQLException e) {
-            logger.error("Error al eliminar cliente", e);
+            logger.error("Error al desactivar cliente", e);
         }
 
         return false;
@@ -218,8 +218,8 @@ public class ClienteService {
      */
     public List<Cliente> buscarClientes(String criterio) {
         List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT id, cedula, nombres, apellidos, telefono, email, direccion, fecha_registro " +
-                     "FROM clientes WHERE cedula LIKE ? OR nombres LIKE ? OR apellidos LIKE ? " +
+        String sql = "SELECT id, cedula, nombres, apellidos, telefono, email, direccion, activo, fecha_registro " +
+                     "FROM clientes WHERE activo = TRUE AND (cedula LIKE ? OR nombres LIKE ? OR apellidos LIKE ?) " +
                      "ORDER BY nombres, apellidos";
 
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
@@ -257,6 +257,14 @@ public class ClienteService {
         cliente.setTelefono(rs.getString("telefono"));
         cliente.setEmail(rs.getString("email"));
         cliente.setDireccion(rs.getString("direccion"));
+
+        // Manejo opcional de activo si existe en la base de datos
+        try {
+            cliente.setActivo(rs.getBoolean("activo"));
+        } catch (SQLException e) {
+            // Si la columna no existe, asumimos activo por defecto
+            cliente.setActivo(true);
+        }
 
         // Manejo opcional de fecha_registro si existe en la base de datos
         try {

@@ -10,6 +10,7 @@ public class Cliente {
     private String telefono;
     private String email;
     private String direccion;
+    private Boolean activo;
     private LocalDateTime fechaRegistro;
 
     public Cliente() {
@@ -70,6 +71,14 @@ public class Cliente {
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
     public LocalDateTime getFechaRegistro() {
