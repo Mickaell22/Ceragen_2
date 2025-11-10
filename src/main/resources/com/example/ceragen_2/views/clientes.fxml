@@ -133,7 +133,7 @@
                 <VBox spacing="20" styleClass="card-lg">
                     <Text text="Editar Cliente" styleClass="title-lg"/>
 
-                    <VBox spacing="8">
+                    <VBox spacing="8" visible="false" managed="false">
                         <Text text="ID" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                         <TextField fx:id="txtEditarId" editable="false" styleClass="disabled-field"
                                    style="-fx-pref-height: 40; -fx-font-size: 14px;"/>

@@ -1,6 +1,7 @@
 package com.example.ceragen_2.controller;
 
 import com.example.ceragen_2.model.Usuario;
+import com.example.ceragen_2.service.AuthService;
 import com.example.ceragen_2.service.UsuarioService;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -85,6 +86,9 @@ public class UsuariosController {
     }
 
     private void configurarTabla() {
+        // Ocultar columna ID (para producción)
+        colId.setVisible(false);
+
         // Configurar columnas
         colId.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getId().toString()));
         colUsername.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getUsername()));
@@ -410,6 +414,21 @@ public class UsuariosController {
 
         final Boolean activo = estadoStr.equals("ACTIVO");
 
+        // Validación: No se puede auto-desactivar
+        if (usuarioId.equals(AuthService.getInstance().getCurrentUserId()) && !activo) {
+            mostrarAlerta("Error", "No puede desactivarse a sí mismo", Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Validación: Debe haber al menos 1 ADMIN activo
+        if (rol.equals("ADMIN") && usuarioEnEdicion.getRol().equals("ADMIN") && !activo) {
+            int adminsActivos = usuarioService.countAdminsActivos();
+            if (adminsActivos <= 1) {
+                mostrarAlerta("Error", "Debe haber al menos un ADMIN activo en el sistema", Alert.AlertType.ERROR);
+                return;
+            }
+        }
+
         loadingIndicator.setVisible(true);
 
         Task<Boolean> task = new Task<>() {
@@ -457,12 +476,27 @@ public class UsuariosController {
     }
 
     private void eliminarUsuario(Usuario usuario) {
-        logger.info("Intentando eliminar usuario: {}", usuario.getUsername());
+        logger.info("Intentando desactivar usuario: {}", usuario.getUsername());
+
+        // Validación: No se puede auto-desactivar
+        if (usuario.getId().equals(AuthService.getInstance().getCurrentUserId())) {
+            mostrarAlerta("Error", "No puede desactivarse a sí mismo", Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Validación: Debe haber al menos 1 ADMIN activo
+        if (usuario.getRol().equals("ADMIN")) {
+            int adminsActivos = usuarioService.countAdminsActivos();
+            if (adminsActivos <= 1) {
+                mostrarAlerta("Error", "Debe haber al menos un ADMIN activo en el sistema", Alert.AlertType.ERROR);
+                return;
+            }
+        }
 
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar Eliminación");
-        confirmacion.setHeaderText("¿Está seguro de eliminar este usuario?");
-        confirmacion.setContentText("Usuario: " + usuario.getUsername() + "\nEsta acción no se puede deshacer.");
+        confirmacion.setTitle("Confirmar Desactivación");
+        confirmacion.setHeaderText("¿Está seguro de desactivar este usuario?");
+        confirmacion.setContentText("Usuario: " + usuario.getUsername() + "\nEl usuario ya no podrá acceder al sistema.");
 
         Optional<ButtonType> resultado = confirmacion.showAndWait();
 
@@ -484,12 +518,12 @@ public class UsuariosController {
                 loadingIndicator.setVisible(false);
 
                 if (exito) {
-                    logger.info("Usuario eliminado exitosamente: {}", username);
-                    mostrarAlerta("Éxito", "Usuario eliminado exitosamente", Alert.AlertType.INFORMATION);
+                    logger.info("Usuario desactivado exitosamente: {}", username);
+                    mostrarAlerta("Éxito", "Usuario desactivado exitosamente", Alert.AlertType.INFORMATION);
                     cargarDatos();
                 } else {
-                    logger.error("Error al eliminar usuario: {}", username);
-                    mostrarAlerta("Error", "No se pudo eliminar el usuario", Alert.AlertType.ERROR);
+                    logger.error("Error al desactivar usuario: {}", username);
+                    mostrarAlerta("Error", "No se pudo desactivar el usuario", Alert.AlertType.ERROR);
                 }
             });
 

@@ -181,10 +181,10 @@ public class UsuarioService {
     }
 
     /**
-     * Elimina un usuario
+     * Desactiva un usuario (eliminación lógica)
      */
     public boolean eliminarUsuario(Integer id) {
-        String sql = "DELETE FROM usuarios WHERE id = ?";
+        String sql = "UPDATE usuarios SET activo = FALSE WHERE id = ?";
 
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -192,13 +192,33 @@ public class UsuarioService {
             stmt.setInt(1, id);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Usuario eliminado con ID: {}", id);
+            logger.info("Usuario desactivado con ID: {}", id);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al eliminar usuario", e);
+            logger.error("Error al desactivar usuario", e);
             return false;
         }
+    }
+
+    /**
+     * Cuenta cuántos usuarios ADMIN activos hay en el sistema
+     */
+    public int countAdminsActivos() {
+        String sql = "SELECT COUNT(*) FROM usuarios WHERE rol = 'ADMIN' AND activo = TRUE";
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            logger.error("Error al contar admins activos", e);
+        }
+
+        return 0;
     }
 
     /**
@@ -226,10 +246,10 @@ public class UsuarioService {
     }
 
     /**
-     * Obtiene un usuario por ID
+     * Obtiene un usuario por ID (solo usuarios activos)
      */
     public Usuario getUsuarioById(Integer id) {
-        String sql = "SELECT id, username, password, rol, activo, fecha_creacion FROM usuarios WHERE id = ?";
+        String sql = "SELECT id, username, password, rol, activo, fecha_creacion FROM usuarios WHERE id = ? AND activo = TRUE";
 
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -57,7 +57,69 @@ public class MainController {
 
         userLabel.setText(username + " (" + role + ")");
 
+        configurarPermisosPorRol(role);
         setupHoverEffects();
+    }
+
+    /**
+     * Configura la visibilidad de los botones del navbar según el rol del usuario
+     * - ADMIN: ve todo
+     * - RECEPCIONISTA: Citas, Pacientes, Clientes, Facturación
+     * - MEDICO: Citas, Pacientes
+     */
+    private void configurarPermisosPorRol(String rol) {
+        // Por defecto ocultar todos los botones
+        btnUsuarios.setVisible(false);
+        btnUsuarios.setManaged(false);
+        btnProfesionales.setVisible(false);
+        btnProfesionales.setManaged(false);
+        btnEspecialidades.setVisible(false);
+        btnEspecialidades.setManaged(false);
+        btnClientes.setVisible(false);
+        btnClientes.setManaged(false);
+        btnFacturacion.setVisible(false);
+        btnFacturacion.setManaged(false);
+
+        // Todos ven: Citas y Pacientes
+        btnCitas.setVisible(true);
+        btnCitas.setManaged(true);
+        btnPacientes.setVisible(true);
+        btnPacientes.setManaged(true);
+
+        switch (rol) {
+            case "ADMIN":
+                // ADMIN ve TODO
+                btnUsuarios.setVisible(true);
+                btnUsuarios.setManaged(true);
+                btnProfesionales.setVisible(true);
+                btnProfesionales.setManaged(true);
+                btnEspecialidades.setVisible(true);
+                btnEspecialidades.setManaged(true);
+                btnClientes.setVisible(true);
+                btnClientes.setManaged(true);
+                btnFacturacion.setVisible(true);
+                btnFacturacion.setManaged(true);
+                logger.info("Permisos configurados para ADMIN - Acceso completo");
+                break;
+
+            case "RECEPCIONISTA":
+                // RECEPCIONISTA ve: Citas, Pacientes, Clientes, Facturación
+                btnClientes.setVisible(true);
+                btnClientes.setManaged(true);
+                btnFacturacion.setVisible(true);
+                btnFacturacion.setManaged(true);
+                logger.info("Permisos configurados para RECEPCIONISTA");
+                break;
+
+            case "MEDICO":
+                // MEDICO solo ve: Citas y Pacientes (ya están visibles por defecto)
+                logger.info("Permisos configurados para MEDICO");
+                break;
+
+            default:
+                logger.warn("Rol desconocido: {}", rol);
+                break;
+        }
     }
 
     private void setupHoverEffects() {
