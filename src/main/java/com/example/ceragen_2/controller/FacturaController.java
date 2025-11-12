@@ -4,6 +4,7 @@ import com.example.ceragen_2.model.*;
 import com.example.ceragen_2.service.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -77,11 +79,11 @@ public class FacturaController {
     @FXML private TextField txtTelefono;
     @FXML private TextField txtDireccion;
     // Tabla de productos
-    @FXML private TableView<?> tableProducts;
-    @FXML private TableColumn<?, ?> colProducto;
-    @FXML private TableColumn<?, ?> colPrecio;
-    @FXML private TableColumn<?, ?> colCantidad;
-    @FXML private TableColumn<?, ?> colTotal;
+    @FXML private TableView<Cita> tableProducts;
+    @FXML private TableColumn<Cita, String> colProducto;
+    @FXML private TableColumn<Cita, String> colPrecio;
+    @FXML private TableColumn<Cita, String> colCantidad;
+    @FXML private TableColumn<Cita, String> colTotal;
     // Resumen
     @FXML private TextField txtSubtotal;
     @FXML private TextField txtIva;
@@ -118,6 +120,7 @@ public class FacturaController {
 
         cargarCatalogos();
         configurarTablaCitas();
+        configurarTablaProductosFactura();
         configurarTablaFacturas();
         cargarFacturas();
 
@@ -155,7 +158,7 @@ public class FacturaController {
                 new SimpleStringProperty(data.getValue().getNumeroFactura()));
 
         colCliente.setCellValueFactory(data ->
-                new SimpleStringProperty(data.getValue().getPacienteNombre()));
+                new SimpleStringProperty(data.getValue().getClienteNombre()));
 
         colFecha.setCellValueFactory(data -> {
             if (data.getValue().getFechaEmision() != null) {
@@ -214,6 +217,35 @@ public class FacturaController {
             }
         });
     }
+
+    private void configurarTablaProductosFactura() {
+        // --- Configurar columnas de la tabla tableProducts ---
+        colProducto.setCellValueFactory(data -> {
+            Cita cita = data.getValue();
+            // Mostramos el nombre del servicio o motivo
+            return new SimpleStringProperty(
+                    cita.getProfesionalNombre() != null ? cita.getProfesionalNombre() : "Sin datos"
+            );
+        });
+
+        colPrecio.setCellValueFactory(data -> {
+            Cita cita = data.getValue();
+            BigDecimal costo = cita.getCosto() != null ? cita.getCosto() : BigDecimal.ZERO;
+            return new SimpleStringProperty(String.format("$%.2f", costo));
+        });
+
+        // Cantidad siempre 1 por cita
+        colCantidad.setCellValueFactory(data ->
+                new SimpleStringProperty("1")
+        );
+
+        // Total = costo * cantidad (1)
+        colTotal.setCellValueFactory(data -> {
+            BigDecimal total = data.getValue().getCosto() != null ? data.getValue().getCosto() : BigDecimal.ZERO;
+            return new SimpleStringProperty(String.format("$%.2f", total));
+        });
+    }
+
 
     private void cargarFacturas() {
         Task<List<Factura>> task = new Task<>() {
@@ -314,10 +346,8 @@ public class FacturaController {
     }
 
     private void cargarDatosFacturaCompleta(Integer facturaId) {
-        // TODO: Implementar la carga de datos completos de la factura en el tab "Ver"
         logger.info("Cargando datos completos de factura ID: {}", facturaId);
 
-        // Ejemplo de implementación:
         Task<Factura> task = new Task<>() {
             @Override
             protected Factura call() {
@@ -328,27 +358,44 @@ public class FacturaController {
         task.setOnSucceeded(event -> {
             Factura factura = task.getValue();
             if (factura != null) {
-                // Cargar datos en los campos del tab "Ver"
+                logger.info("Factura cargada: {}", factura);
+
+                // --- Llenar los campos del tab "Ver" ---
                 txtFacturaNumero.setText("Factura N° " + factura.getNumeroFactura());
-                txtFechaRealizacion.setText(factura.getFechaEmision().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-                txtCiudad.setText(factura.getCiudad());
-                txtSubtotal.setText(String.format("$%.2f", factura.getSubtotal()));
-                txtIva.setText(String.format("$%.2f", factura.getIva()));
-                txtDescuento.setText(String.format("$%.2f", factura.getDescuento()));
-                txtTotal.setText(String.format("$%.2f", factura.getTotal()));
-                // ... cargar más campos según sea necesario
+                txtFechaRealizacion.setText(
+                        factura.getFechaEmision().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                );
+
+                txtCliente.setText(factura.getClienteNombre() != null ? factura.getClienteNombre() : "Sin cliente");
+                txtCiudad.setText(factura.getCiudad() != null ? factura.getCiudad() : "-");
+
+                txtSubtotal.setText(String.format("$%.2f", factura.getSubtotal() != null ? factura.getSubtotal() : 0.0));
+                txtIva.setText(String.format("$%.2f", factura.getIva() != null ? factura.getIva() : 0.0));
+                txtDescuento.setText(String.format("$%.2f", factura.getDescuento() != null ? factura.getDescuento() : 0.0));
+                txtTotal.setText(String.format("$%.2f", factura.getTotal() != null ? factura.getTotal() : 0.0));
+
+                // --- Llenar la tabla con las citas asociadas ---
+                if (factura.getDetalles() != null && !factura.getDetalles().isEmpty()) {
+                    ObservableList<Cita> citas = FXCollections.observableArrayList(factura.getDetalles());
+                    tableProducts.setItems(citas);
+                } else {
+                    tableProducts.setItems(FXCollections.observableArrayList());
+                    logger.warn("La factura ID {} no tiene citas asociadas", facturaId);
+                }
+
+            } else {
+                logger.warn("No se encontró factura con ID {}", facturaId);
+                mostrarAlerta("Aviso", "No se encontró información para la factura seleccionada.");
             }
         });
 
         task.setOnFailed(event -> {
             logger.error("Error al cargar factura completa", task.getException());
-            mostrarAlerta("Error", "No se pudieron cargar los datos de la factura");
+            mostrarAlerta("Error", "No se pudieron cargar los datos de la factura.");
         });
 
         new Thread(task).start();
     }
-
-    // ... (el resto de los métodos se mantienen igual)
 
     private void configurarTablaCitas() {
         // Configurar las columnas existentes...
@@ -368,7 +415,7 @@ public class FacturaController {
         colCitaMotivo.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getMotivo()));
 
-        // Nueva columna para el costo
+        // columna para el costo
         colCitaCosto.setCellValueFactory(data -> {
             if (data.getValue().getCosto() != null) {
                 return new SimpleStringProperty(String.format("$%.2f", data.getValue().getCosto()));
@@ -514,14 +561,6 @@ public class FacturaController {
         }
     }
 
-    public void setListaCitas(List<Cita> listaCitas) {
-        this.listaCitas = listaCitas;
-    }
-
-    public List<Cita> getListaCitas() {
-        return this.listaCitas;
-    }
-
     @FXML
     private void handleAnular() {
         logger.info("Intentando anular factura");
@@ -596,7 +635,6 @@ public class FacturaController {
         String fctCiudad = txtCiudadFacturaNueva.getText().trim();
 
         try {
-            // USAR EL MISMO MÉTODO limpiarNumero() que en validarCampos()
             double fctSubtotal = Double.parseDouble(limpiarNumero(txtSubtotalFacturaNueva.getText()));
             double fctIva = Double.parseDouble(limpiarNumero(txtIvaFacturaNueva.getText()));
             double fctDescuento = Double.parseDouble(limpiarNumero(txtDescuentoFacturaNueva.getText()));
@@ -659,27 +697,18 @@ public class FacturaController {
             mostrarAlerta("Error", "Debe seleccionar un cliente");
             return false;
         }
-
         // Validar que haya citas
         if (listaCitas == null || listaCitas.isEmpty()) {
             mostrarAlerta("Error", "Debe agregar al menos una cita");
             return false;
         }
-
-        // Resto de validaciones...
         String ciudad = txtCiudadFacturaNueva.getText().trim();
-
         // Limpiar los valores numéricos de símbolos y caracteres no numéricos
         String subtotal = limpiarNumero(txtSubtotalFacturaNueva.getText());
         String iva = limpiarNumero(txtIvaFacturaNueva.getText());
         String descuento = limpiarNumero(txtDescuentoFacturaNueva.getText());
         String total = limpiarNumero(txtTotalFacturaNueva.getText());
-
         String metodoPago = cmbMetodoPagoFacturaNueva.getValue();
-
-        // DEBUG: Mostrar valores limpios
-        logger.info("DEBUG - Valores limpios - Subtotal: '{}', IVA: '{}', Descuento: '{}', Total: '{}'",
-                subtotal, iva, descuento, total);
 
         // Validaciones básicas vacíos
         if (ciudad.isEmpty()) {
@@ -723,7 +752,6 @@ public class FacturaController {
         return true;
     }
 
-    // Método auxiliar para limpiar números
     private String limpiarNumero(String texto) {
         if (texto == null || texto.trim().isEmpty()) {
             return "";
@@ -734,8 +762,6 @@ public class FacturaController {
                 .trim();
     }
 
-
-    // Método para cargar datos de factura (será llamado desde otros controladores)
     public void cargarDatosFactura(String numeroFactura, String cliente, String cedula,
                                    String telefono, String direccion, String ciudad,
                                    double subtotal, double iva, double descuento, double total) {
@@ -751,7 +777,6 @@ public class FacturaController {
         txtTotal.setText(String.format("$%.2f", total));
     }
 
-    // Método sobrecargado que usa la ciudad por defecto
     public void cargarDatosFactura(String numeroFactura, String cliente, String cedula,
                                    String telefono, String direccion,
                                    double subtotal, double iva, double descuento, double total) {

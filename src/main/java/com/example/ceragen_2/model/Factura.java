@@ -6,6 +6,7 @@ import java.util.List;
 public class Factura {
     private Integer id;
     private String numeroFactura;
+    private Integer clienteId;
     private Integer pacienteId;
     private LocalDateTime fechaEmision;
     private String ciudad;
@@ -17,8 +18,8 @@ public class Factura {
     private String estado;
 
     // Campos relacionados (no en la BD)
-    private String pacienteNombre;
-    private List<DetalleFactura> detalles;
+    private String clienteNombre;
+    private List<Cita> detalles;
 
     public Factura() {
     }
@@ -28,6 +29,23 @@ public class Factura {
                    String metodoPago, String estado) {
         this.id = id;
         this.numeroFactura = numeroFactura;
+        this.pacienteId = pacienteId;
+        this.fechaEmision = fechaEmision;
+        this.ciudad = ciudad;
+        this.subtotal = subtotal;
+        this.iva = iva;
+        this.descuento = descuento;
+        this.total = total;
+        this.metodoPago = metodoPago;
+        this.estado = estado;
+    }
+
+    public Factura(Integer id, String numeroFactura, Integer pacienteId, Integer clienteId, LocalDateTime fechaEmision,
+                   String ciudad, Double subtotal, Double iva, Double descuento, Double total,
+                   String metodoPago, String estado) {
+        this.id = id;
+        this.numeroFactura = numeroFactura;
+        this.clienteId = clienteId;
         this.pacienteId = pacienteId;
         this.fechaEmision = fechaEmision;
         this.ciudad = ciudad;
@@ -54,6 +72,14 @@ public class Factura {
 
     public void setNumeroFactura(String numeroFactura) {
         this.numeroFactura = numeroFactura;
+    }
+
+    public Integer getClienteId(){
+        return clienteId;
+    }
+
+    public void setClienteId(Integer clienteId){
+        this.clienteId = clienteId;
     }
 
     public Integer getPacienteId() {
@@ -128,19 +154,19 @@ public class Factura {
         this.estado = estado;
     }
 
-    public String getPacienteNombre() {
-        return pacienteNombre;
+    public String getClienteNombre() {
+        return clienteNombre;
     }
 
-    public void setPacienteNombre(String pacienteNombre) {
-        this.pacienteNombre = pacienteNombre;
+    public void setClienteNombre(String clienteNombre) {
+        this.clienteNombre = clienteNombre;
     }
 
-    public List<DetalleFactura> getDetalles() {
+    public List<Cita> getDetalles() {
         return detalles;
     }
 
-    public void setDetalles(List<DetalleFactura> detalles) {
+    public void setDetalles(List<Cita> detalles) {
         this.detalles = detalles;
     }
 
@@ -149,11 +175,12 @@ public class Factura {
         return "Factura{" +
                 "id=" + id +
                 ", numeroFactura='" + numeroFactura + '\'' +
-                ", pacienteId=" + pacienteId +
+                ", clienteId=" + clienteId +
                 ", fechaEmision=" + fechaEmision +
                 ", total=" + total +
                 ", metodoPago='" + metodoPago + '\'' +
                 ", estado='" + estado + '\'' +
+                ", listado='" + detalles.toString() + '\'' +
                 '}';
     }
 }

@@ -205,7 +205,7 @@
                 </HBox>
 
                 <!-- Tabla de productos/servicios -->
-                <TableView fx:id="tableProducts" prefHeight="250" styleClass="table-view">
+                <TableView fx:id="tableProducts" styleClass="table-view" prefHeight="250" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="colProducto" text="Producto/Servicio" prefWidth="350"/>
                         <TableColumn fx:id="colPrecio" text="Precio" prefWidth="150"/>

@@ -2,6 +2,7 @@ package com.example.ceragen_2.service;
 
 import com.example.ceragen_2.config.DatabaseConfig;
 import com.example.ceragen_2.model.Cita;
+import com.example.ceragen_2.model.DetalleFactura;
 import com.example.ceragen_2.model.Factura;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +102,6 @@ public class FacturaService {
             int citasCreadas = 0;
 
             for (Cita cita : citas) {
-                // Usar el método que acepta la conexión para mantener la transacción
                 boolean citaCreada = citaService.crearCita(
                         conn,  // Pasar la misma conexión para mantener la transacción
                         cita.getPacienteId(),
@@ -184,7 +184,7 @@ public class FacturaService {
 
                 factura.setTotal(rs.getDouble("total"));
                 factura.setEstado(rs.getString("estado"));
-                factura.setPacienteNombre(rs.getString("cliente_nombre"));
+                factura.setClienteNombre(rs.getString("cliente_nombre"));
 
                 facturas.add(factura);
             }
@@ -236,7 +236,7 @@ public class FacturaService {
 
                     factura.setTotal(rs.getDouble("total"));
                     factura.setEstado(rs.getString("estado"));
-                    factura.setPacienteNombre(rs.getString("cliente_nombre"));
+                    factura.setClienteNombre(rs.getString("cliente_nombre"));
 
                     facturas.add(factura);
                 }
@@ -282,67 +282,97 @@ public class FacturaService {
      * Obtiene una factura completa por su ID (incluyendo detalles)
      */
     public Factura getFacturaById(Integer facturaId) {
-        // CORREGIDO: Usar CONCAT para unir nombres y apellidos
         String sql = """
-            SELECT 
-                f.id,
-                f.numero_factura,
-                f.cliente_id,
-                f.fecha_emision,
-                f.ciudad,
-                f.subtotal,
-                f.iva,
-                f.descuento,
-                f.total,
-                f.metodo_pago,
-                f.estado,
-                CONCAT(c.nombres, ' ', c.apellidos) AS cliente_nombre,
-                c.cedula,
-                c.telefono,
-                c.direccion
-            FROM facturas f
-            INNER JOIN clientes c ON f.cliente_id = c.id
-            WHERE f.id = ?
-            """;
+        SELECT 
+            f.id,
+            f.numero_factura,
+            f.cliente_id,
+            f.fecha_emision,
+            f.ciudad,
+            f.subtotal,
+            f.iva,
+            f.descuento,
+            f.total,
+            f.metodo_pago,
+            f.estado,
+            CONCAT(c.nombres, ' ', c.apellidos) AS cliente_nombre,
+            c.cedula,
+            c.telefono,
+            c.direccion
+        FROM facturas f
+        INNER JOIN clientes c ON f.cliente_id = c.id
+        WHERE f.id = ?
+        """;
+
+        Factura factura = null;
 
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, facturaId);
 
+            String numeroFactura = null, ciudad = null, metodoPago = null,
+                    estado = null, clienteNombre = null, cedula = null,
+                    telefono = null, direccion = null;
+            int clienteId = 0;
+            double subtotal = 0, iva = 0, descuento = 0, total = 0;
+            LocalDateTime fechaEmision = null;
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    Factura factura = new Factura();
-                    factura.setId(rs.getInt("id"));
-                    factura.setNumeroFactura(rs.getString("numero_factura"));
-                    factura.setPacienteId(rs.getInt("cliente_id"));
-
-                    Timestamp fechaEmision = rs.getTimestamp("fecha_emision");
-                    if (fechaEmision != null) {
-                        factura.setFechaEmision(fechaEmision.toLocalDateTime());
-                    }
-
-                    factura.setCiudad(rs.getString("ciudad"));
-                    factura.setSubtotal(rs.getDouble("subtotal"));
-                    factura.setIva(rs.getDouble("iva"));
-                    factura.setDescuento(rs.getDouble("descuento"));
-                    factura.setTotal(rs.getDouble("total"));
-                    factura.setMetodoPago(rs.getString("metodo_pago"));
-                    factura.setEstado(rs.getString("estado"));
-                    factura.setPacienteNombre(rs.getString("cliente_nombre"));
-
-                    logger.info("Factura encontrada. ID: {}, Número: {}", facturaId, factura.getNumeroFactura());
-                    return factura;
+                    numeroFactura = rs.getString("numero_factura");
+                    clienteId = rs.getInt("cliente_id");
+                    Timestamp ts = rs.getTimestamp("fecha_emision");
+                    if (ts != null) fechaEmision = ts.toLocalDateTime();
+                    ciudad = rs.getString("ciudad");
+                    subtotal = rs.getDouble("subtotal");
+                    iva = rs.getDouble("iva");
+                    descuento = rs.getDouble("descuento");
+                    total = rs.getDouble("total");
+                    metodoPago = rs.getString("metodo_pago");
+                    estado = rs.getString("estado");
+                    clienteNombre = rs.getString("cliente_nombre");
+                    cedula = rs.getString("cedula");
+                    telefono = rs.getString("telefono");
+                    direccion = rs.getString("direccion");
                 }
+            }
+
+            if (numeroFactura != null) {
+                factura = new Factura();
+                factura.setId(facturaId);
+                factura.setNumeroFactura(numeroFactura);
+                factura.setClienteId(clienteId);
+                factura.setFechaEmision(fechaEmision);
+                factura.setCiudad(ciudad);
+                factura.setSubtotal(subtotal);
+                factura.setIva(iva);
+                factura.setDescuento(descuento);
+                factura.setTotal(total);
+                factura.setMetodoPago(metodoPago);
+                factura.setEstado(estado);
+                factura.setClienteNombre(clienteNombre);
+                //faltan los campos del cliente
+
+                // 👇 Ahora sí, después de cerrar el ResultSet
+                List<Cita> citas = getCitasPorFactura(facturaId);
+                factura.setDetalles(citas);
+
+                logger.info(factura.toString());
+                logger.info("Factura encontrada. ID: {}, Número: {}", facturaId, numeroFactura);
             }
 
         } catch (SQLException e) {
             logger.error("Error al obtener factura por ID: {}", facturaId, e);
         }
 
-        logger.warn("Factura no encontrada. ID: {}", facturaId);
-        return null;
+        if (factura == null) {
+            logger.warn("Factura no encontrada. ID: {}", facturaId);
+        }
+
+        return factura;
     }
+
 
     /**
      * Obtiene los detalles de una factura (citas asociadas)
