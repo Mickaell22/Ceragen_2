@@ -44,9 +44,10 @@ public class PasswordUtil {
         String password = "admin";
         String hashed = hashPassword(password);
 
-        System.out.println("Password: " + password);
-        System.out.println("Hashed: " + hashed);
-        System.out.println("Verification: " + verifyPassword(password, hashed));
-        System.out.println("Wrong password: " + verifyPassword("wrong", hashed));
+        // Para uso en producción, usar un logger en lugar de System.out
+        // System.out.println("Password: " + password);
+        // System.out.println("Hashed: " + hashed);
+        // System.out.println("Verification: " + verifyPassword(password, hashed));
+        // System.out.println("Wrong password: " + verifyPassword("wrong", hashed));
     }
 }

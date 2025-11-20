@@ -11,7 +11,19 @@ import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -35,9 +47,9 @@ public class CitasController {
     private final PacienteService pacienteService = PacienteService.getInstance();
     private final ProfesionalService profesionalService = ProfesionalService.getInstance();
 
-    private int paginaActual = 0;
+    private int paginaActual;
     private int registrosPorPagina = 10;
-    private int totalPaginas = 0;
+    private int totalPaginas;
 
     @FXML private TabPane tabPane;
     @FXML private Tab tabEditar;
@@ -113,8 +125,9 @@ public class CitasController {
         });
         colEstado.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getEstado()));
         colMotivo.setCellValueFactory(data -> new SimpleStringProperty(
-            data.getValue().getMotivo() != null && data.getValue().getMotivo().length() > 50 ?
-            data.getValue().getMotivo().substring(0, 50) + "..." : data.getValue().getMotivo()
+            data.getValue().getMotivo() != null && data.getValue().getMotivo().length() > 50
+            ? data.getValue().getMotivo().substring(0, 50) + "..."
+            : data.getValue().getMotivo()
         ));
 
         colAcciones.setCellFactory(param -> new TableCell<>() {
@@ -138,7 +151,7 @@ public class CitasController {
             }
 
             @Override
-            protected void updateItem(Void item, boolean empty) {
+            protected void updateItem(final Void item, final boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : pane);
             }
@@ -158,17 +171,17 @@ public class CitasController {
     }
 
     private void cargarCatalogos() {
-        Task<CatalogosResult> task = new Task<>() {
+        final Task<CatalogosResult> task = new Task<>() {
             @Override
             protected CatalogosResult call() {
-                List<Paciente> pacientes = pacienteService.getAllPacientes();
-                List<Profesional> profesionales = profesionalService.getAllProfesionales();
+                final List<Paciente> pacientes = pacienteService.getAllPacientes();
+                final List<Profesional> profesionales = profesionalService.getAllProfesionales();
                 return new CatalogosResult(pacientes, profesionales);
             }
         };
 
         task.setOnSucceeded(event -> {
-            CatalogosResult resultado = task.getValue();
+            final CatalogosResult resultado = task.getValue();
             listaPacientes = resultado.pacientes;
             listaProfesionales = resultado.profesionales;
 
@@ -200,23 +213,27 @@ public class CitasController {
         final String estadoFilter = cmbEstadoFiltro.getValue();
         final int offset = paginaActual * registrosPorPagina;
 
-        Task<DatosCitasResult> task = new Task<>() {
+        final Task<DatosCitasResult> task = new Task<>() {
             @Override
             protected DatosCitasResult call() {
-                int totalRegistros = citaService.countCitas(pacienteId, profesionalId, estadoFilter, null, null);
+                final int totalRegistros = citaService.countCitas(pacienteId, profesionalId, estadoFilter, null, null);
                 int totalPaginasTemp = (int) Math.ceil((double) totalRegistros / registrosPorPagina);
-                if (totalPaginasTemp == 0) totalPaginasTemp = 1;
+                if (totalPaginasTemp == 0) {
+                    totalPaginasTemp = 1;
+                }
 
-                List<Cita> citas = citaService.getCitas(offset, registrosPorPagina, pacienteId, profesionalId, estadoFilter, null, null);
+                final List<Cita> citas = citaService.getCitas(offset, registrosPorPagina, pacienteId, profesionalId, estadoFilter, null, null);
                 return new DatosCitasResult(citas, totalPaginasTemp);
             }
         };
 
         task.setOnSucceeded(event -> {
-            DatosCitasResult resultado = task.getValue();
+            final DatosCitasResult resultado = task.getValue();
             totalPaginas = resultado.totalPaginas;
 
-            if (paginaActual >= totalPaginas) paginaActual = Math.max(0, totalPaginas - 1);
+            if (paginaActual >= totalPaginas) {
+                paginaActual = Math.max(0, totalPaginas - 1);
+            }
 
             tableCitas.getItems().clear();
             tableCitas.getItems().addAll(resultado.citas);
@@ -237,7 +254,7 @@ public class CitasController {
         new Thread(task).start();
     }
 
-    private void deshabilitarControles(boolean deshabilitar) {
+    private void deshabilitarControles(final boolean deshabilitar) {
         btnPrimera.setDisable(deshabilitar);
         btnAnterior.setDisable(deshabilitar);
         btnSiguiente.setDisable(deshabilitar);
@@ -254,6 +271,7 @@ public class CitasController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleLimpiarFiltros() {
         cmbPacienteFiltro.setValue(null);
         cmbProfesionalFiltro.setValue(null);
@@ -265,12 +283,14 @@ public class CitasController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handlePrimeraPagina() {
         paginaActual = 0;
         cargarDatos();
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handlePaginaAnterior() {
         if (paginaActual > 0) {
             paginaActual--;
@@ -279,6 +299,7 @@ public class CitasController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handlePaginaSiguiente() {
         if (paginaActual < totalPaginas - 1) {
             paginaActual++;
@@ -287,26 +308,28 @@ public class CitasController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleUltimaPagina() {
         paginaActual = totalPaginas - 1;
         cargarDatos();
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleCambioRegistrosPorPagina() {
         registrosPorPagina = Integer.parseInt(cmbRegistrosPorPagina.getValue());
         paginaActual = 0;
         cargarDatos();
     }
 
-    private void abrirEdicion(Cita cita) {
+    private void abrirEdicion(final Cita cita) {
         LOGGER.info("Abriendo edición para cita ID: {}", cita.getId());
         citaEnEdicion = cita;
 
         txtEditarId.setText(cita.getId().toString());
 
         // Buscar y seleccionar paciente en ComboBox
-        for (Paciente p : listaPacientes) {
+        for (final Paciente p : listaPacientes) {
             if (p.getId().equals(cita.getPacienteId())) {
                 cmbEditarPaciente.setValue(p);
                 break;
@@ -314,7 +337,7 @@ public class CitasController {
         }
 
         // Buscar y seleccionar profesional en ComboBox
-        for (Profesional p : listaProfesionales) {
+        for (final Profesional p : listaProfesionales) {
             if (p.getId().equals(cita.getProfesionalId())) {
                 cmbEditarProfesional.setValue(p);
                 break;
@@ -335,8 +358,11 @@ public class CitasController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleActualizarCita() {
-        if (citaEnEdicion == null) return;
+        if (citaEnEdicion == null) {
+            return;
+        }
 
         final Paciente paciente = cmbEditarPaciente.getValue();
         final Profesional profesional = cmbEditarProfesional.getValue();
@@ -352,7 +378,7 @@ public class CitasController {
             return;
         }
 
-        LocalTime hora;
+        final LocalTime hora;
         try {
             hora = LocalTime.parse(horaStr, TIME_FORMATTER);
         } catch (DateTimeParseException e) {
@@ -364,7 +390,7 @@ public class CitasController {
 
         loadingIndicator.setVisible(true);
 
-        Task<Boolean> task = new Task<>() {
+        final Task<Boolean> task = new Task<>() {
             @Override
             protected Boolean call() {
                 if (citaService.existeConflictoHorario(profesional.getId(), fechaHora, citaId)) {
@@ -375,7 +401,7 @@ public class CitasController {
         };
 
         task.setOnSucceeded(event -> {
-            Boolean exito = task.getValue();
+            final Boolean exito = task.getValue();
             loadingIndicator.setVisible(false);
 
             if (exito == null) {
@@ -407,22 +433,22 @@ public class CitasController {
         tabPane.getSelectionModel().select(0);
     }
 
-    private void eliminarCita(Cita cita) {
+    private void eliminarCita(final Cita cita) {
         LOGGER.info("Intentando eliminar cita ID: {}", cita.getId());
 
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        final Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar Eliminación");
         confirmacion.setHeaderText("¿Está seguro de eliminar esta cita?");
         confirmacion.setContentText("Paciente: " + cita.getPacienteNombre() + "\nFecha: " + cita.getFechaHora().format(DATE_TIME_FORMATTER));
 
-        Optional<ButtonType> resultado = confirmacion.showAndWait();
+        final Optional<ButtonType> resultado = confirmacion.showAndWait();
 
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             final Integer citaId = cita.getId();
 
             loadingIndicator.setVisible(true);
 
-            Task<Boolean> task = new Task<>() {
+            final Task<Boolean> task = new Task<>() {
                 @Override
                 protected Boolean call() {
                     return citaService.eliminarCita(citaId);
@@ -430,7 +456,7 @@ public class CitasController {
             };
 
             task.setOnSucceeded(event -> {
-                Boolean exito = task.getValue();
+                final Boolean exito = task.getValue();
                 loadingIndicator.setVisible(false);
 
                 if (exito) {
@@ -453,14 +479,14 @@ public class CitasController {
         }
     }
 
-    private void cambiarEstado(Cita cita, String nuevoEstado) {
+    private void cambiarEstado(final Cita cita, final String nuevoEstado) {
         LOGGER.info("Cambiando estado de cita ID {} a {}", cita.getId(), nuevoEstado);
 
         final Integer citaId = cita.getId();
 
         loadingIndicator.setVisible(true);
 
-        Task<Boolean> task = new Task<>() {
+        final Task<Boolean> task = new Task<>() {
             @Override
             protected Boolean call() {
                 return citaService.cambiarEstado(citaId, nuevoEstado);
@@ -468,7 +494,7 @@ public class CitasController {
         };
 
         task.setOnSucceeded(event -> {
-            Boolean exito = task.getValue();
+            final Boolean exito = task.getValue();
             loadingIndicator.setVisible(false);
 
             if (exito) {
@@ -490,8 +516,8 @@ public class CitasController {
         new Thread(task).start();
     }
 
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
+    private void mostrarAlerta(final String titulo, final String mensaje, final Alert.AlertType tipo) {
+        final Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
@@ -499,10 +525,10 @@ public class CitasController {
     }
 
     private static class DatosCitasResult {
-        List<Cita> citas;
-        int totalPaginas;
+        final List<Cita> citas;
+        final int totalPaginas;
 
-        DatosCitasResult(List<Cita> citas, int totalPaginas) {
+        DatosCitasResult(final List<Cita> citas, final int totalPaginas) {
             this.citas = citas;
             this.totalPaginas = totalPaginas;
         }
@@ -510,20 +536,22 @@ public class CitasController {
 
     // Métodos de búsqueda por cédula para filtros
     @FXML
+    @SuppressWarnings("unused")
     private void handleBuscar() {
         paginaActual = 0;
         cargarDatos();
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleBuscarPacienteFiltro() {
-        String cedula = txtFiltroCedulaPaciente.getText().trim();
+        final String cedula = txtFiltroCedulaPaciente.getText().trim();
         if (cedula.isEmpty()) {
             mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
             return;
         }
 
-        Paciente paciente = pacienteService.getPacienteByCedula(cedula);
+        final Paciente paciente = pacienteService.getPacienteByCedula(cedula);
         if (paciente != null) {
             cmbPacienteFiltro.setValue(paciente);
             mostrarAlerta("Éxito", "Paciente encontrado: " + paciente.getNombreCompleto(), Alert.AlertType.INFORMATION);
@@ -533,14 +561,15 @@ public class CitasController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleBuscarProfesionalFiltro() {
-        String cedula = txtFiltroCedulaProfesional.getText().trim();
+        final String cedula = txtFiltroCedulaProfesional.getText().trim();
         if (cedula.isEmpty()) {
             mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
             return;
         }
 
-        Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
+        final Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
         if (profesional != null) {
             cmbProfesionalFiltro.setValue(profesional);
             mostrarAlerta("Éxito", "Profesional encontrado: " + profesional.getNombreCompleto(), Alert.AlertType.INFORMATION);
@@ -551,14 +580,15 @@ public class CitasController {
 
     // Métodos de búsqueda para formulario Editar
     @FXML
+    @SuppressWarnings("unused")
     private void handleBuscarPacienteEditar() {
-        String cedula = txtEditarCedulaPaciente.getText().trim();
+        final String cedula = txtEditarCedulaPaciente.getText().trim();
         if (cedula.isEmpty()) {
             mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
             return;
         }
 
-        Paciente paciente = pacienteService.getPacienteByCedula(cedula);
+        final Paciente paciente = pacienteService.getPacienteByCedula(cedula);
         if (paciente != null) {
             cmbEditarPaciente.setValue(paciente);
             mostrarAlerta("Éxito", "Paciente encontrado: " + paciente.getNombreCompleto(), Alert.AlertType.INFORMATION);
@@ -568,14 +598,15 @@ public class CitasController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleBuscarProfesionalEditar() {
-        String cedula = txtEditarCedulaProfesional.getText().trim();
+        final String cedula = txtEditarCedulaProfesional.getText().trim();
         if (cedula.isEmpty()) {
             mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
             return;
         }
 
-        Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
+        final Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
         if (profesional != null) {
             cmbEditarProfesional.setValue(profesional);
             mostrarAlerta("Éxito", "Profesional encontrado: " + profesional.getNombreCompleto(), Alert.AlertType.INFORMATION);
@@ -586,28 +617,32 @@ public class CitasController {
 
     // Métodos para vista de horario
     @FXML
+    @SuppressWarnings("unused")
     private void handleSemanaAnterior() {
         dpFechaHorario.setValue(dpFechaHorario.getValue().minusWeeks(1));
         cargarVistaHorario();
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleSemanaSiguiente() {
         dpFechaHorario.setValue(dpFechaHorario.getValue().plusWeeks(1));
         cargarVistaHorario();
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleIrHoy() {
         dpFechaHorario.setValue(LocalDate.now());
         cargarVistaHorario();
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleActualizarHorario() {
-        String cedula = txtHorarioCedulaProfesional.getText().trim();
+        final String cedula = txtHorarioCedulaProfesional.getText().trim();
         if (!cedula.isEmpty()) {
-            Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
+            final Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
             if (profesional != null) {
                 profesionalSeleccionadoHorario = profesional;
                 lblHorarioProfesional.setText(profesional.getNombreCompleto());
@@ -631,23 +666,23 @@ public class CitasController {
         }
 
         // Obtener el inicio de la semana (lunes)
-        LocalDate inicioSemana = fechaSeleccionada.with(java.time.DayOfWeek.MONDAY);
-        LocalDate finSemana = inicioSemana.plusDays(6);
+        final LocalDate inicioSemana = fechaSeleccionada.with(java.time.DayOfWeek.MONDAY);
+        final LocalDate finSemana = inicioSemana.plusDays(6);
 
         // Cargar citas de la semana
-        Integer profesionalId = profesionalSeleccionadoHorario != null ? profesionalSeleccionadoHorario.getId() : null;
+        final Integer profesionalId = profesionalSeleccionadoHorario != null ? profesionalSeleccionadoHorario.getId() : null;
 
-        Task<List<Cita>> task = new Task<>() {
+        final Task<List<Cita>> task = new Task<>() {
             @Override
             protected List<Cita> call() {
-                LocalDateTime fechaInicio = inicioSemana.atStartOfDay();
-                LocalDateTime fechaFin = finSemana.atTime(23, 59, 59);
+                final LocalDateTime fechaInicio = inicioSemana.atStartOfDay();
+                final LocalDateTime fechaFin = finSemana.atTime(23, 59, 59);
                 return citaService.getCitas(0, 1000, null, profesionalId, null, fechaInicio, fechaFin);
             }
         };
 
         task.setOnSucceeded(event -> {
-            List<Cita> citas = task.getValue();
+            final List<Cita> citas = task.getValue();
             generarVistaHorario(inicioSemana, finSemana, citas);
         });
 
@@ -659,22 +694,22 @@ public class CitasController {
         new Thread(task).start();
     }
 
-    private void generarVistaHorario(LocalDate inicioSemana, LocalDate finSemana, List<Cita> citas) {
+    private void generarVistaHorario(final LocalDate inicioSemana, final LocalDate finSemana, final List<Cita> citas) {
         vboxHorario.getChildren().clear();
 
         // Crear encabezado con días de la semana
-        HBox encabezado = new HBox(5);
+        final HBox encabezado = new HBox(5);
         encabezado.setStyle("-fx-padding: 10; -fx-background-color: #34495e;");
 
-        Text lblHora = new Text("Hora");
+        final Text lblHora = new Text("Hora");
         lblHora.setStyle("-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;");
         lblHora.setWrappingWidth(60);
         encabezado.getChildren().add(lblHora);
 
-        DateTimeFormatter diaFormatter = DateTimeFormatter.ofPattern("EEE dd/MM");
+        final DateTimeFormatter diaFormatter = DateTimeFormatter.ofPattern("EEE dd/MM");
         for (int i = 0; i < 7; i++) {
-            LocalDate dia = inicioSemana.plusDays(i);
-            Text lblDia = new Text(dia.format(diaFormatter));
+            final LocalDate dia = inicioSemana.plusDays(i);
+            final Text lblDia = new Text(dia.format(diaFormatter));
             lblDia.setStyle("-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-text-alignment: center;");
             lblDia.setWrappingWidth(140);
             encabezado.getChildren().add(lblDia);
@@ -684,37 +719,39 @@ public class CitasController {
 
         // Generar filas de horas (8:00 AM - 6:00 PM)
         for (int hora = 8; hora <= 18; hora++) {
-            HBox filaHora = new HBox(5);
+            final HBox filaHora = new HBox(5);
             filaHora.setStyle("-fx-padding: 5; -fx-border-color: #ecf0f1; -fx-border-width: 0 0 1 0;");
 
-            Text lblHoraTexto = new Text(String.format("%02d:00", hora));
+            final Text lblHoraTexto = new Text(String.format("%02d:00", hora));
             lblHoraTexto.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
             lblHoraTexto.setWrappingWidth(60);
             filaHora.getChildren().add(lblHoraTexto);
 
             final int horaFinal = hora;
             for (int i = 0; i < 7; i++) {
-                LocalDate dia = inicioSemana.plusDays(i);
-                VBox celda = new VBox(3);
+                final LocalDate dia = inicioSemana.plusDays(i);
+                final VBox celda = new VBox(3);
                 celda.setStyle("-fx-padding: 5; -fx-border-color: #ecf0f1; -fx-border-width: 0 1 0 0; -fx-background-color: white; -fx-pref-width: 140; -fx-min-height: 60;");
 
                 // Buscar citas para esta hora y día
-                List<Cita> citasEnHora = citas.stream()
+                final List<Cita> citasEnHora = citas.stream()
                     .filter(c -> {
-                        if (c.getFechaHora() == null) return false;
+                        if (c.getFechaHora() == null) {
+                            return false;
+                        }
                         return c.getFechaHora().toLocalDate().equals(dia) &&
                                c.getFechaHora().getHour() == horaFinal;
                     })
                     .toList();
 
-                for (Cita cita : citasEnHora) {
-                    VBox citaBox = new VBox(2);
+                for (final Cita cita : citasEnHora) {
+                    final VBox citaBox = new VBox(2);
                     citaBox.setStyle(getEstiloSegunEstado(cita.getEstado()) + "-fx-padding: 5; -fx-background-radius: 3; -fx-cursor: hand;");
 
-                    Text txtHora = new Text(cita.getFechaHora().toLocalTime().format(TIME_FORMATTER));
+                    final Text txtHora = new Text(cita.getFechaHora().toLocalTime().format(TIME_FORMATTER));
                     txtHora.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-fill: white;");
 
-                    Text txtPaciente = new Text(cita.getPacienteNombre());
+                    final Text txtPaciente = new Text(cita.getPacienteNombre());
                     txtPaciente.setStyle("-fx-font-size: 10px; -fx-fill: white;");
                     txtPaciente.setWrappingWidth(120);
 
@@ -731,7 +768,7 @@ public class CitasController {
         }
     }
 
-    private String getEstiloSegunEstado(String estado) {
+    private String getEstiloSegunEstado(final String estado) {
         return switch (estado) {
             case "PENDIENTE" -> "-fx-background-color: #3498db; ";
             case "CONFIRMADA" -> "-fx-background-color: #27ae60; ";

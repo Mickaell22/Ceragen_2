@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UsuarioService {
-    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
+public final class UsuarioService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioService.class);
     private static UsuarioService instance;
 
     private UsuarioService() {
     }
 
-    public static UsuarioService getInstance() {
+    public static synchronized UsuarioService getInstance() {
         if (instance == null) {
             instance = new UsuarioService();
         }
@@ -80,9 +80,9 @@ public class UsuarioService {
                 usuarios.add(usuario);
             }
 
-            logger.info("Se obtuvieron {} usuarios", usuarios.size());
+            LOGGER.info("Se obtuvieron {} usuarios", usuarios.size());
         } catch (SQLException e) {
-            logger.error("Error al obtener usuarios", e);
+            LOGGER.error("Error al obtener usuarios", e);
         }
 
         return usuarios;
@@ -124,7 +124,7 @@ public class UsuarioService {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            logger.error("Error al contar usuarios", e);
+            LOGGER.error("Error al contar usuarios", e);
         }
 
         return 0;
@@ -147,11 +147,11 @@ public class UsuarioService {
             stmt.setBoolean(4, true);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Usuario creado: {}", username);
+            LOGGER.info("Usuario creado: {}", username);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al crear usuario", e);
+            LOGGER.error("Error al crear usuario", e);
             return false;
         }
     }
@@ -171,11 +171,11 @@ public class UsuarioService {
             stmt.setInt(4, id);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Usuario actualizado: {}", username);
+            LOGGER.info("Usuario actualizado: {}", username);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al actualizar usuario", e);
+            LOGGER.error("Error al actualizar usuario", e);
             return false;
         }
     }
@@ -192,11 +192,11 @@ public class UsuarioService {
             stmt.setInt(1, id);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Usuario desactivado con ID: {}", id);
+            LOGGER.info("Usuario desactivado con ID: {}", id);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al desactivar usuario", e);
+            LOGGER.error("Error al desactivar usuario", e);
             return false;
         }
     }
@@ -215,7 +215,7 @@ public class UsuarioService {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            logger.error("Error al contar admins activos", e);
+            LOGGER.error("Error al contar admins activos", e);
         }
 
         return 0;
@@ -236,11 +236,11 @@ public class UsuarioService {
             stmt.setInt(2, id);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Contraseña cambiada para usuario ID: {}", id);
+            LOGGER.info("Contraseña cambiada para usuario ID: {}", id);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al cambiar contraseña", e);
+            LOGGER.error("Error al cambiar contraseña", e);
             return false;
         }
     }
@@ -273,7 +273,7 @@ public class UsuarioService {
                 return usuario;
             }
         } catch (SQLException e) {
-            logger.error("Error al obtener usuario por ID", e);
+            LOGGER.error("Error al obtener usuario por ID", e);
         }
 
         return null;
@@ -295,7 +295,7 @@ public class UsuarioService {
                 return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            logger.error("Error al verificar username", e);
+            LOGGER.error("Error al verificar username", e);
         }
 
         return false;
@@ -318,7 +318,7 @@ public class UsuarioService {
                 return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            logger.error("Error al verificar username", e);
+            LOGGER.error("Error al verificar username", e);
         }
 
         return false;

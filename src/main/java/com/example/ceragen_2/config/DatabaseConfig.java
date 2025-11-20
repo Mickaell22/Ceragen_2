@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public final class DatabaseConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConfig.class);
-    private static volatile DatabaseConfig instance;
+    private static DatabaseConfig instance;
     private Connection connection;
     private final Dotenv dotenv;
 
@@ -22,13 +22,9 @@ public final class DatabaseConfig {
         LOGGER.info("Configuración de base de datos inicializada");
     }
 
-    public static DatabaseConfig getInstance() {
+    public static synchronized DatabaseConfig getInstance() {
         if (instance == null) {
-            synchronized (DatabaseConfig.class) {
-                if (instance == null) {
-                    instance = new DatabaseConfig();
-                }
-            }
+            instance = new DatabaseConfig();
         }
         return instance;
     }
@@ -38,13 +34,14 @@ public final class DatabaseConfig {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
 
-                String host = dotenv.get("MYSQLHOST");
-                String port = dotenv.get("MYSQLPORT");
-                String database = dotenv.get("MYSQLDATABASE");
-                String user = dotenv.get("MYSQLUSER");
-                String password = dotenv.get("MYSQLPASSWORD");
+                final String host = dotenv.get("MYSQLHOST");
+                final String port = dotenv.get("MYSQLPORT");
+                final String database = dotenv.get("MYSQLDATABASE");
+                final String user = dotenv.get("MYSQLUSER");
+                final String password = dotenv.get("MYSQLPASSWORD");
 
-                String url = String.format("jdbc:mysql://%s:%s/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
+                final String url = String.format(
+                        "jdbc:mysql://%s:%s/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
                         host, port, database);
 
                 connection = DriverManager.getConnection(url, user, password);

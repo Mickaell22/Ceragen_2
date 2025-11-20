@@ -11,12 +11,12 @@ public class MainApplication extends Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainApplication.class);
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(final Stage primaryStage) {
         LOGGER.info("Iniciando aplicación Ceragen");
 
         primaryStage.setTitle("Ceragen - Sistema de Gestión Médica");
 
-        ViewNavigator navigator = ViewNavigator.getInstance();
+        final ViewNavigator navigator = ViewNavigator.getInstance();
         navigator.setPrimaryStage(primaryStage);
         navigator.showLogin();
 

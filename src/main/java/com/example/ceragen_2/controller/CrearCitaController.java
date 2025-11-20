@@ -56,23 +56,23 @@ public class CrearCitaController {
     }
 
     // Método para recibir la referencia del FacturaController
-    public void setFacturaController(FacturaController facturaController) {
+    public void setFacturaController(final FacturaController facturaController) {
         this.facturaController = facturaController;
         LOGGER.info("Referencia de FacturaController recibida");
     }
 
     private void cargarCatalogos() {
-        Task<CatalogosResult> task = new Task<>() {
+        final Task<CatalogosResult> task = new Task<>() {
             @Override
             protected CatalogosResult call() {
-                List<Paciente> pacientes = pacienteService.getAllPacientes();
-                List<Profesional> profesionales = profesionalService.getAllProfesionales();
+                final List<Paciente> pacientes = pacienteService.getAllPacientes();
+                final List<Profesional> profesionales = profesionalService.getAllProfesionales();
                 return new CatalogosResult(pacientes, profesionales);
             }
         };
 
         task.setOnSucceeded(event -> {
-            CatalogosResult resultado = task.getValue();
+            final CatalogosResult resultado = task.getValue();
             listaPacientes = resultado.pacientes;
             listaProfesionales = resultado.profesionales;
 
@@ -92,6 +92,7 @@ public class CrearCitaController {
     }
 
     @FXML
+    @SuppressWarnings({"unused", "PMD.AvoidCatchingGenericException"})
     private void handleCrearCita() {
         LOGGER.info("Intentando crear nueva cita...");
 
@@ -100,12 +101,12 @@ public class CrearCitaController {
         }
 
         try {
-            Paciente paciente = cmbCrearPaciente.getValue();
-            Profesional profesional = cmbCrearProfesional.getValue();
-            LocalDate fecha = dpCrearFecha.getValue();
-            LocalTime hora = LocalTime.parse(txtCrearHora.getText().trim(), TIME_FORMATTER);
-            LocalDateTime fechaHora = LocalDateTime.of(fecha, hora);
-            String motivo = txtCrearMotivo.getText().trim();
+            final Paciente paciente = cmbCrearPaciente.getValue();
+            final Profesional profesional = cmbCrearProfesional.getValue();
+            final LocalDate fecha = dpCrearFecha.getValue();
+            final LocalTime hora = LocalTime.parse(txtCrearHora.getText().trim(), TIME_FORMATTER);
+            final LocalDateTime fechaHora = LocalDateTime.of(fecha, hora);
+            final String motivo = txtCrearMotivo.getText().trim();
 
             // DEBUG: Mostrar todos los valores
             //LOGGER.info("DEBUG - Paciente ID: {}", paciente != null ? paciente.getId() : "NULL");
@@ -115,11 +116,11 @@ public class CrearCitaController {
             //LOGGER.info("DEBUG - Motivo: {}", motivo);
 
             // Obtener el costo de la especialidad
-            EspecialidadService especialidadService = EspecialidadService.getInstance();
+            final EspecialidadService especialidadService = EspecialidadService.getInstance();
             //LOGGER.info("DEBUG - EspecialidadService: {}", especialidadService != null ? "especialidadService Activo" : "NULL");
             //LOGGER.info("DEBUG - profesional: {}", profesional != null ? "existe profesional" : "NULL");
             //LOGGER.info("DEBUG - ID de la especialidad: {}", profesional.getEspecialidadId() != null ? "existe especialidad" : "NULL");
-            Especialidad especialidad = especialidadService.getEspecialidadById(profesional.getEspecialidadId());
+            final Especialidad especialidad = especialidadService.getEspecialidadById(profesional.getEspecialidadId());
 
             //LOGGER.info("DEBUG - Especialidad: {}", especialidad != null ? especialidad.getNombre() : "NULL");
             //LOGGER.info("DEBUG - Costo: {}", especialidad != null ? especialidad.getCostoConsulta() : "NULL");
@@ -130,7 +131,7 @@ public class CrearCitaController {
             }
 
             // Crear nueva cita
-            Cita nuevaCita = new Cita();
+            final Cita nuevaCita = new Cita();
             nuevaCita.setPacienteId(paciente.getId());
             nuevaCita.setProfesionalId(profesional.getId());
             nuevaCita.setFechaHora(fechaHora);
@@ -167,6 +168,7 @@ public class CrearCitaController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleLimpiar() {
         LOGGER.info("Limpiando formulario de cita");
         cmbCrearPaciente.setValue(null);
@@ -189,11 +191,11 @@ public class CrearCitaController {
             mostrarAlerta("Error", "Seleccione una fecha");
             return false;
         }
-        if (txtCrearHora.getText().trim().isEmpty()) {
+        if (txtCrearHora.getText().isBlank()) {
             mostrarAlerta("Error", "Ingrese la hora");
             return false;
         }
-        if (txtCrearMotivo.getText().trim().isEmpty()) {
+        if (txtCrearMotivo.getText().isBlank()) {
             mostrarAlerta("Error", "Ingrese el motivo de la consulta");
             return false;
         }
@@ -209,10 +211,11 @@ public class CrearCitaController {
         return true;
     }
 
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     private void cerrarVentana() {
         try {
             // Obtener el Stage desde cualquier nodo de la escena
-            Stage stage = (Stage) txtCrearMotivo.getScene().getWindow(); // Usa cualquier control que sí esté inicializado
+            final Stage stage = (Stage) txtCrearMotivo.getScene().getWindow(); // Usa cualquier control que sí esté inicializado
             stage.close();
             LOGGER.info("Ventana cerrada exitosamente");
         } catch (Exception e) {
@@ -222,8 +225,8 @@ public class CrearCitaController {
         }
     }
 
-    private void mostrarAlerta(String titulo, String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    private void mostrarAlerta(final String titulo, final String mensaje) {
+        final Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
         alert.setContentText(mensaje);

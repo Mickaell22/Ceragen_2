@@ -10,8 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class AuthService {
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+public final class AuthService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
     private static AuthService instance;
     private String currentUsername;
     private String currentUserRole;
@@ -19,13 +19,9 @@ public class AuthService {
 
     private AuthService() {}
 
-    public static AuthService getInstance() {
+    public static synchronized AuthService getInstance() {
         if (instance == null) {
-            synchronized (AuthService.class) {
-                if (instance == null) {
-                    instance = new AuthService();
-                }
-            }
+            instance = new AuthService();
         }
         return instance;
     }
@@ -37,33 +33,34 @@ public class AuthService {
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                String hashedPassword = rs.getString("password");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String hashedPassword = rs.getString("password");
 
-                if (PasswordUtil.verifyPassword(password, hashedPassword)) {
-                    currentUserId = rs.getInt("id");
-                    currentUsername = rs.getString("username");
-                    currentUserRole = rs.getString("rol");
+                    if (PasswordUtil.verifyPassword(password, hashedPassword)) {
+                        currentUserId = rs.getInt("id");
+                        currentUsername = rs.getString("username");
+                        currentUserRole = rs.getString("rol");
 
-                    logger.info("Usuario autenticado: {} - Rol: {}", currentUsername, currentUserRole);
-                    return true;
+                        LOGGER.info("Usuario autenticado: {} - Rol: {}", currentUsername, currentUserRole);
+                        return true;
+                    } else {
+                        LOGGER.warn("Contraseña incorrecta para usuario: {}", username);
+                    }
                 } else {
-                    logger.warn("Contraseña incorrecta para usuario: {}", username);
+                    LOGGER.warn("Usuario no encontrado o inactivo: {}", username);
                 }
-            } else {
-                logger.warn("Usuario no encontrado o inactivo: {}", username);
             }
         } catch (SQLException e) {
-            logger.error("Error al autenticar usuario: {}", username, e);
+            LOGGER.error("Error al autenticar usuario: {}", username, e);
         }
 
         return false;
     }
 
     public void logout() {
-        logger.info("Usuario desconectado: {}", currentUsername);
+        LOGGER.info("Usuario desconectado: {}", currentUsername);
         currentUserId = null;
         currentUsername = null;
         currentUserRole = null;

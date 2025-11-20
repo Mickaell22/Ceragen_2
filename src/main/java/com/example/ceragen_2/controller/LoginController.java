@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LoginController {
-    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 
     @FXML
     private TextField usernameField;
@@ -37,8 +37,8 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
-        String username = usernameField.getText().trim();
-        String password = passwordField.getText();
+        final String username = usernameField.getText().trim();
+        final String password = passwordField.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
             showError("Por favor, complete todos los campos");
@@ -49,7 +49,7 @@ public class LoginController {
         errorLabel.setVisible(false);
 
         if (AuthService.getInstance().login(username, password)) {
-            logger.info("Login exitoso para usuario: {}", username);
+            LOGGER.info("Login exitoso para usuario: {}", username);
             ViewNavigator.getInstance().showMainView();
         } else {
             showError("Usuario o contraseña incorrectos");
@@ -57,7 +57,7 @@ public class LoginController {
         }
     }
 
-    private void showError(String message) {
+    private void showError(final String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
     }
