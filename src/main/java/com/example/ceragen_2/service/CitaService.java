@@ -336,9 +336,10 @@ public final class CitaService {
                     }
 
                     cita.setPacienteNombre(rs.getString("paciente_nombre"));
-                cita.setProfesionalNombre(rs.getString("profesional_nombre"));
+                    cita.setProfesionalNombre(rs.getString("profesional_nombre"));
 
-                return cita;
+                    return cita;
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Error al obtener cita por ID", e);
