@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class CitasController {
-    private static final Logger logger = LoggerFactory.getLogger(CitasController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CitasController.class);
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -93,7 +93,7 @@ public class CitasController {
 
     @FXML
     public void initialize() {
-        logger.info("Inicializando módulo de Citas");
+        LOGGER.info("Inicializando módulo de Citas");
         configurarTabla();
         configurarFiltros();
         configurarPaginacion();
@@ -184,7 +184,7 @@ public class CitasController {
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al cargar catálogos", task.getException());
+            LOGGER.error("Error al cargar catálogos", task.getException());
             mostrarAlerta("Error", "No se pudieron cargar los catálogos", Alert.AlertType.ERROR);
         });
 
@@ -222,13 +222,13 @@ public class CitasController {
             tableCitas.getItems().addAll(resultado.citas);
             actualizarInfoPaginacion();
 
-            logger.info("Datos cargados: {} citas en página {}/{}", resultado.citas.size(), paginaActual + 1, totalPaginas);
+            LOGGER.info("Datos cargados: {} citas en página {}/{}", resultado.citas.size(), paginaActual + 1, totalPaginas);
             loadingIndicator.setVisible(false);
             deshabilitarControles(false);
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al cargar datos", task.getException());
+            LOGGER.error("Error al cargar datos", task.getException());
             loadingIndicator.setVisible(false);
             deshabilitarControles(false);
             mostrarAlerta("Error", "No se pudieron cargar los datos", Alert.AlertType.ERROR);
@@ -300,7 +300,7 @@ public class CitasController {
     }
 
     private void abrirEdicion(Cita cita) {
-        logger.info("Abriendo edición para cita ID: {}", cita.getId());
+        LOGGER.info("Abriendo edición para cita ID: {}", cita.getId());
         citaEnEdicion = cita;
 
         txtEditarId.setText(cita.getId().toString());
@@ -381,18 +381,18 @@ public class CitasController {
             if (exito == null) {
                 mostrarAlerta("Error", "Ya existe una cita para este profesional en ese horario", Alert.AlertType.ERROR);
             } else if (exito) {
-                logger.info("Cita actualizada exitosamente");
+                LOGGER.info("Cita actualizada exitosamente");
                 mostrarAlerta("Éxito", "Cita actualizada exitosamente", Alert.AlertType.INFORMATION);
                 cargarDatos();
                 handleCancelarEdicion();
             } else {
-                logger.error("Error al actualizar cita");
+                LOGGER.error("Error al actualizar cita");
                 mostrarAlerta("Error", "No se pudo actualizar la cita", Alert.AlertType.ERROR);
             }
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al actualizar cita", task.getException());
+            LOGGER.error("Error al actualizar cita", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudo actualizar la cita", Alert.AlertType.ERROR);
         });
@@ -408,7 +408,7 @@ public class CitasController {
     }
 
     private void eliminarCita(Cita cita) {
-        logger.info("Intentando eliminar cita ID: {}", cita.getId());
+        LOGGER.info("Intentando eliminar cita ID: {}", cita.getId());
 
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar Eliminación");
@@ -434,17 +434,17 @@ public class CitasController {
                 loadingIndicator.setVisible(false);
 
                 if (exito) {
-                    logger.info("Cita eliminada exitosamente");
+                    LOGGER.info("Cita eliminada exitosamente");
                     mostrarAlerta("Éxito", "Cita eliminada exitosamente", Alert.AlertType.INFORMATION);
                     cargarDatos();
                 } else {
-                    logger.error("Error al eliminar cita");
+                    LOGGER.error("Error al eliminar cita");
                     mostrarAlerta("Error", "No se pudo eliminar la cita", Alert.AlertType.ERROR);
                 }
             });
 
             task.setOnFailed(event -> {
-                logger.error("Error al eliminar cita", task.getException());
+                LOGGER.error("Error al eliminar cita", task.getException());
                 loadingIndicator.setVisible(false);
                 mostrarAlerta("Error", "No se pudo eliminar la cita", Alert.AlertType.ERROR);
             });
@@ -454,7 +454,7 @@ public class CitasController {
     }
 
     private void cambiarEstado(Cita cita, String nuevoEstado) {
-        logger.info("Cambiando estado de cita ID {} a {}", cita.getId(), nuevoEstado);
+        LOGGER.info("Cambiando estado de cita ID {} a {}", cita.getId(), nuevoEstado);
 
         final Integer citaId = cita.getId();
 
@@ -472,17 +472,17 @@ public class CitasController {
             loadingIndicator.setVisible(false);
 
             if (exito) {
-                logger.info("Estado cambiado exitosamente");
+                LOGGER.info("Estado cambiado exitosamente");
                 mostrarAlerta("Éxito", "Estado cambiado a " + nuevoEstado, Alert.AlertType.INFORMATION);
                 cargarDatos();
             } else {
-                logger.error("Error al cambiar estado");
+                LOGGER.error("Error al cambiar estado");
                 mostrarAlerta("Error", "No se pudo cambiar el estado", Alert.AlertType.ERROR);
             }
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al cambiar estado", task.getException());
+            LOGGER.error("Error al cambiar estado", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudo cambiar el estado", Alert.AlertType.ERROR);
         });
@@ -652,7 +652,7 @@ public class CitasController {
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al cargar vista de horario", task.getException());
+            LOGGER.error("Error al cargar vista de horario", task.getException());
             mostrarAlerta("Error", "No se pudo cargar la vista de horario", Alert.AlertType.ERROR);
         });
 

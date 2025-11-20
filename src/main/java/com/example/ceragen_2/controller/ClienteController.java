@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ClienteController {
-    private static final Logger logger = LoggerFactory.getLogger(ClienteController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClienteController.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final ClienteService clienteService = ClienteService.getInstance();
@@ -65,7 +65,7 @@ public class ClienteController {
 
     @FXML
     public void initialize() {
-        logger.info("Inicializando modulo de Clientes");
+        LOGGER.info("Inicializando modulo de Clientes");
 
         configurarTabla();
         cargarDatos();
@@ -131,12 +131,12 @@ public class ClienteController {
             List<Cliente> clientes = task.getValue();
             tableClientes.getItems().clear();
             tableClientes.getItems().addAll(clientes);
-            logger.info("Datos cargados: {} clientes", clientes.size());
+            LOGGER.info("Datos cargados: {} clientes", clientes.size());
             loadingIndicator.setVisible(false);
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al cargar datos", task.getException());
+            LOGGER.error("Error al cargar datos", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudieron cargar los datos", Alert.AlertType.ERROR);
         });
@@ -153,7 +153,7 @@ public class ClienteController {
             return;
         }
 
-        logger.info("Buscando clientes con criterio: {}", criterio);
+        LOGGER.info("Buscando clientes con criterio: {}", criterio);
         loadingIndicator.setVisible(true);
 
         Task<List<Cliente>> task = new Task<>() {
@@ -167,12 +167,12 @@ public class ClienteController {
             List<Cliente> clientes = task.getValue();
             tableClientes.getItems().clear();
             tableClientes.getItems().addAll(clientes);
-            logger.info("Busqueda completa: {} clientes encontrados", clientes.size());
+            LOGGER.info("Busqueda completa: {} clientes encontrados", clientes.size());
             loadingIndicator.setVisible(false);
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al buscar clientes", task.getException());
+            LOGGER.error("Error al buscar clientes", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudo realizar la busqueda", Alert.AlertType.ERROR);
         });
@@ -182,7 +182,7 @@ public class ClienteController {
 
     @FXML
     private void handleLimpiarFiltros() {
-        logger.info("Limpiando filtros");
+        LOGGER.info("Limpiando filtros");
         txtBuscar.clear();
         cargarDatos();
     }
@@ -232,19 +232,19 @@ public class ClienteController {
             if (exito == null) {
                 mostrarAlerta("Error", "Ya existe un cliente con esta cedula", Alert.AlertType.ERROR);
             } else if (exito) {
-                logger.info("Cliente creado exitosamente: {} {}", nombres, apellidos);
+                LOGGER.info("Cliente creado exitosamente: {} {}", nombres, apellidos);
                 mostrarAlerta("Exito", "Cliente creado exitosamente", Alert.AlertType.INFORMATION);
                 limpiarFormularioCrear();
                 cargarDatos();
                 tabPane.getSelectionModel().select(0);
             } else {
-                logger.error("Error al crear cliente");
+                LOGGER.error("Error al crear cliente");
                 mostrarAlerta("Error", "No se pudo crear el cliente", Alert.AlertType.ERROR);
             }
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al crear cliente", task.getException());
+            LOGGER.error("Error al crear cliente", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudo crear el cliente", Alert.AlertType.ERROR);
         });
@@ -267,7 +267,7 @@ public class ClienteController {
     }
 
     private void abrirEdicion(Cliente cliente) {
-        logger.info("Abriendo edicion para cliente: {}", cliente.getNombreCompleto());
+        LOGGER.info("Abriendo edicion para cliente: {}", cliente.getNombreCompleto());
         clienteEnEdicion = cliente;
 
         txtEditarId.setText(cliente.getId().toString());
@@ -334,18 +334,18 @@ public class ClienteController {
             if (exito == null) {
                 mostrarAlerta("Error", "Ya existe otro cliente con esta cedula", Alert.AlertType.ERROR);
             } else if (exito) {
-                logger.info("Cliente actualizado exitosamente: {} {}", nombres, apellidos);
+                LOGGER.info("Cliente actualizado exitosamente: {} {}", nombres, apellidos);
                 mostrarAlerta("Exito", "Cliente actualizado exitosamente", Alert.AlertType.INFORMATION);
                 cargarDatos();
                 handleCancelarEdicion();
             } else {
-                logger.error("Error al actualizar cliente");
+                LOGGER.error("Error al actualizar cliente");
                 mostrarAlerta("Error", "No se pudo actualizar el cliente", Alert.AlertType.ERROR);
             }
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al actualizar cliente", task.getException());
+            LOGGER.error("Error al actualizar cliente", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudo actualizar el cliente", Alert.AlertType.ERROR);
         });
@@ -361,7 +361,7 @@ public class ClienteController {
     }
 
     private void eliminarCliente(Cliente cliente) {
-        logger.info("Intentando eliminar cliente: {}", cliente.getNombreCompleto());
+        LOGGER.info("Intentando eliminar cliente: {}", cliente.getNombreCompleto());
 
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar Eliminacion");
@@ -387,17 +387,17 @@ public class ClienteController {
                 loadingIndicator.setVisible(false);
 
                 if (exito) {
-                    logger.info("Cliente eliminado exitosamente: {}", cliente.getNombreCompleto());
+                    LOGGER.info("Cliente eliminado exitosamente: {}", cliente.getNombreCompleto());
                     mostrarAlerta("Exito", "Cliente eliminado exitosamente", Alert.AlertType.INFORMATION);
                     cargarDatos();
                 } else {
-                    logger.error("Error al eliminar cliente: {}", cliente.getNombreCompleto());
+                    LOGGER.error("Error al eliminar cliente: {}", cliente.getNombreCompleto());
                     mostrarAlerta("Error", "No se pudo eliminar el cliente", Alert.AlertType.ERROR);
                 }
             });
 
             task.setOnFailed(event -> {
-                logger.error("Error al eliminar cliente", task.getException());
+                LOGGER.error("Error al eliminar cliente", task.getException());
                 loadingIndicator.setVisible(false);
                 mostrarAlerta("Error", "No se pudo eliminar el cliente", Alert.AlertType.ERROR);
             });
