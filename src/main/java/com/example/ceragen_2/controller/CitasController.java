@@ -11,7 +11,19 @@ import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -113,8 +125,9 @@ public class CitasController {
         });
         colEstado.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getEstado()));
         colMotivo.setCellValueFactory(data -> new SimpleStringProperty(
-            data.getValue().getMotivo() != null && data.getValue().getMotivo().length() > 50 ?
-            data.getValue().getMotivo().substring(0, 50) + "..." : data.getValue().getMotivo()
+            data.getValue().getMotivo() != null && data.getValue().getMotivo().length() > 50
+            ? data.getValue().getMotivo().substring(0, 50) + "..."
+            : data.getValue().getMotivo()
         ));
 
         colAcciones.setCellFactory(param -> new TableCell<>() {
