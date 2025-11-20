@@ -9,8 +9,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public final class DatabaseConfig {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConfig.class);
-    private static volatile DatabaseConfig instance;
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
+    private static DatabaseConfig instance;
     private Connection connection;
     private final Dotenv dotenv;
 
@@ -19,7 +19,7 @@ public final class DatabaseConfig {
         dotenv = Dotenv.configure()
                 .ignoreIfMissing()
                 .load();
-        LOGGER.info("Configuración de base de datos inicializada");
+        logger.info("Configuración de base de datos inicializada");
     }
 
     public static DatabaseConfig getInstance() {
@@ -38,23 +38,23 @@ public final class DatabaseConfig {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
 
-                String host = dotenv.get("MYSQLHOST");
-                String port = dotenv.get("MYSQLPORT");
-                String database = dotenv.get("MYSQLDATABASE");
-                String user = dotenv.get("MYSQLUSER");
-                String password = dotenv.get("MYSQLPASSWORD");
+                final String host = dotenv.get("MYSQLHOST");
+                final String port = dotenv.get("MYSQLPORT");
+                final String database = dotenv.get("MYSQLDATABASE");
+                final String user = dotenv.get("MYSQLUSER");
+                final String password = dotenv.get("MYSQLPASSWORD");
 
-                String url = String.format(
+                final String url = String.format(
                         "jdbc:mysql://%s:%s/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
                         host, port, database);
 
                 connection = DriverManager.getConnection(url, user, password);
-                LOGGER.info("Conexión a la base de datos establecida exitosamente");
+                logger.info("Conexión a la base de datos establecida exitosamente");
             } catch (ClassNotFoundException e) {
-                LOGGER.error("Driver de MySQL no encontrado", e);
+                logger.error("Driver de MySQL no encontrado", e);
                 throw new SQLException("Driver de MySQL no encontrado", e);
             } catch (SQLException e) {
-                LOGGER.error("Error al conectar con la base de datos", e);
+                logger.error("Error al conectar con la base de datos", e);
                 throw e;
             }
         }
@@ -65,9 +65,9 @@ public final class DatabaseConfig {
         if (connection != null) {
             try {
                 connection.close();
-                LOGGER.info("Conexión a la base de datos cerrada");
+                logger.info("Conexión a la base de datos cerrada");
             } catch (SQLException e) {
-                LOGGER.error("Error al cerrar la conexión", e);
+                logger.error("Error al cerrar la conexión", e);
             }
         }
     }

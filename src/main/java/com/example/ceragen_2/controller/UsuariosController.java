@@ -20,15 +20,15 @@ import java.util.List;
 import java.util.Optional;
 
 public class UsuariosController {
-    private static final Logger logger = LoggerFactory.getLogger(UsuariosController.class);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final Logger LOGGER = LoggerFactory.getLogger(UsuariosController.class);
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final UsuarioService usuarioService = UsuarioService.getInstance();
 
     // Paginación
-    private int paginaActual = 0;
+    private int paginaActual;
     private int registrosPorPagina = 10;
-    private int totalPaginas = 0;
+    private int totalPaginas;
 
     // Tab pane
     @FXML private TabPane tabPane;
@@ -76,7 +76,7 @@ public class UsuariosController {
 
     @FXML
     public void initialize() {
-        logger.info("Inicializando módulo de Usuarios");
+        LOGGER.info("Inicializando módulo de Usuarios");
 
         configurarTabla();
         configurarFiltros();
@@ -96,7 +96,7 @@ public class UsuariosController {
         colActivo.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getActivo() ? "ACTIVO" : "INACTIVO"));
         colFechaCreacion.setCellValueFactory(data -> {
             if (data.getValue().getFechaCreacion() != null) {
-                return new SimpleStringProperty(data.getValue().getFechaCreacion().format(DATE_FORMATTER));
+                return new SimpleStringProperty(data.getValue().getFechaCreacion().format(dateFormatter));
             }
             return new SimpleStringProperty("");
         });
@@ -116,23 +116,23 @@ public class UsuariosController {
                 btnCambiarPassword.setStyle("-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
 
                 btnEditar.setOnAction(event -> {
-                    Usuario usuario = getTableView().getItems().get(getIndex());
+                    final Usuario usuario = getTableView().getItems().get(getIndex());
                     abrirEdicion(usuario);
                 });
 
                 btnEliminar.setOnAction(event -> {
-                    Usuario usuario = getTableView().getItems().get(getIndex());
+                    final Usuario usuario = getTableView().getItems().get(getIndex());
                     eliminarUsuario(usuario);
                 });
 
                 btnCambiarPassword.setOnAction(event -> {
-                    Usuario usuario = getTableView().getItems().get(getIndex());
+                    final Usuario usuario = getTableView().getItems().get(getIndex());
                     cambiarContrasena(usuario);
                 });
             }
 
             @Override
-            protected void updateItem(Void item, boolean empty) {
+            protected void updateItem(final Void item, final boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : pane);
             }
@@ -194,7 +194,7 @@ public class UsuariosController {
             tableUsuarios.getItems().addAll(resultado.usuarios);
             actualizarInfoPaginacion();
 
-            logger.info("Datos cargados: {} usuarios en página {}/{}", resultado.usuarios.size(), paginaActual + 1, totalPaginas);
+            LOGGER.info("Datos cargados: {} usuarios en página {}/{}", resultado.usuarios.size(), paginaActual + 1, totalPaginas);
 
             // Ocultar indicador de carga
             loadingIndicator.setVisible(false);
@@ -203,7 +203,7 @@ public class UsuariosController {
 
         // Si hay error
         task.setOnFailed(event -> {
-            logger.error("Error al cargar datos", task.getException());
+            LOGGER.error("Error al cargar datos", task.getException());
             loadingIndicator.setVisible(false);
             deshabilitarControles(false);
             mostrarAlerta("Error", "No se pudieron cargar los datos", Alert.AlertType.ERROR);
@@ -253,14 +253,14 @@ public class UsuariosController {
 
     @FXML
     private void handleBuscar() {
-        logger.info("Aplicando filtros de búsqueda");
+        LOGGER.info("Aplicando filtros de búsqueda");
         paginaActual = 0;
         cargarDatos();
     }
 
     @FXML
     private void handleLimpiarFiltros() {
-        logger.info("Limpiando filtros");
+        LOGGER.info("Limpiando filtros");
         txtBuscar.clear();
         cmbRolFiltro.setValue("TODOS");
         cmbActivoFiltro.setValue("TODOS");
@@ -301,7 +301,7 @@ public class UsuariosController {
         String valor = cmbRegistrosPorPagina.getValue();
         registrosPorPagina = Integer.parseInt(valor);
         paginaActual = 0;
-        logger.info("Registros por página cambiado a: {}", registrosPorPagina);
+        LOGGER.info("Registros por página cambiado a: {}", registrosPorPagina);
         cargarDatos();
     }
 
@@ -350,19 +350,19 @@ public class UsuariosController {
             if (exito == null) {
                 mostrarAlerta("Error", "El username ya existe", Alert.AlertType.ERROR);
             } else if (exito) {
-                logger.info("Usuario creado exitosamente: {}", username);
+                LOGGER.info("Usuario creado exitosamente: {}", username);
                 mostrarAlerta("Éxito", "Usuario creado exitosamente", Alert.AlertType.INFORMATION);
                 limpiarFormularioCrear();
                 cargarDatos();
                 tabPane.getSelectionModel().select(0);
             } else {
-                logger.error("Error al crear usuario: {}", username);
+                LOGGER.error("Error al crear usuario: {}", username);
                 mostrarAlerta("Error", "No se pudo crear el usuario", Alert.AlertType.ERROR);
             }
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al crear usuario", task.getException());
+            LOGGER.error("Error al crear usuario", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudo crear el usuario", Alert.AlertType.ERROR);
         });
@@ -383,7 +383,7 @@ public class UsuariosController {
     }
 
     private void abrirEdicion(Usuario usuario) {
-        logger.info("Abriendo edición para usuario: {}", usuario.getUsername());
+        LOGGER.info("Abriendo edición para usuario: {}", usuario.getUsername());
         usuarioEnEdicion = usuario;
 
         txtEditarId.setText(usuario.getId().toString());
@@ -449,18 +449,18 @@ public class UsuariosController {
             if (exito == null) {
                 mostrarAlerta("Error", "El username ya existe", Alert.AlertType.ERROR);
             } else if (exito) {
-                logger.info("Usuario actualizado exitosamente: {}", username);
+                LOGGER.info("Usuario actualizado exitosamente: {}", username);
                 mostrarAlerta("Éxito", "Usuario actualizado exitosamente", Alert.AlertType.INFORMATION);
                 cargarDatos();
                 handleCancelarEdicion();
             } else {
-                logger.error("Error al actualizar usuario: {}", username);
+                LOGGER.error("Error al actualizar usuario: {}", username);
                 mostrarAlerta("Error", "No se pudo actualizar el usuario", Alert.AlertType.ERROR);
             }
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al actualizar usuario", task.getException());
+            LOGGER.error("Error al actualizar usuario", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudo actualizar el usuario", Alert.AlertType.ERROR);
         });
@@ -476,7 +476,7 @@ public class UsuariosController {
     }
 
     private void eliminarUsuario(Usuario usuario) {
-        logger.info("Intentando desactivar usuario: {}", usuario.getUsername());
+        LOGGER.info("Intentando desactivar usuario: {}", usuario.getUsername());
 
         // Validación: No se puede auto-desactivar
         if (usuario.getId().equals(AuthService.getInstance().getCurrentUserId())) {
@@ -518,17 +518,17 @@ public class UsuariosController {
                 loadingIndicator.setVisible(false);
 
                 if (exito) {
-                    logger.info("Usuario desactivado exitosamente: {}", username);
+                    LOGGER.info("Usuario desactivado exitosamente: {}", username);
                     mostrarAlerta("Éxito", "Usuario desactivado exitosamente", Alert.AlertType.INFORMATION);
                     cargarDatos();
                 } else {
-                    logger.error("Error al desactivar usuario: {}", username);
+                    LOGGER.error("Error al desactivar usuario: {}", username);
                     mostrarAlerta("Error", "No se pudo desactivar el usuario", Alert.AlertType.ERROR);
                 }
             });
 
             task.setOnFailed(event -> {
-                logger.error("Error al eliminar usuario", task.getException());
+                LOGGER.error("Error al eliminar usuario", task.getException());
                 loadingIndicator.setVisible(false);
                 mostrarAlerta("Error", "No se pudo eliminar el usuario", Alert.AlertType.ERROR);
             });
@@ -538,7 +538,7 @@ public class UsuariosController {
     }
 
     private void cambiarContrasena(Usuario usuario) {
-        logger.info("Cambiando contraseña para usuario: {}", usuario.getUsername());
+        LOGGER.info("Cambiando contraseña para usuario: {}", usuario.getUsername());
 
         // Crear diálogo personalizado
         Dialog<String> dialog = new Dialog<>();
@@ -608,16 +608,16 @@ public class UsuariosController {
                 loadingIndicator.setVisible(false);
 
                 if (exito) {
-                    logger.info("Contraseña cambiada exitosamente para usuario: {}", username);
+                    LOGGER.info("Contraseña cambiada exitosamente para usuario: {}", username);
                     mostrarAlerta("Éxito", "Contraseña cambiada exitosamente", Alert.AlertType.INFORMATION);
                 } else {
-                    logger.error("Error al cambiar contraseña para usuario: {}", username);
+                    LOGGER.error("Error al cambiar contraseña para usuario: {}", username);
                     mostrarAlerta("Error", "No se pudo cambiar la contraseña", Alert.AlertType.ERROR);
                 }
             });
 
             task.setOnFailed(event -> {
-                logger.error("Error al cambiar contraseña", task.getException());
+                LOGGER.error("Error al cambiar contraseña", task.getException());
                 loadingIndicator.setVisible(false);
                 mostrarAlerta("Error", "No se pudo cambiar la contraseña", Alert.AlertType.ERROR);
             });

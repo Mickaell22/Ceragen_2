@@ -9,14 +9,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClienteService {
-    private static final Logger logger = LoggerFactory.getLogger(ClienteService.class);
+public final class ClienteService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClienteService.class);
     private static ClienteService instance;
 
     private ClienteService() {
     }
 
-    public static ClienteService getInstance() {
+    public static synchronized ClienteService getInstance() {
         if (instance == null) {
             instance = new ClienteService();
         }
@@ -43,9 +43,9 @@ public class ClienteService {
                 clientes.add(cliente);
             }
 
-            logger.info("Se obtuvieron {} clientes", clientes.size());
+            LOGGER.info("Se obtuvieron {} clientes", clientes.size());
         } catch (SQLException e) {
-            logger.error("Error al obtener clientes", e);
+            LOGGER.error("Error al obtener clientes", e);
         }
 
         return clientes;
@@ -68,9 +68,9 @@ public class ClienteService {
                 clientes.add(cliente);
             }
 
-            logger.info("Se obtuvieron {} clientes completos", clientes.size());
+            LOGGER.info("Se obtuvieron {} clientes completos", clientes.size());
         } catch (SQLException e) {
-            logger.error("Error al obtener clientes completos", e);
+            LOGGER.error("Error al obtener clientes completos", e);
         }
 
         return clientes;
@@ -114,9 +114,9 @@ public class ClienteService {
                 clientes.add(cliente);
             }
 
-            logger.info("Se obtuvieron {} clientes paginados", clientes.size());
+            LOGGER.info("Se obtuvieron {} clientes paginados", clientes.size());
         } catch (SQLException e) {
-            logger.error("Error al obtener clientes paginados", e);
+            LOGGER.error("Error al obtener clientes paginados", e);
         }
 
         return clientes;
@@ -147,7 +147,7 @@ public class ClienteService {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            logger.error("Error al contar clientes", e);
+            LOGGER.error("Error al contar clientes", e);
         }
 
         return 0;
@@ -167,11 +167,11 @@ public class ClienteService {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                logger.info("Cliente encontrado con ID: {}", id);
+                LOGGER.info("Cliente encontrado con ID: {}", id);
                 return mapResultSetToCliente(rs);
             }
         } catch (SQLException e) {
-            logger.error("Error al obtener cliente por ID", e);
+            LOGGER.error("Error al obtener cliente por ID", e);
         }
 
         return null;
@@ -191,11 +191,11 @@ public class ClienteService {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                logger.info("Cliente encontrado con cedula: {}", cedula);
+                LOGGER.info("Cliente encontrado con cedula: {}", cedula);
                 return mapResultSetToCliente(rs);
             }
         } catch (SQLException e) {
-            logger.error("Error al obtener cliente por cedula", e);
+            LOGGER.error("Error al obtener cliente por cedula", e);
         }
 
         return null;
@@ -226,11 +226,11 @@ public class ClienteService {
                         cliente.setId(generatedKeys.getInt(1));
                     }
                 }
-                logger.info("Cliente creado exitosamente: {}", cliente.getNombreCompleto());
+                LOGGER.info("Cliente creado exitosamente: {}", cliente.getNombreCompleto());
                 return true;
             }
         } catch (SQLException e) {
-            logger.error("Error al crear cliente", e);
+            LOGGER.error("Error al crear cliente", e);
         }
 
         return false;
@@ -257,11 +257,11 @@ public class ClienteService {
             int affectedRows = stmt.executeUpdate();
 
             if (affectedRows > 0) {
-                logger.info("Cliente actualizado exitosamente: {}", cliente.getNombreCompleto());
+                LOGGER.info("Cliente actualizado exitosamente: {}", cliente.getNombreCompleto());
                 return true;
             }
         } catch (SQLException e) {
-            logger.error("Error al actualizar cliente", e);
+            LOGGER.error("Error al actualizar cliente", e);
         }
 
         return false;
@@ -280,11 +280,11 @@ public class ClienteService {
             int affectedRows = stmt.executeUpdate();
 
             if (affectedRows > 0) {
-                logger.info("Cliente desactivado exitosamente con ID: {}", id);
+                LOGGER.info("Cliente desactivado exitosamente con ID: {}", id);
                 return true;
             }
         } catch (SQLException e) {
-            logger.error("Error al desactivar cliente", e);
+            LOGGER.error("Error al desactivar cliente", e);
         }
 
         return false;
@@ -314,9 +314,9 @@ public class ClienteService {
                 clientes.add(cliente);
             }
 
-            logger.info("Se encontraron {} clientes con el criterio: {}", clientes.size(), criterio);
+            LOGGER.info("Se encontraron {} clientes con el criterio: {}", clientes.size(), criterio);
         } catch (SQLException e) {
-            logger.error("Error al buscar clientes", e);
+            LOGGER.error("Error al buscar clientes", e);
         }
 
         return clientes;
@@ -351,7 +351,7 @@ public class ClienteService {
             }
         } catch (SQLException e) {
             // Si la columna no existe, simplemente continuamos
-            logger.debug("Columna fecha_registro no encontrada, continuando...");
+            LOGGER.debug("Columna fecha_registro no encontrada, continuando...");
         }
 
         return cliente;

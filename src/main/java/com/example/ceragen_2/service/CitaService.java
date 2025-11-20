@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CitaService {
-    private static final Logger logger = LoggerFactory.getLogger(CitaService.class);
+public final class CitaService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CitaService.class);
     private static CitaService instance;
 
     private CitaService() {
     }
 
-    public static CitaService getInstance() {
+    public static synchronized CitaService getInstance() {
         if (instance == null) {
             instance = new CitaService();
         }
@@ -112,9 +112,9 @@ public class CitaService {
                 citas.add(cita);
             }
 
-            logger.info("Se obtuvieron {} citas", citas.size());
+            LOGGER.info("Se obtuvieron {} citas", citas.size());
         } catch (SQLException e) {
-            logger.error("Error al obtener citas", e);
+            LOGGER.error("Error al obtener citas", e);
         }
 
         return citas;
@@ -169,7 +169,7 @@ public class CitaService {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            logger.error("Error al contar citas", e);
+            LOGGER.error("Error al contar citas", e);
         }
 
         return 0;
@@ -193,11 +193,11 @@ public class CitaService {
             stmt.setInt(6, facturaId);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Cita creada para paciente ID: {}, factura ID: {}", pacienteId, facturaId);
+            LOGGER.info("Cita creada para paciente ID: {}, factura ID: {}", pacienteId, facturaId);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al crear cita con factura", e);
+            LOGGER.error("Error al crear cita con factura", e);
             return false;
         }
     }
@@ -218,7 +218,7 @@ public class CitaService {
             stmt.setInt(6, facturaId);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Cita creada para paciente ID: {}, factura ID: {}", pacienteId, facturaId);
+            LOGGER.info("Cita creada para paciente ID: {}, factura ID: {}", pacienteId, facturaId);
             return rowsAffected > 0;
         }
     }
@@ -243,11 +243,11 @@ public class CitaService {
             stmt.setInt(7, id);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Cita actualizada ID: {}", id);
+            LOGGER.info("Cita actualizada ID: {}", id);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al actualizar cita", e);
+            LOGGER.error("Error al actualizar cita", e);
             return false;
         }
     }
@@ -264,11 +264,11 @@ public class CitaService {
             stmt.setInt(1, id);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Cita eliminada con ID: {}", id);
+            LOGGER.info("Cita eliminada con ID: {}", id);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al eliminar cita", e);
+            LOGGER.error("Error al eliminar cita", e);
             return false;
         }
     }
@@ -286,11 +286,11 @@ public class CitaService {
             stmt.setInt(2, id);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Estado de cita ID {} cambiado a: {}", id, nuevoEstado);
+            LOGGER.info("Estado de cita ID {} cambiado a: {}", id, nuevoEstado);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al cambiar estado de cita", e);
+            LOGGER.error("Error al cambiar estado de cita", e);
             return false;
         }
     }
@@ -340,7 +340,7 @@ public class CitaService {
                 return cita;
             }
         } catch (SQLException e) {
-            logger.error("Error al obtener cita por ID", e);
+            LOGGER.error("Error al obtener cita por ID", e);
         }
 
         return null;
@@ -371,7 +371,7 @@ public class CitaService {
                 return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            logger.error("Error al verificar conflicto de horario", e);
+            LOGGER.error("Error al verificar conflicto de horario", e);
         }
 
         return false;
