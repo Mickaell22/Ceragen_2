@@ -525,10 +525,10 @@ public class CitasController {
     }
 
     private static class DatosCitasResult {
-        List<Cita> citas;
-        int totalPaginas;
+        final List<Cita> citas;
+        final int totalPaginas;
 
-        DatosCitasResult(List<Cita> citas, int totalPaginas) {
+        DatosCitasResult(final List<Cita> citas, final int totalPaginas) {
             this.citas = citas;
             this.totalPaginas = totalPaginas;
         }

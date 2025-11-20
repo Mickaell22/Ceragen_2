@@ -1,99 +1,30 @@
 MÓDULOS CON VIOLACIONES PMD
 
-=== com/example/ceragen_2/Launcher.java ===
-Priority 1:
-- ClassWithOnlyPrivateConstructorsShouldBeFinal: This class has only private constructors and may be final (Línea 5)
-
-Priority 3:
-- MethodArgumentCouldBeFinal: Parameter 'args' is not assigned and could be declared final (Línea 10)
-
 === com/example/ceragen_2/MainApplication.java ===
 Priority 2:
 - VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 11)
 
-Priority 3:
-- MethodArgumentCouldBeFinal: Parameter 'primaryStage' is not assigned and could be declared final (Línea 14)
-- LocalVariableCouldBeFinal: Local variable 'navigator' could be declared final (Línea 19)
-
 === com/example/ceragen_2/config/DatabaseConfig.java ===
-Priority 2:
-- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 12)
-- AvoidUsingVolatile: Use of modifier volatile is not recommended. (Línea 13)
-
-Priority 3:
-- LocalVariableCouldBeFinal: Local variable 'host' could be declared final (Línea 41)
-- LocalVariableCouldBeFinal: Local variable 'port' could be declared final (Línea 42)
-- LocalVariableCouldBeFinal: Local variable 'database' could be declared final (Línea 43)
-- LocalVariableCouldBeFinal: Local variable 'user' could be declared final (Línea 44)
-- LocalVariableCouldBeFinal: Local variable 'password' could be declared final (Línea 45)
-- LocalVariableCouldBeFinal: Local variable 'url' could be declared final (Línea 47)
-
-=== com/example/ceragen_2/controller/LoginController.java ===
 Priority 1:
-- FieldNamingConventions: The constant name 'logger' doesn't match '[A-Z][A-Z_0-9]*' (Línea 15)
-
-Priority 3:
-- LocalVariableCouldBeFinal: Local variable 'username' could be declared final (Línea 40)
-- LocalVariableCouldBeFinal: Local variable 'password' could be declared final (Línea 41)
-- MethodArgumentCouldBeFinal: Parameter 'message' is not assigned and could be declared final (Línea 60)
-
-=== com/example/ceragen_2/controller/MainController.java ===
-Priority 1:
-- FieldNamingConventions: The constant name 'logger' doesn't match '[A-Z][A-Z_0-9]*' (Línea 17)
-
-Priority 3:
-- LocalVariableCouldBeFinal: Local variable 'authService' could be declared final (Línea 54)
-- LocalVariableCouldBeFinal: Local variable 'username' could be declared final (Línea 55)
-- LocalVariableCouldBeFinal: Local variable 'role' could be declared final (Línea 56)
-- MethodArgumentCouldBeFinal: Parameter 'rol' is not assigned and could be declared final (Línea 70)
-- MethodArgumentCouldBeFinal: Parameter 'button' is not assigned and could be declared final (Línea 135)
-- UnusedPrivateMethod: Avoid unused private methods such as 'navigateToUsuarios()'. (Línea 141)
-- UnusedPrivateMethod: Avoid unused private methods such as 'navigateToPacientes()'. (Línea 147)
-- UnusedPrivateMethod: Avoid unused private methods such as 'navigateToClientes()'. (Línea 153)
-- UnusedPrivateMethod: Avoid unused private methods such as 'navigateToProfesionales()'. (Línea 159)
-- UnusedPrivateMethod: Avoid unused private methods such as 'navigateToEspecialidades()'. (Línea 165)
-- UnusedPrivateMethod: Avoid unused private methods such as 'navigateToCitas()'. (Línea 171)
-- UnusedPrivateMethod: Avoid unused private methods such as 'navigateToFacturacion()'. (Línea 177)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleLogout()'. (Línea 184)
-- MethodArgumentCouldBeFinal: Parameter 'fxmlPath' is not assigned and could be declared final (Línea 190)
-- LocalVariableCouldBeFinal: Local variable 'loader' could be declared final (Línea 192)
-- LocalVariableCouldBeFinal: Local variable 'vista' could be declared final (Línea 193)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleNoTocar()'. (Línea 203)
-- LocalVariableCouldBeFinal: Local variable 'os' could be declared final (Línea 207)
-- UseLocaleWithCaseConversions: When doing a String.toLowerCase()/toUpperCase() call, use a Locale (Línea 207)
-- LocalVariableCouldBeFinal: Local variable 'processBuilder' could be declared final (Línea 208)
+- FieldNamingConventions: The constant name 'logger' doesn't match '[A-Z][A-Z_0-9]*' (Línea 12)
+- DoubleCheckedLocking: Double checked locking is not thread safe in Java. (Línea 25)
 
 === com/example/ceragen_2/controller/UsuariosController.java ===
-Priority 1:
-- FieldNamingConventions: The constant name 'logger' doesn't match '[A-Z][A-Z_0-9]*' (Línea 23)
-
 Priority 2:
+- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 23)
 - VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 24)
 
 Priority 3:
-- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Líneas 1-636)
+- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Línea 1)
 - GodClass: Possible God Class (WMC=50, ATFD=157, TCC=32.971%) (Línea 22)
-- TooManyFields: Too many fields (Líneas 22-636)
-- RedundantFieldInitializer: Avoid using redundant field initializer for 'paginaActual' (Línea 29)
-- RedundantFieldInitializer: Avoid using redundant field initializer for 'totalPaginas' (Línea 31)
+- TooManyFields: Too many fields (Línea 22)
 - AvoidDuplicateLiterals: The String literal "ACTIVO" appears 4 times in this file; the first occurrence is on line 96 (Línea 96)
-- LocalVariableCouldBeFinal: Local variable 'usuario' could be declared final (Línea 119)
-- LocalVariableCouldBeFinal: Local variable 'usuario' could be declared final (Línea 124)
-- LocalVariableCouldBeFinal: Local variable 'usuario' could be declared final (Línea 129)
-- MethodArgumentCouldBeFinal: Parameter 'item' is not assigned and could be declared final (Línea 135)
-- MethodArgumentCouldBeFinal: Parameter 'empty' is not assigned and could be declared final (Línea 135)
 - AvoidDuplicateLiterals: The String literal "TODOS" appears 4 times in this file; the first occurrence is on line 143 (Línea 143)
 - LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 162)
 - LocalVariableCouldBeFinal: Local variable 'totalRegistros' could be declared final (Línea 166)
 - LocalVariableCouldBeFinal: Local variable 'usuarios' could be declared final (Línea 173)
 - LocalVariableCouldBeFinal: Local variable 'resultado' could be declared final (Línea 181)
 - AvoidDuplicateLiterals: The String literal "Error" appears 22 times in this file; the first occurrence is on line 209 (Línea 209)
-- MethodArgumentCouldBeFinal: Parameter 'deshabilitar' is not assigned and could be declared final (Línea 216)
-- ImmutableField: Field 'usuarios' may be declared final (Línea 229)
-- ImmutableField: Field 'totalPaginas' may be declared final (Línea 230)
-- MethodArgumentCouldBeFinal: Parameter 'usuarios' is not assigned and could be declared final (Línea 232)
-- MethodArgumentCouldBeFinal: Parameter 'totalPaginas' is not assigned and could be declared final (Línea 232)
-- LocalVariableCouldBeFinal: Local variable 'valor' could be declared final (Línea 239)
 - LiteralsFirstInComparisons: Position literals first in String comparisons (Línea 240)
 - ControlStatementBraces: This statement should have braces (Línea 240)
 - SimplifyBooleanReturns: This if statement can be replaced by `return !{condition} || {elseBranch};` (Línea 241)
@@ -106,14 +37,12 @@ Priority 3:
 - UnusedPrivateMethod: Avoid unused private methods such as 'handlePaginaSiguiente()'. (Línea 286)
 - UnusedPrivateMethod: Avoid unused private methods such as 'handleUltimaPagina()'. (Línea 294)
 - UnusedPrivateMethod: Avoid unused private methods such as 'handleCambioRegistrosPorPagina()'. (Línea 300)
-- LocalVariableCouldBeFinal: Local variable 'valor' could be declared final (Línea 301)
 - UnusedPrivateMethod: Avoid unused private methods such as 'handleCrearUsuario()'. (Línea 309)
 - AvoidLiteralsInIfCondition: Avoid using literals in if statements (Línea 326)
 - LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 335)
 - LocalVariableCouldBeFinal: Local variable 'exito' could be declared final (Línea 347)
 - AvoidDuplicateLiterals: The String literal "Éxito" appears 4 times in this file; the first occurrence is on line 354 (Línea 354)
 - UnusedPrivateMethod: Avoid unused private methods such as 'handleLimpiarFormCrear()'. (Línea 374)
-- MethodArgumentCouldBeFinal: Parameter 'usuario' is not assigned and could be declared final (Línea 385)
 - UnusedPrivateMethod: Avoid unused private methods such as 'handleActualizarUsuario()'. (Línea 399)
 - CognitiveComplexity: The method 'handleActualizarUsuario()' has a cognitive complexity of 15, current threshold is 15 (Línea 399)
 - NPathComplexity: The method 'handleActualizarUsuario()' has an NPath complexity of 720, current threshold is 200 (Línea 399)
@@ -125,7 +54,6 @@ Priority 3:
 - LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 434)
 - LocalVariableCouldBeFinal: Local variable 'exito' could be declared final (Línea 446)
 - NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 473)
-- MethodArgumentCouldBeFinal: Parameter 'usuario' is not assigned and could be declared final (Línea 478)
 - LiteralsFirstInComparisons: Position literals first in String comparisons (Línea 488)
 - LocalVariableCouldBeFinal: Local variable 'adminsActivos' could be declared final (Línea 489)
 - AvoidLiteralsInIfCondition: Avoid using literals in if statements (Línea 490)
@@ -133,7 +61,6 @@ Priority 3:
 - LocalVariableCouldBeFinal: Local variable 'resultado' could be declared final (Línea 501)
 - LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 509)
 - LocalVariableCouldBeFinal: Local variable 'exito' could be declared final (Línea 517)
-- MethodArgumentCouldBeFinal: Parameter 'usuario' is not assigned and could be declared final (Línea 540)
 - LocalVariableCouldBeFinal: Local variable 'dialog' could be declared final (Línea 544)
 - LocalVariableCouldBeFinal: Local variable 'btnCambiar' could be declared final (Línea 548)
 - LocalVariableCouldBeFinal: Local variable 'txtNuevaPassword' could be declared final (Línea 551)
@@ -145,10 +72,12 @@ Priority 3:
 - AvoidLiteralsInIfCondition: Avoid using literals in if statements (Línea 589)
 - LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 599)
 - LocalVariableCouldBeFinal: Local variable 'exito' could be declared final (Línea 607)
-- MethodArgumentCouldBeFinal: Parameter 'titulo' is not assigned and could be declared final (Línea 629)
-- MethodArgumentCouldBeFinal: Parameter 'mensaje' is not assigned and could be declared final (Línea 629)
-- MethodArgumentCouldBeFinal: Parameter 'tipo' is not assigned and could be declared final (Línea 629)
 - LocalVariableCouldBeFinal: Local variable 'alerta' could be declared final (Línea 630)
+
+Priority 4:
+- UnnecessaryImport: Unused import 'javafx.application.Platform' (Línea 6)
+- UnnecessaryFullyQualifiedName: Unnecessary qualifier 'javafx.scene.layout': 'VBox' is already in scope because it is imported in this file (Línea 559)
+- UnnecessaryFullyQualifiedName: Unnecessary qualifier 'javafx.scene.layout': 'VBox' is already in scope because it is imported in this file (Línea 559)
 
 === com/example/ceragen_2/controller/CitasController.java ===
 Priority 2:
@@ -157,115 +86,26 @@ Priority 2:
 - VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 44)
 
 Priority 3:
-- ExcessiveImports: A high number of imports can indicate a high degree of coupling within an object. (Líneas 1-759)
-- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Líneas 1-759)
+- ExcessiveImports: A high number of imports can indicate a high degree of coupling within an object. (Línea 1)
+- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Línea 1)
 - GodClass: Possible God Class (WMC=72, ATFD=226, TCC=19.697%) (Línea 41)
-- TooManyFields: Too many fields (Líneas 41-759)
-- RedundantFieldInitializer: Avoid using redundant field initializer for 'paginaActual' (Línea 50)
-- RedundantFieldInitializer: Avoid using redundant field initializer for 'totalPaginas' (Línea 52)
-- MethodArgumentCouldBeFinal: Parameter 'item' is not assigned and could be declared final (Línea 154)
-- MethodArgumentCouldBeFinal: Parameter 'empty' is not assigned and could be declared final (Línea 154)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 174)
-- LocalVariableCouldBeFinal: Local variable 'pacientes' could be declared final (Línea 177)
-- LocalVariableCouldBeFinal: Local variable 'profesionales' could be declared final (Línea 178)
-- LocalVariableCouldBeFinal: Local variable 'resultado' could be declared final (Línea 184)
+- TooManyFields: Too many fields (Línea 41)
 - AvoidDuplicateLiterals: The String literal "Error" appears 20 times in this file; the first occurrence is on line 201 (Línea 201)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 216)
-- LocalVariableCouldBeFinal: Local variable 'totalRegistros' could be declared final (Línea 219)
-- ControlStatementBraces: This statement should have braces (Línea 221)
-- LocalVariableCouldBeFinal: Local variable 'citas' could be declared final (Línea 223)
-- LocalVariableCouldBeFinal: Local variable 'resultado' could be declared final (Línea 229)
-- ControlStatementBraces: This statement should have braces (Línea 232)
-- MethodArgumentCouldBeFinal: Parameter 'deshabilitar' is not assigned and could be declared final (Línea 253)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleLimpiarFiltros()'. (Línea 270)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handlePrimeraPagina()'. (Línea 281)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handlePaginaAnterior()'. (Línea 287)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handlePaginaSiguiente()'. (Línea 295)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleUltimaPagina()'. (Línea 303)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleCambioRegistrosPorPagina()'. (Línea 309)
-- MethodArgumentCouldBeFinal: Parameter 'cita' is not assigned and could be declared final (Línea 315)
-- LocalVariableCouldBeFinal: Local variable 'p' could be declared final (Línea 322)
-- LocalVariableCouldBeFinal: Local variable 'p' could be declared final (Línea 330)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleActualizarCita()'. (Línea 351)
-- ControlStatementBraces: This statement should have braces (Línea 352)
-- LocalVariableCouldBeFinal: Local variable 'hora' could be declared final (Línea 368)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 380)
-- LocalVariableCouldBeFinal: Local variable 'exito' could be declared final (Línea 391)
-- AvoidDuplicateLiterals: The String literal "Éxito" appears 7 times in this file; the first occurrence is on line 398 (Línea 398)
-- NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 418)
-- MethodArgumentCouldBeFinal: Parameter 'cita' is not assigned and could be declared final (Línea 423)
-- LocalVariableCouldBeFinal: Local variable 'confirmacion' could be declared final (Línea 426)
-- LocalVariableCouldBeFinal: Local variable 'resultado' could be declared final (Línea 431)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 438)
-- LocalVariableCouldBeFinal: Local variable 'exito' could be declared final (Línea 446)
-- MethodArgumentCouldBeFinal: Parameter 'cita' is not assigned and could be declared final (Línea 469)
-- MethodArgumentCouldBeFinal: Parameter 'nuevoEstado' is not assigned and could be declared final (Línea 469)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 476)
-- LocalVariableCouldBeFinal: Local variable 'exito' could be declared final (Línea 484)
-- MethodArgumentCouldBeFinal: Parameter 'titulo' is not assigned and could be declared final (Línea 506)
-- MethodArgumentCouldBeFinal: Parameter 'mensaje' is not assigned and could be declared final (Línea 506)
-- MethodArgumentCouldBeFinal: Parameter 'tipo' is not assigned and could be declared final (Línea 506)
-- LocalVariableCouldBeFinal: Local variable 'alerta' could be declared final (Línea 507)
-- ImmutableField: Field 'citas' may be declared final (Línea 515)
-- ImmutableField: Field 'totalPaginas' may be declared final (Línea 516)
-- MethodArgumentCouldBeFinal: Parameter 'citas' is not assigned and could be declared final (Línea 518)
-- MethodArgumentCouldBeFinal: Parameter 'totalPaginas' is not assigned and could be declared final (Línea 518)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleBuscar()'. (Línea 526)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleBuscarPacienteFiltro()'. (Línea 532)
-- LocalVariableCouldBeFinal: Local variable 'cedula' could be declared final (Línea 533)
-- AvoidDuplicateLiterals: The String literal "Ingrese una cédula" appears 4 times in this file; the first occurrence is on line 535 (Línea 535)
-- LocalVariableCouldBeFinal: Local variable 'paciente' could be declared final (Línea 539)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleBuscarProfesionalFiltro()'. (Línea 549)
-- LocalVariableCouldBeFinal: Local variable 'cedula' could be declared final (Línea 550)
-- LocalVariableCouldBeFinal: Local variable 'profesional' could be declared final (Línea 556)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleBuscarPacienteEditar()'. (Línea 567)
-- LocalVariableCouldBeFinal: Local variable 'cedula' could be declared final (Línea 568)
-- LocalVariableCouldBeFinal: Local variable 'paciente' could be declared final (Línea 574)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleBuscarProfesionalEditar()'. (Línea 584)
-- LocalVariableCouldBeFinal: Local variable 'cedula' could be declared final (Línea 585)
-- LocalVariableCouldBeFinal: Local variable 'profesional' could be declared final (Línea 591)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleSemanaAnterior()'. (Línea 602)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleSemanaSiguiente()'. (Línea 608)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleIrHoy()'. (Línea 614)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleActualizarHorario()'. (Línea 620)
-- LocalVariableCouldBeFinal: Local variable 'cedula' could be declared final (Línea 621)
-- ConfusingTernary: Avoid if (x != y) ..; else ..; (Líneas 622-635)
-- LocalVariableCouldBeFinal: Local variable 'profesional' could be declared final (Línea 623)
-- NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 629)
-- NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 633)
-- LocalVariableCouldBeFinal: Local variable 'inicioSemana' could be declared final (Línea 647)
-- LocalVariableCouldBeFinal: Local variable 'finSemana' could be declared final (Línea 648)
-- LocalVariableCouldBeFinal: Local variable 'profesionalId' could be declared final (Línea 651)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 653)
-- LocalVariableCouldBeFinal: Local variable 'fechaInicio' could be declared final (Línea 656)
-- LocalVariableCouldBeFinal: Local variable 'fechaFin' could be declared final (Línea 657)
-- LocalVariableCouldBeFinal: Local variable 'citas' could be declared final (Línea 663)
-- MethodArgumentCouldBeFinal: Parameter 'inicioSemana' is not assigned and could be declared final (Línea 675)
-- UnusedFormalParameter: Avoid unused method parameters such as 'finSemana'. (Línea 675)
-- MethodArgumentCouldBeFinal: Parameter 'citas' is not assigned and could be declared final (Línea 675)
-- LocalVariableCouldBeFinal: Local variable 'encabezado' could be declared final (Línea 679)
-- LocalVariableCouldBeFinal: Local variable 'lblHora' could be declared final (Línea 682)
-- LocalVariableCouldBeFinal: Local variable 'diaFormatter' could be declared final (Línea 687)
-- LocalVariableCouldBeFinal: Local variable 'dia' could be declared final (Línea 689)
-- LocalVariableCouldBeFinal: Local variable 'lblDia' could be declared final (Línea 690)
-- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 690)
-- LocalVariableCouldBeFinal: Local variable 'filaHora' could be declared final (Línea 700)
-- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 700)
-- LocalVariableCouldBeFinal: Local variable 'lblHoraTexto' could be declared final (Línea 703)
-- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 703)
-- LocalVariableCouldBeFinal: Local variable 'dia' could be declared final (Línea 710)
-- LocalVariableCouldBeFinal: Local variable 'celda' could be declared final (Línea 711)
-- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 711)
-- LocalVariableCouldBeFinal: Local variable 'citasEnHora' could be declared final (Línea 715)
-- ControlStatementBraces: This statement should have braces (Línea 717)
-- LocalVariableCouldBeFinal: Local variable 'cita' could be declared final (Línea 723)
-- LocalVariableCouldBeFinal: Local variable 'citaBox' could be declared final (Línea 724)
-- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 724)
-- LocalVariableCouldBeFinal: Local variable 'txtHora' could be declared final (Línea 727)
-- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 727)
-- LocalVariableCouldBeFinal: Local variable 'txtPaciente' could be declared final (Línea 730)
-- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 730)
-- MethodArgumentCouldBeFinal: Parameter 'estado' is not assigned and could be declared final (Línea 747)
+- AvoidDuplicateLiterals: The String literal "unused" appears 16 times in this file; the first occurrence is on line 274 (Línea 274)
+- AvoidDuplicateLiterals: The String literal "Éxito" appears 7 times in this file; the first occurrence is on line 411 (Línea 411)
+- NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 431)
+- AvoidDuplicateLiterals: The String literal "Ingrese una cédula" appears 4 times in this file; the first occurrence is on line 550 (Línea 550)
+- ConfusingTernary: Avoid if (x != y) ..; else ..; (Línea 644)
+- NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 651)
+- NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 655)
+- UnusedFormalParameter: Avoid unused method parameters such as 'finSemana'. (Línea 697)
+- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 712)
+- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 722)
+- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 725)
+- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 733)
+- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 748)
+- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 751)
+- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 754)
 
 === com/example/ceragen_2/controller/ClienteController.java ===
 Priority 2:
@@ -273,41 +113,10 @@ Priority 2:
 - VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 21)
 
 Priority 3:
-- TooManyFields: Too many fields (Líneas 19-416)
-- LocalVariableCouldBeFinal: Local variable 'cliente' could be declared final (Línea 102)
-- LocalVariableCouldBeFinal: Local variable 'cliente' could be declared final (Línea 107)
-- MethodArgumentCouldBeFinal: Parameter 'item' is not assigned and could be declared final (Línea 113)
-- MethodArgumentCouldBeFinal: Parameter 'empty' is not assigned and could be declared final (Línea 113)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 123)
-- LocalVariableCouldBeFinal: Local variable 'clientes' could be declared final (Línea 131)
+- TooManyFields: Too many fields (Línea 19)
 - AvoidDuplicateLiterals: The String literal "Error" appears 12 times in this file; the first occurrence is on line 141 (Línea 141)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleBuscar()'. (Línea 148)
-- LocalVariableCouldBeFinal: Local variable 'criterio' could be declared final (Línea 149)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 159)
-- LocalVariableCouldBeFinal: Local variable 'clientes' could be declared final (Línea 167)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleLimpiarFiltros()'. (Línea 184)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleCrearCliente()'. (Línea 191)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 207)
-- LocalVariableCouldBeFinal: Local variable 'existente' could be declared final (Línea 211)
-- LocalVariableCouldBeFinal: Local variable 'cliente' could be declared final (Línea 216)
-- LocalVariableCouldBeFinal: Local variable 'exito' could be declared final (Línea 229)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleLimpiarFormCrear()'. (Línea 256)
-- MethodArgumentCouldBeFinal: Parameter 'cliente' is not assigned and could be declared final (Línea 269)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleActualizarCliente()'. (Línea 286)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 308)
-- LocalVariableCouldBeFinal: Local variable 'existente' could be declared final (Línea 312)
-- LocalVariableCouldBeFinal: Local variable 'cliente' could be declared final (Línea 317)
-- LocalVariableCouldBeFinal: Local variable 'exito' could be declared final (Línea 331)
-- NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 358)
-- MethodArgumentCouldBeFinal: Parameter 'cliente' is not assigned and could be declared final (Línea 363)
-- LocalVariableCouldBeFinal: Local variable 'confirmacion' could be declared final (Línea 366)
-- LocalVariableCouldBeFinal: Local variable 'resultado' could be declared final (Línea 371)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 378)
-- LocalVariableCouldBeFinal: Local variable 'exito' could be declared final (Línea 386)
-- MethodArgumentCouldBeFinal: Parameter 'titulo' is not assigned and could be declared final (Línea 409)
-- MethodArgumentCouldBeFinal: Parameter 'mensaje' is not assigned and could be declared final (Línea 409)
-- MethodArgumentCouldBeFinal: Parameter 'tipo' is not assigned and could be declared final (Línea 409)
-- LocalVariableCouldBeFinal: Local variable 'alerta' could be declared final (Línea 410)
+- AvoidDuplicateLiterals: The String literal "unused" appears 5 times in this file; the first occurrence is on line 148 (Línea 148)
+- NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 363)
 
 === com/example/ceragen_2/controller/CrearCitaController.java ===
 Priority 2:
@@ -315,69 +124,84 @@ Priority 2:
 - VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 33)
 
 Priority 3:
-- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Líneas 1-235)
-- MethodArgumentCouldBeFinal: Parameter 'facturaController' is not assigned and could be declared final (Línea 59)
-- LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 65)
-- LocalVariableCouldBeFinal: Local variable 'pacientes' could be declared final (Línea 68)
-- LocalVariableCouldBeFinal: Local variable 'profesionales' could be declared final (Línea 69)
-- LocalVariableCouldBeFinal: Local variable 'resultado' could be declared final (Línea 75)
+- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Línea 1)
 - AvoidDuplicateLiterals: The String literal "Error" appears 11 times in this file; the first occurrence is on line 88 (Línea 88)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleCrearCita()'. (Línea 95)
-- LocalVariableCouldBeFinal: Local variable 'paciente' could be declared final (Línea 103)
-- LocalVariableCouldBeFinal: Local variable 'profesional' could be declared final (Línea 104)
-- LocalVariableCouldBeFinal: Local variable 'fecha' could be declared final (Línea 105)
-- LocalVariableCouldBeFinal: Local variable 'hora' could be declared final (Línea 106)
-- LocalVariableCouldBeFinal: Local variable 'fechaHora' could be declared final (Línea 107)
-- LocalVariableCouldBeFinal: Local variable 'motivo' could be declared final (Línea 108)
-- LocalVariableCouldBeFinal: Local variable 'especialidadService' could be declared final (Línea 118)
-- LocalVariableCouldBeFinal: Local variable 'especialidad' could be declared final (Línea 122)
-- LocalVariableCouldBeFinal: Local variable 'nuevaCita' could be declared final (Línea 133)
-- AvoidCatchingGenericException: Avoid catching generic exceptions such as NullPointerException, RuntimeException, Exception in try-catch block (Línea 163)
-- UnusedPrivateMethod: Avoid unused private methods such as 'handleLimpiar()'. (Línea 170)
-- InefficientEmptyStringCheck: String.trim().length() == 0 / String.trim().isEmpty() is an inefficient way to validate a blank String. (Línea 192)
-- InefficientEmptyStringCheck: String.trim().length() == 0 / String.trim().isEmpty() is an inefficient way to validate a blank String. (Línea 196)
-- LocalVariableCouldBeFinal: Local variable 'stage' could be declared final (Línea 215)
-- AvoidCatchingGenericException: Avoid catching generic exceptions such as NullPointerException, RuntimeException, Exception in try-catch block (Línea 218)
-- MethodArgumentCouldBeFinal: Parameter 'titulo' is not assigned and could be declared final (Línea 225)
-- MethodArgumentCouldBeFinal: Parameter 'mensaje' is not assigned and could be declared final (Línea 225)
-- LocalVariableCouldBeFinal: Local variable 'alert' could be declared final (Línea 226)
+- AvoidCatchingGenericException: Avoid catching generic exceptions such as NullPointerException, RuntimeException, Exception in try-catch block (Línea 164)
+- AvoidCatchingGenericException: Avoid catching generic exceptions such as NullPointerException, RuntimeException, Exception in try-catch block (Línea 220)
+
+=== com/example/ceragen_2/controller/LoginController.java ===
+Priority 2:
+- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 15)
+
+=== com/example/ceragen_2/controller/MainController.java ===
+Priority 2:
+- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 17)
+
+Priority 3:
+- AvoidDuplicateLiterals: The String literal "unused" appears 9 times in this file; the first occurrence is on line 141 (Línea 141)
 
 === com/example/ceragen_2/service/AuthService.java ===
-Priority 1:
-- ClassWithOnlyPrivateConstructorsShouldBeFinal: This class has only private constructors and may be final (Línea 13)
-- FieldNamingConventions: The constant name 'logger' doesn't match '[A-Z][A-Z_0-9]*' (Línea 14)
-- DoubleCheckedLocking: Double checked locking is not thread safe in Java. (Línea 22)
-
-=== com/example/ceragen_2/service/CitaService.java ===
-Priority 1:
-- ClassWithOnlyPrivateConstructorsShouldBeFinal: This class has only private constructors and may be final (Línea 14)
-- FieldNamingConventions: The constant name 'logger' doesn't match '[A-Z][A-Z_0-9]*' (Línea 15)
-
-=== com/example/ceragen_2/service/ClienteService.java ===
-Priority 1:
-- ClassWithOnlyPrivateConstructorsShouldBeFinal: This class has only private constructors and may be final (Línea 12)
-- FieldNamingConventions: The constant name 'logger' doesn't match '[A-Z][A-Z_0-9]*' (Línea 13)
-
-=== com/example/ceragen_2/service/UsuarioService.java ===
-Priority 1:
-- ClassWithOnlyPrivateConstructorsShouldBeFinal: This class has only private constructors and may be final (Línea 14)
-- FieldNamingConventions: The constant name 'logger' doesn't match '[A-Z][A-Z_0-9]*' (Línea 15)
-
-=== com/example/ceragen_2/service/ViewNavigator.java ===
-Priority 1:
-- ClassWithOnlyPrivateConstructorsShouldBeFinal: This class has only private constructors and may be final (Línea 12)
-- FieldNamingConventions: The constant name 'logger' doesn't match '[A-Z][A-Z_0-9]*' (Línea 13)
-- DoubleCheckedLocking: Double checked locking is not thread safe in Java. (Línea 23)
-- AvoidThrowingRawExceptionTypes: Avoid throwing raw exception types. (Línea 56)
-
 Priority 2:
-- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 18)
-- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 19)
+- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 14)
 
-=== com/example/ceragen_2/util/PasswordUtil.java ===
-Priority 2:
-- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 11)
-- SystemPrintln: Usage of System.out/err (Línea 47)
-- SystemPrintln: Usage of System.out/err (Línea 48)
-- SystemPrintln: Usage of System.out/err (Línea 49)
-- SystemPrintln: Usage of System.out/err (Línea 50)
+Priority 3:
+- MethodArgumentCouldBeFinal: Parameter 'username' is not assigned and could be declared final (Línea 29)
+- MethodArgumentCouldBeFinal: Parameter 'password' is not assigned and could be declared final (Línea 29)
+- LocalVariableCouldBeFinal: Local variable 'query' could be declared final (Línea 30)
+- CloseResource: Ensure that resources like this ResultSet object are closed after use (Línea 36)
+- LocalVariableCouldBeFinal: Local variable 'rs' could be declared final (Línea 36)
+- LocalVariableCouldBeFinal: Local variable 'hashedPassword' could be declared final (Línea 39)
+- NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 63)
+- NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 64)
+
+=== com/example/ceragen_2/model/Cita.java ===
+Priority 3:
+- ShortClassName: Avoid short class names like Cita (Línea 6)
+- UncommentedEmptyConstructor: Document empty constructor (Línea 21)
+- MethodArgumentCouldBeFinal: Parameter 'id' is not assigned and could be declared final (Línea 24)
+- MethodArgumentCouldBeFinal: Parameter 'pacienteId' is not assigned and could be declared final (Línea 24)
+- MethodArgumentCouldBeFinal: Parameter 'profesionalId' is not assigned and could be declared final (Línea 24)
+- MethodArgumentCouldBeFinal: Parameter 'fechaHora' is not assigned and could be declared final (Línea 24)
+- MethodArgumentCouldBeFinal: Parameter 'motivo' is not assigned and could be declared final (Línea 25)
+- MethodArgumentCouldBeFinal: Parameter 'estado' is not assigned and could be declared final (Línea 25)
+- MethodArgumentCouldBeFinal: Parameter 'observaciones' is not assigned and could be declared final (Línea 25)
+- MethodArgumentCouldBeFinal: Parameter 'fechaCreacion' is not assigned and could be declared final (Línea 25)
+- MethodArgumentCouldBeFinal: Parameter 'pacienteId' is not assigned and could be declared final (Línea 37)
+- MethodArgumentCouldBeFinal: Parameter 'profesionalId' is not assigned and could be declared final (Línea 37)
+- MethodArgumentCouldBeFinal: Parameter 'fechaHora' is not assigned and could be declared final (Línea 37)
+- MethodArgumentCouldBeFinal: Parameter 'motivo' is not assigned and could be declared final (Línea 38)
+- MethodArgumentCouldBeFinal: Parameter 'pacienteId' is not assigned and could be declared final (Línea 45)
+- MethodArgumentCouldBeFinal: Parameter 'profesionalId' is not assigned and could be declared final (Línea 45)
+- MethodArgumentCouldBeFinal: Parameter 'fechaHora' is not assigned and could be declared final (Línea 45)
+- MethodArgumentCouldBeFinal: Parameter 'motivo' is not assigned and could be declared final (Línea 46)
+- MethodArgumentCouldBeFinal: Parameter 'costo' is not assigned and could be declared final (Línea 46)
+- MethodArgumentCouldBeFinal: Parameter 'id' is not assigned and could be declared final (Línea 59)
+- MethodArgumentCouldBeFinal: Parameter 'pacienteId' is not assigned and could be declared final (Línea 67)
+- MethodArgumentCouldBeFinal: Parameter 'profesionalId' is not assigned and could be declared final (Línea 75)
+- MethodArgumentCouldBeFinal: Parameter 'fechaHora' is not assigned and could be declared final (Línea 83)
+- MethodArgumentCouldBeFinal: Parameter 'motivo' is not assigned and could be declared final (Línea 91)
+- MethodArgumentCouldBeFinal: Parameter 'estado' is not assigned and could be declared final (Línea 99)
+- MethodArgumentCouldBeFinal: Parameter 'observaciones' is not assigned and could be declared final (Línea 107)
+- MethodArgumentCouldBeFinal: Parameter 'fechaCreacion' is not assigned and could be declared final (Línea 115)
+- MethodArgumentCouldBeFinal: Parameter 'pacienteNombre' is not assigned and could be declared final (Línea 123)
+- MethodArgumentCouldBeFinal: Parameter 'profesionalNombre' is not assigned and could be declared final (Línea 131)
+- MethodArgumentCouldBeFinal: Parameter 'costo' is not assigned and could be declared final (Línea 139)
+
+Priority 4:
+- ShortClassName: Avoid short class names like Cita (Línea 6)
+
+=== com/example/ceragen_2/model/Usuario.java ===
+Priority 3:
+- UncommentedEmptyConstructor: Document empty constructor (Línea 13)
+- MethodArgumentCouldBeFinal: Parameter 'id' is not assigned and could be declared final (Línea 16)
+- MethodArgumentCouldBeFinal: Parameter 'username' is not assigned and could be declared final (Línea 16)
+- MethodArgumentCouldBeFinal: Parameter 'password' is not assigned and could be declared final (Línea 16)
+- MethodArgumentCouldBeFinal: Parameter 'rol' is not assigned and could be declared final (Línea 16)
+- MethodArgumentCouldBeFinal: Parameter 'activo' is not assigned and could be declared final (Línea 16)
+- MethodArgumentCouldBeFinal: Parameter 'fechaCreacion' is not assigned and could be declared final (Línea 16)
+- MethodArgumentCouldBeFinal: Parameter 'id' is not assigned and could be declared final (Línea 30)
+- MethodArgumentCouldBeFinal: Parameter 'username' is not assigned and could be declared final (Línea 38)
+- MethodArgumentCouldBeFinal: Parameter 'password' is not assigned and could be declared final (Línea 46)
+- MethodArgumentCouldBeFinal: Parameter 'rol' is not assigned and could be declared final (Línea 54)
+- MethodArgumentCouldBeFinal: Parameter 'activo' is not assigned and could be declared final (Línea 62)
+- MethodArgumentCouldBeFinal: Parameter 'fechaCreacion' is not assigned and could be declared final (Línea 70)

@@ -21,7 +21,7 @@ import java.util.Optional;
 
 public class UsuariosController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UsuariosController.class);
-    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final UsuarioService usuarioService = UsuarioService.getInstance();
 
@@ -96,7 +96,7 @@ public class UsuariosController {
         colActivo.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getActivo() ? "ACTIVO" : "INACTIVO"));
         colFechaCreacion.setCellValueFactory(data -> {
             if (data.getValue().getFechaCreacion() != null) {
-                return new SimpleStringProperty(data.getValue().getFechaCreacion().format(dateFormatter));
+                return new SimpleStringProperty(data.getValue().getFechaCreacion().format(DATE_FORMATTER));
             }
             return new SimpleStringProperty("");
         });
@@ -213,7 +213,7 @@ public class UsuariosController {
         new Thread(task).start();
     }
 
-    private void deshabilitarControles(boolean deshabilitar) {
+    private void deshabilitarControles(final boolean deshabilitar) {
         btnPrimera.setDisable(deshabilitar);
         btnAnterior.setDisable(deshabilitar);
         btnSiguiente.setDisable(deshabilitar);
@@ -226,17 +226,17 @@ public class UsuariosController {
 
     // Clase interna para retornar múltiples valores del Task
     private static class DatosUsuariosResult {
-        List<Usuario> usuarios;
-        int totalPaginas;
+        final List<Usuario> usuarios;
+        final int totalPaginas;
 
-        DatosUsuariosResult(List<Usuario> usuarios, int totalPaginas) {
+        DatosUsuariosResult(final List<Usuario> usuarios, final int totalPaginas) {
             this.usuarios = usuarios;
             this.totalPaginas = totalPaginas;
         }
     }
 
     private Boolean obtenerFiltroActivo() {
-        String valor = cmbActivoFiltro.getValue();
+        final String valor = cmbActivoFiltro.getValue();
         if (valor.equals("ACTIVO")) return true;
         if (valor.equals("INACTIVO")) return false;
         return null;
@@ -298,7 +298,7 @@ public class UsuariosController {
 
     @FXML
     private void handleCambioRegistrosPorPagina() {
-        String valor = cmbRegistrosPorPagina.getValue();
+        final String valor = cmbRegistrosPorPagina.getValue();
         registrosPorPagina = Integer.parseInt(valor);
         paginaActual = 0;
         LOGGER.info("Registros por página cambiado a: {}", registrosPorPagina);
@@ -382,7 +382,7 @@ public class UsuariosController {
         cmbCrearRol.setValue(null);
     }
 
-    private void abrirEdicion(Usuario usuario) {
+    private void abrirEdicion(final Usuario usuario) {
         LOGGER.info("Abriendo edición para usuario: {}", usuario.getUsername());
         usuarioEnEdicion = usuario;
 
@@ -475,7 +475,7 @@ public class UsuariosController {
         tabPane.getSelectionModel().select(0); // Volver a la pestaña de listar
     }
 
-    private void eliminarUsuario(Usuario usuario) {
+    private void eliminarUsuario(final Usuario usuario) {
         LOGGER.info("Intentando desactivar usuario: {}", usuario.getUsername());
 
         // Validación: No se puede auto-desactivar
@@ -537,7 +537,7 @@ public class UsuariosController {
         }
     }
 
-    private void cambiarContrasena(Usuario usuario) {
+    private void cambiarContrasena(final Usuario usuario) {
         LOGGER.info("Cambiando contraseña para usuario: {}", usuario.getUsername());
 
         // Crear diálogo personalizado
@@ -626,7 +626,7 @@ public class UsuariosController {
         });
     }
 
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
+    private void mostrarAlerta(final String titulo, final String mensaje, final Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
