@@ -317,8 +317,9 @@ class ClienteServiceTest {
     void testValidarCamposObligatorios() {
         logger.info("Test: Validar campos obligatorios");
 
+        String cedula = "0123456" + System.currentTimeMillis() % 1000;
         Cliente cliente = new Cliente();
-        cliente.setCedula("0123456789");
+        cliente.setCedula(cedula);
         cliente.setNombres("Nombre");
         cliente.setApellidos("Apellido");
 
@@ -326,7 +327,7 @@ class ClienteServiceTest {
         assertTrue(resultado, "Debería crear el cliente con solo campos obligatorios");
 
         // Verificar que se creó
-        Cliente clienteCreado = clienteService.getClienteByCedula("0123456789");
+        Cliente clienteCreado = clienteService.getClienteByCedula(cedula);
         assertNotNull(clienteCreado, "El cliente debería existir");
         assertEquals("Nombre", clienteCreado.getNombres());
         assertEquals("Apellido", clienteCreado.getApellidos());
