@@ -92,7 +92,7 @@ public class CrearCitaController {
     }
 
     @FXML
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "PMD.AvoidCatchingGenericException"})
     private void handleCrearCita() {
         LOGGER.info("Intentando crear nueva cita...");
 
@@ -211,6 +211,7 @@ public class CrearCitaController {
         return true;
     }
 
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     private void cerrarVentana() {
         try {
             // Obtener el Stage desde cualquier nodo de la escena

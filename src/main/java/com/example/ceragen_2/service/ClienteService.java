@@ -107,14 +107,14 @@ public final class ClienteService {
             stmt.setInt(paramIndex++, limit);
             stmt.setInt(paramIndex, offset);
 
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Cliente cliente = mapResultSetToCliente(rs);
+                    clientes.add(cliente);
+                }
 
-            while (rs.next()) {
-                Cliente cliente = mapResultSetToCliente(rs);
-                clientes.add(cliente);
+                LOGGER.info("Se obtuvieron {} clientes paginados", clientes.size());
             }
-
-            LOGGER.info("Se obtuvieron {} clientes paginados", clientes.size());
         } catch (SQLException e) {
             LOGGER.error("Error al obtener clientes paginados", e);
         }
@@ -142,9 +142,10 @@ public final class ClienteService {
                 stmt.setString(3, searchPattern);
             }
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Error al contar clientes", e);
@@ -164,11 +165,12 @@ public final class ClienteService {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                LOGGER.info("Cliente encontrado con ID: {}", id);
-                return mapResultSetToCliente(rs);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    LOGGER.info("Cliente encontrado con ID: {}", id);
+                    return mapResultSetToCliente(rs);
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Error al obtener cliente por ID", e);
@@ -188,11 +190,12 @@ public final class ClienteService {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cedula);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                LOGGER.info("Cliente encontrado con cedula: {}", cedula);
-                return mapResultSetToCliente(rs);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    LOGGER.info("Cliente encontrado con cedula: {}", cedula);
+                    return mapResultSetToCliente(rs);
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Error al obtener cliente por cedula", e);
@@ -307,14 +310,14 @@ public final class ClienteService {
             stmt.setString(2, searchPattern);
             stmt.setString(3, searchPattern);
 
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Cliente cliente = mapResultSetToCliente(rs);
+                    clientes.add(cliente);
+                }
 
-            while (rs.next()) {
-                Cliente cliente = mapResultSetToCliente(rs);
-                clientes.add(cliente);
+                LOGGER.info("Se encontraron {} clientes con el criterio: {}", clientes.size(), criterio);
             }
-
-            LOGGER.info("Se encontraron {} clientes con el criterio: {}", clientes.size(), criterio);
         } catch (SQLException e) {
             LOGGER.error("Error al buscar clientes", e);
         }

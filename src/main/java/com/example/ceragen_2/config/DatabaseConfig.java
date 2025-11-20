@@ -9,7 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public final class DatabaseConfig {
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConfig.class);
     private static DatabaseConfig instance;
     private Connection connection;
     private final Dotenv dotenv;
@@ -19,16 +19,12 @@ public final class DatabaseConfig {
         dotenv = Dotenv.configure()
                 .ignoreIfMissing()
                 .load();
-        logger.info("Configuración de base de datos inicializada");
+        LOGGER.info("Configuración de base de datos inicializada");
     }
 
-    public static DatabaseConfig getInstance() {
+    public static synchronized DatabaseConfig getInstance() {
         if (instance == null) {
-            synchronized (DatabaseConfig.class) {
-                if (instance == null) {
-                    instance = new DatabaseConfig();
-                }
-            }
+            instance = new DatabaseConfig();
         }
         return instance;
     }
@@ -49,12 +45,12 @@ public final class DatabaseConfig {
                         host, port, database);
 
                 connection = DriverManager.getConnection(url, user, password);
-                logger.info("Conexión a la base de datos establecida exitosamente");
+                LOGGER.info("Conexión a la base de datos establecida exitosamente");
             } catch (ClassNotFoundException e) {
-                logger.error("Driver de MySQL no encontrado", e);
+                LOGGER.error("Driver de MySQL no encontrado", e);
                 throw new SQLException("Driver de MySQL no encontrado", e);
             } catch (SQLException e) {
-                logger.error("Error al conectar con la base de datos", e);
+                LOGGER.error("Error al conectar con la base de datos", e);
                 throw e;
             }
         }
@@ -65,9 +61,9 @@ public final class DatabaseConfig {
         if (connection != null) {
             try {
                 connection.close();
-                logger.info("Conexión a la base de datos cerrada");
+                LOGGER.info("Conexión a la base de datos cerrada");
             } catch (SQLException e) {
-                logger.error("Error al cerrar la conexión", e);
+                LOGGER.error("Error al cerrar la conexión", e);
             }
         }
     }

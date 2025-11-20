@@ -6,8 +6,10 @@ Priority 2:
 
 === com/example/ceragen_2/config/DatabaseConfig.java ===
 Priority 1:
-- FieldNamingConventions: The constant name 'logger' doesn't match '[A-Z][A-Z_0-9]*' (Línea 12)
 - DoubleCheckedLocking: Double checked locking is not thread safe in Java. (Línea 25)
+
+Priority 2:
+- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 12)
 
 === com/example/ceragen_2/controller/UsuariosController.java ===
 Priority 2:
@@ -15,9 +17,9 @@ Priority 2:
 - VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 24)
 
 Priority 3:
-- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Línea 1)
+- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Línea 1-636)
 - GodClass: Possible God Class (WMC=50, ATFD=157, TCC=32.971%) (Línea 22)
-- TooManyFields: Too many fields (Línea 22)
+- TooManyFields: Too many fields (Línea 22-636)
 - AvoidDuplicateLiterals: The String literal "ACTIVO" appears 4 times in this file; the first occurrence is on line 96 (Línea 96)
 - AvoidDuplicateLiterals: The String literal "TODOS" appears 4 times in this file; the first occurrence is on line 143 (Línea 143)
 - LocalVariableCouldBeFinal: Local variable 'task' could be declared final (Línea 162)
@@ -74,10 +76,17 @@ Priority 3:
 - LocalVariableCouldBeFinal: Local variable 'exito' could be declared final (Línea 607)
 - LocalVariableCouldBeFinal: Local variable 'alerta' could be declared final (Línea 630)
 
-Priority 4:
-- UnnecessaryImport: Unused import 'javafx.application.Platform' (Línea 6)
-- UnnecessaryFullyQualifiedName: Unnecessary qualifier 'javafx.scene.layout': 'VBox' is already in scope because it is imported in this file (Línea 559)
-- UnnecessaryFullyQualifiedName: Unnecessary qualifier 'javafx.scene.layout': 'VBox' is already in scope because it is imported in this file (Línea 559)
+=== com/example/ceragen_2/service/ViewNavigator.java ===
+Priority 1:
+- FieldNamingConventions: The public constant name 'loginView' doesn't match '[A-Z][A-Z_0-9]*' (Línea 18)
+- FieldNamingConventions: The public constant name 'mainView' doesn't match '[A-Z][A-Z_0-9]*' (Línea 19)
+
+Priority 2:
+- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 13)
+
+=== com/example/ceragen_2/util/PasswordUtil.java ===
+Priority 1:
+- FieldNamingConventions: The constant name 'bcryptRounds' doesn't match '[A-Z][A-Z_0-9]*' (Línea 11)
 
 === com/example/ceragen_2/controller/CitasController.java ===
 Priority 2:
@@ -86,16 +95,16 @@ Priority 2:
 - VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 44)
 
 Priority 3:
-- ExcessiveImports: A high number of imports can indicate a high degree of coupling within an object. (Línea 1)
-- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Línea 1)
+- ExcessiveImports: A high number of imports can indicate a high degree of coupling within an object. (Línea 1-783)
+- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Línea 1-783)
 - GodClass: Possible God Class (WMC=72, ATFD=226, TCC=19.697%) (Línea 41)
-- TooManyFields: Too many fields (Línea 41)
+- TooManyFields: Too many fields (Línea 41-783)
 - AvoidDuplicateLiterals: The String literal "Error" appears 20 times in this file; the first occurrence is on line 201 (Línea 201)
 - AvoidDuplicateLiterals: The String literal "unused" appears 16 times in this file; the first occurrence is on line 274 (Línea 274)
 - AvoidDuplicateLiterals: The String literal "Éxito" appears 7 times in this file; the first occurrence is on line 411 (Línea 411)
 - NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 431)
 - AvoidDuplicateLiterals: The String literal "Ingrese una cédula" appears 4 times in this file; the first occurrence is on line 550 (Línea 550)
-- ConfusingTernary: Avoid if (x != y) ..; else ..; (Línea 644)
+- ConfusingTernary: Avoid if (x != y) ..; else ..; (Línea 644-657)
 - NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 651)
 - NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 655)
 - UnusedFormalParameter: Avoid unused method parameters such as 'finSemana'. (Línea 697)
@@ -113,7 +122,7 @@ Priority 2:
 - VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 21)
 
 Priority 3:
-- TooManyFields: Too many fields (Línea 19)
+- TooManyFields: Too many fields (Línea 19-421)
 - AvoidDuplicateLiterals: The String literal "Error" appears 12 times in this file; the first occurrence is on line 141 (Línea 141)
 - AvoidDuplicateLiterals: The String literal "unused" appears 5 times in this file; the first occurrence is on line 148 (Línea 148)
 - NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 363)
@@ -124,7 +133,7 @@ Priority 2:
 - VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 33)
 
 Priority 3:
-- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Línea 1)
+- CouplingBetweenObjects: High amount of different objects as members denotes a high coupling (Línea 1-237)
 - AvoidDuplicateLiterals: The String literal "Error" appears 11 times in this file; the first occurrence is on line 88 (Línea 88)
 - AvoidCatchingGenericException: Avoid catching generic exceptions such as NullPointerException, RuntimeException, Exception in try-catch block (Línea 164)
 - AvoidCatchingGenericException: Avoid catching generic exceptions such as NullPointerException, RuntimeException, Exception in try-catch block (Línea 220)
@@ -153,10 +162,160 @@ Priority 3:
 - LocalVariableCouldBeFinal: Local variable 'hashedPassword' could be declared final (Línea 39)
 - NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 63)
 - NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 64)
+- NullAssignment: Assigning an Object to null is a code smell. Consider refactoring. (Línea 65)
+
+=== com/example/ceragen_2/service/CitaService.java ===
+Priority 2:
+- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 15)
+
+Priority 3:
+- CognitiveComplexity: The method 'getCitas(int, int, Integer, Integer, String, LocalDateTime, LocalDateTime)' has a cognitive complexity of 18, current threshold is 15 (Línea 31)
+- CyclomaticComplexity: The method 'getCitas(int, int, Integer, Integer, String, LocalDateTime, LocalDateTime)' has a cyclomatic complexity of 17. (Línea 31)
+- NPathComplexity: The method 'getCitas(int, int, Integer, Integer, String, LocalDateTime, LocalDateTime)' has an NPath complexity of 11616, current threshold is 200 (Línea 31)
+- MethodArgumentCouldBeFinal: Parameter 'offset' is not assigned and could be declared final (Línea 31)
+- MethodArgumentCouldBeFinal: Parameter 'limit' is not assigned and could be declared final (Línea 31)
+- MethodArgumentCouldBeFinal: Parameter 'pacienteId' is not assigned and could be declared final (Línea 31)
+- MethodArgumentCouldBeFinal: Parameter 'profesionalId' is not assigned and could be declared final (Línea 31)
+- MethodArgumentCouldBeFinal: Parameter 'estadoFilter' is not assigned and could be declared final (Línea 32)
+- MethodArgumentCouldBeFinal: Parameter 'fechaDesde' is not assigned and could be declared final (Línea 32)
+- MethodArgumentCouldBeFinal: Parameter 'fechaHasta' is not assigned and could be declared final (Línea 32)
+- LocalVariableCouldBeFinal: Local variable 'citas' could be declared final (Línea 33)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 34)
+- InsufficientStringBufferDeclaration: StringBuilder has been initialized with size 396, but has at least 532 characters appended. (Línea 34-43)
+- LiteralsFirstInComparisons: Position literals first in String comparisons (Línea 51)
+- AvoidDuplicateLiterals: The String literal "TODOS" appears 4 times in this file; the first occurrence is on line 51 (Línea 51)
+- LiteralsFirstInComparisons: Position literals first in String comparisons (Línea 74)
+- CloseResource: Ensure that resources like this ResultSet object are closed after use (Línea 87)
+- LocalVariableCouldBeFinal: Local variable 'rs' could be declared final (Línea 87)
+- LocalVariableCouldBeFinal: Local variable 'cita' could be declared final (Línea 90)
+- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 90)
+- LocalVariableCouldBeFinal: Local variable 'timestamp' could be declared final (Línea 95)
+- LocalVariableCouldBeFinal: Local variable 'fechaCreacion' could be declared final (Línea 104)
+- CyclomaticComplexity: The method 'countCitas(Integer, Integer, String, LocalDateTime, LocalDateTime)' has a cyclomatic complexity of 15. (Línea 126)
+- NPathComplexity: The method 'countCitas(Integer, Integer, String, LocalDateTime, LocalDateTime)' has an NPath complexity of 4704, current threshold is 200 (Línea 126)
+- MethodArgumentCouldBeFinal: Parameter 'pacienteId' is not assigned and could be declared final (Línea 126)
+- MethodArgumentCouldBeFinal: Parameter 'profesionalId' is not assigned and could be declared final (Línea 126)
+- MethodArgumentCouldBeFinal: Parameter 'estadoFilter' is not assigned and could be declared final (Línea 126)
+- MethodArgumentCouldBeFinal: Parameter 'fechaDesde' is not assigned and could be declared final (Línea 127)
+- MethodArgumentCouldBeFinal: Parameter 'fechaHasta' is not assigned and could be declared final (Línea 127)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 128)
+- InsufficientStringBufferDeclaration: StringBuilder has been initialized with size 52, but has at least 134 characters appended. (Línea 128)
+- LiteralsFirstInComparisons: Position literals first in String comparisons (Línea 136)
+- LiteralsFirstInComparisons: Position literals first in String comparisons (Línea 157)
+- UnusedAssignment: The updated value of variable 'paramIndex' is never used (Línea 164)
+- CloseResource: Ensure that resources like this ResultSet object are closed after use (Línea 167)
+- LocalVariableCouldBeFinal: Local variable 'rs' could be declared final (Línea 167)
+- MethodArgumentCouldBeFinal: Parameter 'pacienteId' is not assigned and could be declared final (Línea 181)
+- MethodArgumentCouldBeFinal: Parameter 'profesionalId' is not assigned and could be declared final (Línea 181)
+- MethodArgumentCouldBeFinal: Parameter 'fechaHora' is not assigned and could be declared final (Línea 181)
+- MethodArgumentCouldBeFinal: Parameter 'motivo' is not assigned and could be declared final (Línea 182)
+- MethodArgumentCouldBeFinal: Parameter 'costo' is not assigned and could be declared final (Línea 182)
+- MethodArgumentCouldBeFinal: Parameter 'facturaId' is not assigned and could be declared final (Línea 182)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 183)
+- LocalVariableCouldBeFinal: Local variable 'rowsAffected' could be declared final (Línea 195)
+- MethodArgumentCouldBeFinal: Parameter 'conn' is not assigned and could be declared final (Línea 208)
+- MethodArgumentCouldBeFinal: Parameter 'pacienteId' is not assigned and could be declared final (Línea 208)
+- MethodArgumentCouldBeFinal: Parameter 'profesionalId' is not assigned and could be declared final (Línea 208)
+- MethodArgumentCouldBeFinal: Parameter 'fechaHora' is not assigned and could be declared final (Línea 209)
+- MethodArgumentCouldBeFinal: Parameter 'motivo' is not assigned and could be declared final (Línea 209)
+- MethodArgumentCouldBeFinal: Parameter 'costo' is not assigned and could be declared final (Línea 209)
+- MethodArgumentCouldBeFinal: Parameter 'facturaId' is not assigned and could be declared final (Línea 209)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 210)
+- LocalVariableCouldBeFinal: Local variable 'rowsAffected' could be declared final (Línea 220)
+- MethodArgumentCouldBeFinal: Parameter 'id' is not assigned and could be declared final (Línea 229)
+- MethodArgumentCouldBeFinal: Parameter 'pacienteId' is not assigned and could be declared final (Línea 229)
+- MethodArgumentCouldBeFinal: Parameter 'profesionalId' is not assigned and could be declared final (Línea 229)
+- MethodArgumentCouldBeFinal: Parameter 'fechaHora' is not assigned and could be declared final (Línea 230)
+- MethodArgumentCouldBeFinal: Parameter 'motivo' is not assigned and could be declared final (Línea 230)
+- MethodArgumentCouldBeFinal: Parameter 'estado' is not assigned and could be declared final (Línea 230)
+- MethodArgumentCouldBeFinal: Parameter 'observaciones' is not assigned and could be declared final (Línea 230)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 231)
+- LocalVariableCouldBeFinal: Local variable 'rowsAffected' could be declared final (Línea 245)
+- MethodArgumentCouldBeFinal: Parameter 'id' is not assigned and could be declared final (Línea 258)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 259)
+- LocalVariableCouldBeFinal: Local variable 'rowsAffected' could be declared final (Línea 266)
+- MethodArgumentCouldBeFinal: Parameter 'id' is not assigned and could be declared final (Línea 279)
+- MethodArgumentCouldBeFinal: Parameter 'nuevoEstado' is not assigned and could be declared final (Línea 279)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 280)
+- LocalVariableCouldBeFinal: Local variable 'rowsAffected' could be declared final (Línea 288)
+- MethodArgumentCouldBeFinal: Parameter 'id' is not assigned and could be declared final (Línea 301)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 302)
+- CloseResource: Ensure that resources like this ResultSet object are closed after use (Línea 315)
+- LocalVariableCouldBeFinal: Local variable 'rs' could be declared final (Línea 315)
+- LocalVariableCouldBeFinal: Local variable 'cita' could be declared final (Línea 318)
+- LocalVariableCouldBeFinal: Local variable 'timestamp' could be declared final (Línea 323)
+- LocalVariableCouldBeFinal: Local variable 'fechaCreacion' could be declared final (Línea 332)
+- MethodArgumentCouldBeFinal: Parameter 'profesionalId' is not assigned and could be declared final (Línea 352)
+- MethodArgumentCouldBeFinal: Parameter 'fechaHora' is not assigned and could be declared final (Línea 352)
+- MethodArgumentCouldBeFinal: Parameter 'citaIdExcluir' is not assigned and could be declared final (Línea 352)
+- CloseResource: Ensure that resources like this ResultSet object are closed after use (Línea 369)
+- LocalVariableCouldBeFinal: Local variable 'rs' could be declared final (Línea 369)
+
+=== com/example/ceragen_2/service/ClienteService.java ===
+Priority 2:
+- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 13)
+
+Priority 3:
+- LocalVariableCouldBeFinal: Local variable 'clientes' could be declared final (Línea 30)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 31)
+- LocalVariableCouldBeFinal: Local variable 'cliente' could be declared final (Línea 38)
+- AvoidInstantiatingObjectsInLoops: Avoid instantiating new objects inside loops (Línea 38)
+- LocalVariableCouldBeFinal: Local variable 'clientes' could be declared final (Línea 58)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 59)
+- AvoidDuplicateLiterals: The String literal "SELECT id, cedula, nombres, apellidos, telefono, email, direccion, activo, fecha_registro " appears 5 times in this file; the first occurrence is on line 59 (Línea 59)
+- LocalVariableCouldBeFinal: Local variable 'cliente' could be declared final (Línea 67)
+- MethodArgumentCouldBeFinal: Parameter 'offset' is not assigned and could be declared final (Línea 82)
+- MethodArgumentCouldBeFinal: Parameter 'limit' is not assigned and could be declared final (Línea 82)
+- MethodArgumentCouldBeFinal: Parameter 'searchText' is not assigned and could be declared final (Línea 82)
+- LocalVariableCouldBeFinal: Local variable 'clientes' could be declared final (Línea 83)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 84)
+- InsufficientStringBufferDeclaration: StringBuilder has been initialized with size 139, but has at least 227 characters appended. (Línea 84-87)
+- InefficientEmptyStringCheck: String.trim().length() == 0 / String.trim().isEmpty() is an inefficient way to validate a blank String. (Línea 89)
+- InefficientEmptyStringCheck: String.trim().length() == 0 / String.trim().isEmpty() is an inefficient way to validate a blank String. (Línea 100)
+- LocalVariableCouldBeFinal: Local variable 'searchPattern' could be declared final (Línea 101)
+- CloseResource: Ensure that resources like this ResultSet object are closed after use (Línea 110)
+- LocalVariableCouldBeFinal: Local variable 'rs' could be declared final (Línea 110)
+- LocalVariableCouldBeFinal: Local variable 'cliente' could be declared final (Línea 113)
+- MethodArgumentCouldBeFinal: Parameter 'searchText' is not assigned and could be declared final (Línea 128)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 129)
+- InsufficientStringBufferDeclaration: StringBuilder has been initialized with size 65, but has at least 107 characters appended. (Línea 129)
+- InefficientEmptyStringCheck: String.trim().length() == 0 / String.trim().isEmpty() is an inefficient way to validate a blank String. (Línea 131)
+- InefficientEmptyStringCheck: String.trim().length() == 0 / String.trim().isEmpty() is an inefficient way to validate a blank String. (Línea 138)
+- LocalVariableCouldBeFinal: Local variable 'searchPattern' could be declared final (Línea 139)
+- CloseResource: Ensure that resources like this ResultSet object are closed after use (Línea 145)
+- LocalVariableCouldBeFinal: Local variable 'rs' could be declared final (Línea 145)
+- MethodArgumentCouldBeFinal: Parameter 'id' is not assigned and could be declared final (Línea 159)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 160)
+- LocalVariableCouldBeFinal: Local variable 'rs' could be declared final (Línea 167)
+- MethodArgumentCouldBeFinal: Parameter 'cedula' is not assigned and could be declared final (Línea 183)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 184)
+- LocalVariableCouldBeFinal: Local variable 'rs' could be declared final (Línea 191)
+- MethodArgumentCouldBeFinal: Parameter 'cliente' is not assigned and could be declared final (Línea 207)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 208)
+- LocalVariableCouldBeFinal: Local variable 'affectedRows' could be declared final (Línea 221)
+- MethodArgumentCouldBeFinal: Parameter 'cliente' is not assigned and could be declared final (Línea 242)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 243)
+- LocalVariableCouldBeFinal: Local variable 'affectedRows' could be declared final (Línea 257)
+- MethodArgumentCouldBeFinal: Parameter 'id' is not assigned and could be declared final (Línea 273)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 274)
+- LocalVariableCouldBeFinal: Local variable 'affectedRows' could be declared final (Línea 280)
+- MethodArgumentCouldBeFinal: Parameter 'criterio' is not assigned and could be declared final (Línea 296)
+- LocalVariableCouldBeFinal: Local variable 'clientes' could be declared final (Línea 297)
+- LocalVariableCouldBeFinal: Local variable 'sql' could be declared final (Línea 298)
+- LocalVariableCouldBeFinal: Local variable 'searchPattern' could be declared final (Línea 305)
+- CloseResource: Ensure that resources like this ResultSet object are closed after use (Línea 310)
+- LocalVariableCouldBeFinal: Local variable 'rs' could be declared final (Línea 310)
+- LocalVariableCouldBeFinal: Local variable 'cliente' could be declared final (Línea 313)
+- MethodArgumentCouldBeFinal: Parameter 'rs' is not assigned and could be declared final (Línea 328)
+- LocalVariableCouldBeFinal: Local variable 'cliente' could be declared final (Línea 329)
+- LocalVariableCouldBeFinal: Local variable 'fechaRegistro' could be declared final (Línea 333)
+
+=== com/example/ceragen_2/service/UsuarioService.java ===
+Priority 2:
+- VariableNamesMustStartWithLowerCase: Los nombres de variables deben iniciar con letra minúscula (camelCase) (Línea 15)
 
 === com/example/ceragen_2/model/Cita.java ===
 Priority 3:
-- ShortClassName: Avoid short class names like Cita (Línea 6)
 - UncommentedEmptyConstructor: Document empty constructor (Línea 21)
 - MethodArgumentCouldBeFinal: Parameter 'id' is not assigned and could be declared final (Línea 24)
 - MethodArgumentCouldBeFinal: Parameter 'pacienteId' is not assigned and could be declared final (Línea 24)
@@ -186,9 +345,6 @@ Priority 3:
 - MethodArgumentCouldBeFinal: Parameter 'pacienteNombre' is not assigned and could be declared final (Línea 123)
 - MethodArgumentCouldBeFinal: Parameter 'profesionalNombre' is not assigned and could be declared final (Línea 131)
 - MethodArgumentCouldBeFinal: Parameter 'costo' is not assigned and could be declared final (Línea 139)
-
-Priority 4:
-- ShortClassName: Avoid short class names like Cita (Línea 6)
 
 === com/example/ceragen_2/model/Usuario.java ===
 Priority 3:

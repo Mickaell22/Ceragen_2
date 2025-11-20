@@ -8,7 +8,7 @@ import org.mindrot.jbcrypt.BCrypt;
 public class PasswordUtil {
 
     // Cost factor para BCrypt (12 es un buen balance entre seguridad y rendimiento)
-    private static final int bcryptRounds = 12;
+    private static final int BCRYPT_ROUNDS = 12;
 
     /**
      * Hashea una contraseña usando BCrypt
@@ -17,7 +17,7 @@ public class PasswordUtil {
      * @return Hash BCrypt de la contraseña
      */
     public static String hashPassword(String plainPassword) {
-        return BCrypt.hashpw(plainPassword, BCrypt.gensalt(bcryptRounds));
+        return BCrypt.hashpw(plainPassword, BCrypt.gensalt(BCRYPT_ROUNDS));
     }
 
     /**

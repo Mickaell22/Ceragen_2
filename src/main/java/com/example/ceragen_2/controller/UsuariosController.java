@@ -565,7 +565,7 @@ public class UsuariosController {
         dialog.getDialogPane().setContent(vbox);
 
         dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == btnCambiar) {
+            if (btnCambiar.equals(dialogButton)) {
                 return txtNuevaPassword.getText();
             }
             return null;

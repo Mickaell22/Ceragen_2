@@ -84,35 +84,35 @@ public final class CitaService {
             stmt.setInt(paramIndex++, limit);
             stmt.setInt(paramIndex, offset);
 
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Cita cita = new Cita();
+                    cita.setId(rs.getInt("id"));
+                    cita.setPacienteId(rs.getInt("paciente_id"));
+                    cita.setProfesionalId(rs.getInt("profesional_id"));
 
-            while (rs.next()) {
-                Cita cita = new Cita();
-                cita.setId(rs.getInt("id"));
-                cita.setPacienteId(rs.getInt("paciente_id"));
-                cita.setProfesionalId(rs.getInt("profesional_id"));
+                    Timestamp timestamp = rs.getTimestamp("fecha_hora");
+                    if (timestamp != null) {
+                        cita.setFechaHora(timestamp.toLocalDateTime());
+                    }
 
-                Timestamp timestamp = rs.getTimestamp("fecha_hora");
-                if (timestamp != null) {
-                    cita.setFechaHora(timestamp.toLocalDateTime());
+                    cita.setMotivo(rs.getString("motivo"));
+                    cita.setEstado(rs.getString("estado"));
+                    cita.setObservaciones(rs.getString("observaciones"));
+
+                    Timestamp fechaCreacion = rs.getTimestamp("fecha_creacion");
+                    if (fechaCreacion != null) {
+                        cita.setFechaCreacion(fechaCreacion.toLocalDateTime());
+                    }
+
+                    cita.setPacienteNombre(rs.getString("paciente_nombre"));
+                    cita.setProfesionalNombre(rs.getString("profesional_nombre"));
+
+                    citas.add(cita);
                 }
 
-                cita.setMotivo(rs.getString("motivo"));
-                cita.setEstado(rs.getString("estado"));
-                cita.setObservaciones(rs.getString("observaciones"));
-
-                Timestamp fechaCreacion = rs.getTimestamp("fecha_creacion");
-                if (fechaCreacion != null) {
-                    cita.setFechaCreacion(fechaCreacion.toLocalDateTime());
-                }
-
-                cita.setPacienteNombre(rs.getString("paciente_nombre"));
-                cita.setProfesionalNombre(rs.getString("profesional_nombre"));
-
-                citas.add(cita);
+                LOGGER.info("Se obtuvieron {} citas", citas.size());
             }
-
-            LOGGER.info("Se obtuvieron {} citas", citas.size());
         } catch (SQLException e) {
             LOGGER.error("Error al obtener citas", e);
         }
@@ -164,9 +164,10 @@ public final class CitaService {
                 stmt.setTimestamp(paramIndex++, Timestamp.valueOf(fechaHasta));
             }
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Error al contar citas", e);
@@ -312,29 +313,29 @@ public final class CitaService {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                Cita cita = new Cita();
-                cita.setId(rs.getInt("id"));
-                cita.setPacienteId(rs.getInt("paciente_id"));
-                cita.setProfesionalId(rs.getInt("profesional_id"));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Cita cita = new Cita();
+                    cita.setId(rs.getInt("id"));
+                    cita.setPacienteId(rs.getInt("paciente_id"));
+                    cita.setProfesionalId(rs.getInt("profesional_id"));
 
-                Timestamp timestamp = rs.getTimestamp("fecha_hora");
-                if (timestamp != null) {
-                    cita.setFechaHora(timestamp.toLocalDateTime());
-                }
+                    Timestamp timestamp = rs.getTimestamp("fecha_hora");
+                    if (timestamp != null) {
+                        cita.setFechaHora(timestamp.toLocalDateTime());
+                    }
 
-                cita.setMotivo(rs.getString("motivo"));
-                cita.setEstado(rs.getString("estado"));
-                cita.setObservaciones(rs.getString("observaciones"));
+                    cita.setMotivo(rs.getString("motivo"));
+                    cita.setEstado(rs.getString("estado"));
+                    cita.setObservaciones(rs.getString("observaciones"));
 
-                Timestamp fechaCreacion = rs.getTimestamp("fecha_creacion");
-                if (fechaCreacion != null) {
-                    cita.setFechaCreacion(fechaCreacion.toLocalDateTime());
-                }
+                    Timestamp fechaCreacion = rs.getTimestamp("fecha_creacion");
+                    if (fechaCreacion != null) {
+                        cita.setFechaCreacion(fechaCreacion.toLocalDateTime());
+                    }
 
-                cita.setPacienteNombre(rs.getString("paciente_nombre"));
+                    cita.setPacienteNombre(rs.getString("paciente_nombre"));
                 cita.setProfesionalNombre(rs.getString("profesional_nombre"));
 
                 return cita;
@@ -366,9 +367,10 @@ public final class CitaService {
                 stmt.setInt(3, citaIdExcluir);
             }
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Error al verificar conflicto de horario", e);

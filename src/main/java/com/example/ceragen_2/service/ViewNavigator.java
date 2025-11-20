@@ -15,8 +15,8 @@ public final class ViewNavigator {
     private Stage primaryStage;
 
     // Rutas de vistas
-    public static final String loginView = "/com/example/ceragen_2/views/login.fxml";
-    public static final String mainView = "/com/example/ceragen_2/views/main.fxml";
+    public static final String LOGIN_VIEW = "/com/example/ceragen_2/views/login.fxml";
+    public static final String MAIN_VIEW = "/com/example/ceragen_2/views/main.fxml";
 
     private ViewNavigator() {}
 
@@ -54,7 +54,7 @@ public final class ViewNavigator {
     }
 
     public void showLogin() {
-        navigateTo(loginView);
+        navigateTo(LOGIN_VIEW);
         primaryStage.setMaximized(false);
         primaryStage.setWidth(400);
         primaryStage.setHeight(500);
@@ -62,7 +62,7 @@ public final class ViewNavigator {
     }
 
     public void showMainView() {
-        navigateTo(mainView);
+        navigateTo(MAIN_VIEW);
         primaryStage.setMaximized(true);
     }
 }

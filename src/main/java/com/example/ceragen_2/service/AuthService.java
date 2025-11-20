@@ -33,23 +33,24 @@ public final class AuthService {
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                String hashedPassword = rs.getString("password");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String hashedPassword = rs.getString("password");
 
-                if (PasswordUtil.verifyPassword(password, hashedPassword)) {
-                    currentUserId = rs.getInt("id");
-                    currentUsername = rs.getString("username");
-                    currentUserRole = rs.getString("rol");
+                    if (PasswordUtil.verifyPassword(password, hashedPassword)) {
+                        currentUserId = rs.getInt("id");
+                        currentUsername = rs.getString("username");
+                        currentUserRole = rs.getString("rol");
 
-                    LOGGER.info("Usuario autenticado: {} - Rol: {}", currentUsername, currentUserRole);
-                    return true;
+                        LOGGER.info("Usuario autenticado: {} - Rol: {}", currentUsername, currentUserRole);
+                        return true;
+                    } else {
+                        LOGGER.warn("Contraseña incorrecta para usuario: {}", username);
+                    }
                 } else {
-                    LOGGER.warn("Contraseña incorrecta para usuario: {}", username);
+                    LOGGER.warn("Usuario no encontrado o inactivo: {}", username);
                 }
-            } else {
-                LOGGER.warn("Usuario no encontrado o inactivo: {}", username);
             }
         } catch (SQLException e) {
             LOGGER.error("Error al autenticar usuario: {}", username, e);
