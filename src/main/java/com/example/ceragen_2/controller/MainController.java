@@ -162,8 +162,9 @@ public class MainController {
     @SuppressWarnings("unused")
     private void navigateToProfesionales() {
         LOGGER.info("Navegando a módulo Profesionales");
-        // TODO: Cargar vista de profesionales en contentArea
+        cargarVista("/com/example/ceragen_2/views/profesionales.fxml");
     }
+
 
     @FXML
     @SuppressWarnings("unused")
