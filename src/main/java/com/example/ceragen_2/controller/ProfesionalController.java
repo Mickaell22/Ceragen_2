@@ -1,5 +1,8 @@
 package com.example.ceragen_2.controller;
-
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.layout.GridPane;
 import com.example.ceragen_2.model.Profesional;
 import com.example.ceragen_2.service.ProfesionalService;
 import javafx.application.Platform;
@@ -579,22 +582,132 @@ public class ProfesionalController {
     // =====================================================
     // ACCIONES COLUMNA "ACCIONES"
     // =====================================================
+    // =====================================================
+// ACCIONES COLUMNA "ACCIONES"  -> VER PROFESIONAL CON MEJOR DISEÑO
+// =====================================================
     private void handleVerProfesional(Profesional profesional) {
         if (profesional == null) return;
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Detalle Profesional");
-        alert.setHeaderText(profesional.getNombreCompleto());
-        alert.setContentText(
-                "Cédula: " + profesional.getCedula() + "\n" +
-                        "Especialidad: " + (profesional.getEspecialidadNombre() != null
-                        ? profesional.getEspecialidadNombre()
-                        : profesional.getEspecialidadId()) + "\n" +
-                        "Teléfono: " + profesional.getTelefono() + "\n" +
-                        "Email: " + profesional.getEmail()
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Detalle del profesional");
+        dialog.setHeaderText(null); // usamos nuestro propio header
+
+        DialogPane pane = dialog.getDialogPane();
+        pane.getButtonTypes().add(ButtonType.CLOSE);
+
+        // Fondo y padding del diálogo
+        pane.setStyle(
+                "-fx-background-color: linear-gradient(to bottom, #f4f7fb, #ffffff);" +
+                        "-fx-padding: 20;" +
+                        "-fx-font-family: 'Segoe UI', sans-serif;"
         );
-        alert.showAndWait();
+
+        // Contenedor principal
+        VBox root = new VBox(12);
+        root.setFillWidth(true);
+
+        // Nombre del profesional (título)
+        Label lblNombre = new Label(profesional.getNombreCompleto());
+        lblNombre.setStyle(
+                "-fx-font-size: 18px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #00695c;"   // verde tipo Ceragen
+        );
+
+        // Subtítulo
+        Label lblSubtitulo = new Label("Información del profesional");
+        lblSubtitulo.setStyle(
+                "-fx-font-size: 13px;" +
+                        "-fx-text-fill: #607d8b;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        Separator separator = new Separator();
+
+        // Grid con los datos
+        GridPane grid = new GridPane();
+        grid.setHgap(12);
+        grid.setVgap(8);
+
+        // Helper para crear labels de título (izquierda)
+        java.util.function.Function<String, Label> leftLabel = text -> {
+            Label l = new Label(text);
+            l.setStyle(
+                    "-fx-font-weight: bold;" +
+                            "-fx-text-fill: #455a64;" +
+                            "-fx-font-size: 13px;"
+            );
+            return l;
+        };
+
+        // Helper para crear labels de valor (derecha)
+        java.util.function.Function<String, Label> rightLabel = text -> {
+            Label l = new Label(text != null ? text : "-");
+            l.setStyle(
+                    "-fx-font-size: 13px;" +
+                            "-fx-text-fill: #37474f;"
+            );
+            return l;
+        };
+
+        String especialidad = profesional.getEspecialidadNombre() != null
+                ? profesional.getEspecialidadNombre()
+                : (profesional.getEspecialidadId() != null
+                ? "ID " + profesional.getEspecialidadId()
+                : "-");
+
+        String estado = Boolean.TRUE.equals(profesional.getActivo()) ? "ACTIVO" : "INACTIVO";
+
+        int row = 0;
+        grid.add(leftLabel.apply("Cédula:"),            0, row);
+        grid.add(rightLabel.apply(profesional.getCedula()), 1, row++);
+
+        grid.add(leftLabel.apply("Especialidad:"),      0, row);
+        grid.add(rightLabel.apply(especialidad),        1, row++);
+
+        grid.add(leftLabel.apply("Teléfono:"),          0, row);
+        grid.add(rightLabel.apply(profesional.getTelefono()), 1, row++);
+
+        grid.add(leftLabel.apply("Email:"),             0, row);
+        grid.add(rightLabel.apply(profesional.getEmail()), 1, row++);
+
+        grid.add(leftLabel.apply("Número de licencia:"),0, row);
+        grid.add(rightLabel.apply(profesional.getNumeroLicencia()), 1, row++);
+
+        grid.add(leftLabel.apply("Estado:"),            0, row);
+        Label lblEstado = rightLabel.apply(estado);
+        // Color según estado
+        lblEstado.setStyle(
+                "-fx-font-size: 13px;" +
+                        "-fx-font-weight: bold;" +
+                        (Boolean.TRUE.equals(profesional.getActivo())
+                                ? "-fx-text-fill: #2e7d32;"   // verde
+                                : "-fx-text-fill: #c62828;")  // rojo
+        );
+        grid.add(lblEstado, 1, row);
+
+        // Armamos el contenido
+        root.getChildren().addAll(lblNombre, lblSubtitulo, separator, grid);
+
+        pane.setContent(root);
+
+        // Botón cerrar con un poco de estilo
+        Button btnCerrar = (Button) pane.lookupButton(ButtonType.CLOSE);
+        if (btnCerrar != null) {
+            btnCerrar.setText("Cerrar");
+            btnCerrar.setStyle(
+                    "-fx-background-color: #00695c;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-padding: 6 20 6 20;" +
+                            "-fx-background-radius: 20;"
+            );
+        }
+
+        dialog.showAndWait();
     }
+
+
 
     private void handleEditarProfesional(Profesional profesional) {
         if (profesional == null) return;
