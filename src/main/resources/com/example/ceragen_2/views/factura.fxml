@@ -235,12 +235,12 @@
                 <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
                     <HBox spacing="10">
                         <Label text="Descuento:" styleClass="text-primary-dark-control"/>
-                        <TextField fx:id="txtDescuento" editable="false" prefWidth="150"/>
+                        <TextField fx:id="txtDescuento" editable="false" styleClass="disabled-field" prefWidth="150"/>
                     </HBox>
 
                     <HBox spacing="10">
                         <Label text="Método de pago:" styleClass="text-primary-dark-control"/>
-                        <TextField fx:id="txtMetodoPago" editable="false" prefWidth="150"/>
+                        <TextField fx:id="txtMetodoPago" editable="false" styleClass="disabled-field" prefWidth="150"/>
                     </HBox>
                 </HBox>
 

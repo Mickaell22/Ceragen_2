@@ -1,7 +1,16 @@
 package com.example.ceragen_2.controller;
 
-import com.example.ceragen_2.model.*;
-import com.example.ceragen_2.service.*;
+import com.example.ceragen_2.model.Factura;
+import com.example.ceragen_2.model.Cita;
+import com.example.ceragen_2.model.Cliente;
+import com.example.ceragen_2.model.Paciente;
+import com.example.ceragen_2.model.Profesional;
+
+import com.example.ceragen_2.service.PacienteService;
+import com.example.ceragen_2.service.ClienteService;
+import com.example.ceragen_2.service.ProfesionalService;
+import com.example.ceragen_2.service.FacturaService;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -89,6 +98,7 @@ public class FacturaController {
     @FXML private TextField txtIva;
     @FXML private TextField txtDescuento;
     @FXML private TextField txtTotal;
+    @FXML private TextField txtMetodoPago;
     // Botones
     @FXML private Button btnVolver;
     @FXML private Button btnAnular;
@@ -246,7 +256,6 @@ public class FacturaController {
         });
     }
 
-
     private void cargarFacturas() {
         Task<List<Factura>> task = new Task<>() {
             @Override
@@ -302,14 +311,14 @@ public class FacturaController {
         new Thread(task).start();
     }
 
-    private void verFactura(Integer facturaId) {
+    private void verFactura(final Integer facturaId) {
         logger.info("Abriendo vista de factura ID: {}", facturaId);
         // Cambiar al tab "Ver" y cargar los datos de la factura
         tabPane.getSelectionModel().select(2); // Índice del tab "Ver"
         cargarDatosFacturaCompleta(facturaId);
     }
 
-    private void anularFactura(Integer facturaId) {
+    private void anularFactura(final Integer facturaId) {
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Anular Factura");
         confirmacion.setHeaderText("¿Está seguro de anular esta factura?");
@@ -368,10 +377,15 @@ public class FacturaController {
 
                 txtCliente.setText(factura.getClienteNombre() != null ? factura.getClienteNombre() : "Sin cliente");
                 txtCiudad.setText(factura.getCiudad() != null ? factura.getCiudad() : "-");
+                var obj = clienteService.getClienteById(factura.getClienteId());
+                txtCedula.setText(obj.getCedula());
+                txtTelefono.setText(obj.getCedula());
+                txtDireccion.setText(obj.getDireccion());
 
                 txtSubtotal.setText(String.format("$%.2f", factura.getSubtotal() != null ? factura.getSubtotal() : 0.0));
                 txtIva.setText(String.format("$%.2f", factura.getIva() != null ? factura.getIva() : 0.0));
                 txtDescuento.setText(String.format("$%.2f", factura.getDescuento() != null ? factura.getDescuento() : 0.0));
+                txtMetodoPago.setText(factura.getMetodoPago() != null ? factura.getMetodoPago() : "No hay datos");
                 txtTotal.setText(String.format("$%.2f", factura.getTotal() != null ? factura.getTotal() : 0.0));
 
                 // --- Llenar la tabla con las citas asociadas ---
