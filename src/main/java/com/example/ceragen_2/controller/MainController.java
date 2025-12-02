@@ -170,8 +170,9 @@ public class MainController {
     @SuppressWarnings("unused")
     private void navigateToEspecialidades() {
         LOGGER.info("Navegando a módulo Especialidades");
-        // TODO: Cargar vista de especialidades en contentArea
+        cargarVista("/com/example/ceragen_2/views/especialidad.fxml");
     }
+
 
     @FXML
     @SuppressWarnings("unused")
