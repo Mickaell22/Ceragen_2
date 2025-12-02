@@ -17,6 +17,6 @@ if %errorlevel% neq 0 (
 )
 
 REM Ejecutar Maven con todos los argumentos pasados
-call mvnw.cmd %*
+call "%~dp0mvnw.cmd" %*
 
 endlocal

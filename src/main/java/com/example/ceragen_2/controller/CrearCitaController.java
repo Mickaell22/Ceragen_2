@@ -29,7 +29,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class CrearCitaController {
-    private static final Logger logger = LoggerFactory.getLogger(CrearCitaController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrearCitaController.class);
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private final PacienteService pacienteService = PacienteService.getInstance();
@@ -49,42 +49,42 @@ public class CrearCitaController {
 
     @FXML
     public void initialize() {
-        logger.info("Inicializando CrearCitaController");
+        LOGGER.info("Inicializando CrearCitaController");
         cargarCatalogos();
         // Configurar fecha actual por defecto
         dpCrearFecha.setValue(LocalDate.now());
     }
 
     // Método para recibir la referencia del FacturaController
-    public void setFacturaController(FacturaController facturaController) {
+    public void setFacturaController(final FacturaController facturaController) {
         this.facturaController = facturaController;
-        logger.info("Referencia de FacturaController recibida");
+        LOGGER.info("Referencia de FacturaController recibida");
     }
 
     private void cargarCatalogos() {
-        Task<CatalogosResult> task = new Task<>() {
+        final Task<CatalogosResult> task = new Task<>() {
             @Override
             protected CatalogosResult call() {
-                List<Paciente> pacientes = pacienteService.getAllPacientes();
-                List<Profesional> profesionales = profesionalService.getAllProfesionales();
+                final List<Paciente> pacientes = pacienteService.getAllPacientes();
+                final List<Profesional> profesionales = profesionalService.getAllProfesionales();
                 return new CatalogosResult(pacientes, profesionales);
             }
         };
 
         task.setOnSucceeded(event -> {
-            CatalogosResult resultado = task.getValue();
+            final CatalogosResult resultado = task.getValue();
             listaPacientes = resultado.pacientes;
             listaProfesionales = resultado.profesionales;
 
             cmbCrearPaciente.setItems(FXCollections.observableArrayList(listaPacientes));
             cmbCrearProfesional.setItems(FXCollections.observableArrayList(listaProfesionales));
 
-            logger.info("Catálogos cargados: {} pacientes, {} profesionales",
+            LOGGER.info("Catálogos cargados: {} pacientes, {} profesionales",
                     listaPacientes.size(), listaProfesionales.size());
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al cargar catálogos", task.getException());
+            LOGGER.error("Error al cargar catálogos", task.getException());
             mostrarAlerta("Error", "No se pudieron cargar los catálogos");
         });
 
@@ -92,37 +92,38 @@ public class CrearCitaController {
     }
 
     @FXML
+    @SuppressWarnings({"unused", "PMD.AvoidCatchingGenericException"})
     private void handleCrearCita() {
-        logger.info("Intentando crear nueva cita...");
+        LOGGER.info("Intentando crear nueva cita...");
 
         if (!validarCampos()) {
             return;
         }
 
         try {
-            Paciente paciente = cmbCrearPaciente.getValue();
-            Profesional profesional = cmbCrearProfesional.getValue();
-            LocalDate fecha = dpCrearFecha.getValue();
-            LocalTime hora = LocalTime.parse(txtCrearHora.getText().trim(), TIME_FORMATTER);
-            LocalDateTime fechaHora = LocalDateTime.of(fecha, hora);
-            String motivo = txtCrearMotivo.getText().trim();
+            final Paciente paciente = cmbCrearPaciente.getValue();
+            final Profesional profesional = cmbCrearProfesional.getValue();
+            final LocalDate fecha = dpCrearFecha.getValue();
+            final LocalTime hora = LocalTime.parse(txtCrearHora.getText().trim(), TIME_FORMATTER);
+            final LocalDateTime fechaHora = LocalDateTime.of(fecha, hora);
+            final String motivo = txtCrearMotivo.getText().trim();
 
             // DEBUG: Mostrar todos los valores
-            //logger.info("DEBUG - Paciente ID: {}", paciente != null ? paciente.getId() : "NULL");
-            //logger.info("DEBUG - Profesional ID: {}", profesional != null ? profesional.getId() : "NULL");
-            //logger.info("DEBUG - Profesional Especialidad: {}", profesional != null ? profesional.getEspecialidadId() : "NULL");
-            //logger.info("DEBUG - FechaHora: {}", fechaHora);
-            //logger.info("DEBUG - Motivo: {}", motivo);
+            //LOGGER.info("DEBUG - Paciente ID: {}", paciente != null ? paciente.getId() : "NULL");
+            //LOGGER.info("DEBUG - Profesional ID: {}", profesional != null ? profesional.getId() : "NULL");
+            //LOGGER.info("DEBUG - Profesional Especialidad: {}", profesional != null ? profesional.getEspecialidadId() : "NULL");
+            //LOGGER.info("DEBUG - FechaHora: {}", fechaHora);
+            //LOGGER.info("DEBUG - Motivo: {}", motivo);
 
             // Obtener el costo de la especialidad
-            EspecialidadService especialidadService = EspecialidadService.getInstance();
-            //logger.info("DEBUG - EspecialidadService: {}", especialidadService != null ? "especialidadService Activo" : "NULL");
-            //logger.info("DEBUG - profesional: {}", profesional != null ? "existe profesional" : "NULL");
-            //logger.info("DEBUG - ID de la especialidad: {}", profesional.getEspecialidadId() != null ? "existe especialidad" : "NULL");
-            Especialidad especialidad = especialidadService.getEspecialidadById(profesional.getEspecialidadId());
+            final EspecialidadService especialidadService = EspecialidadService.getInstance();
+            //LOGGER.info("DEBUG - EspecialidadService: {}", especialidadService != null ? "especialidadService Activo" : "NULL");
+            //LOGGER.info("DEBUG - profesional: {}", profesional != null ? "existe profesional" : "NULL");
+            //LOGGER.info("DEBUG - ID de la especialidad: {}", profesional.getEspecialidadId() != null ? "existe especialidad" : "NULL");
+            final Especialidad especialidad = especialidadService.getEspecialidadById(profesional.getEspecialidadId());
 
-            //logger.info("DEBUG - Especialidad: {}", especialidad != null ? especialidad.getNombre() : "NULL");
-            //logger.info("DEBUG - Costo: {}", especialidad != null ? especialidad.getCostoConsulta() : "NULL");
+            //LOGGER.info("DEBUG - Especialidad: {}", especialidad != null ? especialidad.getNombre() : "NULL");
+            //LOGGER.info("DEBUG - Costo: {}", especialidad != null ? especialidad.getCostoConsulta() : "NULL");
 
             if (especialidad == null) {
                 mostrarAlerta("Error", "No se pudo obtener el costo de la especialidad");
@@ -130,7 +131,7 @@ public class CrearCitaController {
             }
 
             // Crear nueva cita
-            Cita nuevaCita = new Cita();
+            final Cita nuevaCita = new Cita();
             nuevaCita.setPacienteId(paciente.getId());
             nuevaCita.setProfesionalId(profesional.getId());
             nuevaCita.setFechaHora(fechaHora);
@@ -140,15 +141,15 @@ public class CrearCitaController {
             nuevaCita.setProfesionalNombre(profesional.getNombreCompleto());
 
             // DEBUG: Verificar la cita creada
-            logger.info("DEBUG - Cita creada - PacienteID: {}, ProfesionalID: {}, Costo: {}",
+            LOGGER.info("DEBUG - Cita creada - PacienteID: {}, ProfesionalID: {}, Costo: {}",
                     nuevaCita.getPacienteId(), nuevaCita.getProfesionalId(), nuevaCita.getCosto());
 
             // Agregar cita a la factura
             if (facturaController != null) {
                 facturaController.agregarCita(nuevaCita);
-                logger.info("Cita agregada exitosamente a la factura");
+                LOGGER.info("Cita agregada exitosamente a la factura");
             } else {
-                logger.error("No hay referencia a FacturaController");
+                LOGGER.error("No hay referencia a FacturaController");
                 mostrarAlerta("Error", "No se pudo conectar con la factura");
                 return;
             }
@@ -158,17 +159,18 @@ public class CrearCitaController {
             cerrarVentana();
 
         } catch (DateTimeParseException e) {
-            logger.error("Error de formato de hora: {}", e.getMessage());
+            LOGGER.error("Error de formato de hora: {}", e.getMessage());
             mostrarAlerta("Error", "Formato de hora inválido. Use HH:mm (ej: 14:30)");
         } catch (Exception e) {
-            logger.error("Error detallado al crear cita:", e);
+            LOGGER.error("Error detallado al crear cita:", e);
             mostrarAlerta("Error", "No se pudo crear la cita: " + e.getMessage());
         }
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleLimpiar() {
-        logger.info("Limpiando formulario de cita");
+        LOGGER.info("Limpiando formulario de cita");
         cmbCrearPaciente.setValue(null);
         cmbCrearProfesional.setValue(null);
         dpCrearFecha.setValue(LocalDate.now());
@@ -189,11 +191,11 @@ public class CrearCitaController {
             mostrarAlerta("Error", "Seleccione una fecha");
             return false;
         }
-        if (txtCrearHora.getText().trim().isEmpty()) {
+        if (txtCrearHora.getText().isBlank()) {
             mostrarAlerta("Error", "Ingrese la hora");
             return false;
         }
-        if (txtCrearMotivo.getText().trim().isEmpty()) {
+        if (txtCrearMotivo.getText().isBlank()) {
             mostrarAlerta("Error", "Ingrese el motivo de la consulta");
             return false;
         }
@@ -209,21 +211,22 @@ public class CrearCitaController {
         return true;
     }
 
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     private void cerrarVentana() {
         try {
             // Obtener el Stage desde cualquier nodo de la escena
-            Stage stage = (Stage) txtCrearMotivo.getScene().getWindow(); // Usa cualquier control que sí esté inicializado
+            final Stage stage = (Stage) txtCrearMotivo.getScene().getWindow(); // Usa cualquier control que sí esté inicializado
             stage.close();
-            logger.info("Ventana cerrada exitosamente");
+            LOGGER.info("Ventana cerrada exitosamente");
         } catch (Exception e) {
-            logger.error("Error al cerrar ventana: {}", e.getMessage());
+            LOGGER.error("Error al cerrar ventana: {}", e.getMessage());
             // Fallback: cerrar la aplicación si no se puede obtener el stage
             Platform.exit();
         }
     }
 
-    private void mostrarAlerta(String titulo, String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    private void mostrarAlerta(final String titulo, final String mensaje) {
+        final Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
         alert.setContentText(mensaje);

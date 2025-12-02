@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CitaService {
-    private static final Logger logger = LoggerFactory.getLogger(CitaService.class);
+public final class CitaService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CitaService.class);
     private static CitaService instance;
 
     private CitaService() {
     }
 
-    public static CitaService getInstance() {
+    public static synchronized CitaService getInstance() {
         if (instance == null) {
             instance = new CitaService();
         }
@@ -84,37 +84,37 @@ public class CitaService {
             stmt.setInt(paramIndex++, limit);
             stmt.setInt(paramIndex, offset);
 
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Cita cita = new Cita();
+                    cita.setId(rs.getInt("id"));
+                    cita.setPacienteId(rs.getInt("paciente_id"));
+                    cita.setProfesionalId(rs.getInt("profesional_id"));
 
-            while (rs.next()) {
-                Cita cita = new Cita();
-                cita.setId(rs.getInt("id"));
-                cita.setPacienteId(rs.getInt("paciente_id"));
-                cita.setProfesionalId(rs.getInt("profesional_id"));
+                    Timestamp timestamp = rs.getTimestamp("fecha_hora");
+                    if (timestamp != null) {
+                        cita.setFechaHora(timestamp.toLocalDateTime());
+                    }
 
-                Timestamp timestamp = rs.getTimestamp("fecha_hora");
-                if (timestamp != null) {
-                    cita.setFechaHora(timestamp.toLocalDateTime());
+                    cita.setMotivo(rs.getString("motivo"));
+                    cita.setEstado(rs.getString("estado"));
+                    cita.setObservaciones(rs.getString("observaciones"));
+
+                    Timestamp fechaCreacion = rs.getTimestamp("fecha_creacion");
+                    if (fechaCreacion != null) {
+                        cita.setFechaCreacion(fechaCreacion.toLocalDateTime());
+                    }
+
+                    cita.setPacienteNombre(rs.getString("paciente_nombre"));
+                    cita.setProfesionalNombre(rs.getString("profesional_nombre"));
+
+                    citas.add(cita);
                 }
 
-                cita.setMotivo(rs.getString("motivo"));
-                cita.setEstado(rs.getString("estado"));
-                cita.setObservaciones(rs.getString("observaciones"));
-
-                Timestamp fechaCreacion = rs.getTimestamp("fecha_creacion");
-                if (fechaCreacion != null) {
-                    cita.setFechaCreacion(fechaCreacion.toLocalDateTime());
-                }
-
-                cita.setPacienteNombre(rs.getString("paciente_nombre"));
-                cita.setProfesionalNombre(rs.getString("profesional_nombre"));
-
-                citas.add(cita);
+                LOGGER.info("Se obtuvieron {} citas", citas.size());
             }
-
-            logger.info("Se obtuvieron {} citas", citas.size());
         } catch (SQLException e) {
-            logger.error("Error al obtener citas", e);
+            LOGGER.error("Error al obtener citas", e);
         }
 
         return citas;
@@ -164,12 +164,13 @@ public class CitaService {
                 stmt.setTimestamp(paramIndex++, Timestamp.valueOf(fechaHasta));
             }
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
         } catch (SQLException e) {
-            logger.error("Error al contar citas", e);
+            LOGGER.error("Error al contar citas", e);
         }
 
         return 0;
@@ -193,11 +194,11 @@ public class CitaService {
             stmt.setInt(6, facturaId);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Cita creada para paciente ID: {}, factura ID: {}", pacienteId, facturaId);
+            LOGGER.info("Cita creada para paciente ID: {}, factura ID: {}", pacienteId, facturaId);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al crear cita con factura", e);
+            LOGGER.error("Error al crear cita con factura", e);
             return false;
         }
     }
@@ -218,7 +219,7 @@ public class CitaService {
             stmt.setInt(6, facturaId);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Cita creada para paciente ID: {}, factura ID: {}", pacienteId, facturaId);
+            LOGGER.info("Cita creada para paciente ID: {}, factura ID: {}", pacienteId, facturaId);
             return rowsAffected > 0;
         }
     }
@@ -243,11 +244,11 @@ public class CitaService {
             stmt.setInt(7, id);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Cita actualizada ID: {}", id);
+            LOGGER.info("Cita actualizada ID: {}", id);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al actualizar cita", e);
+            LOGGER.error("Error al actualizar cita", e);
             return false;
         }
     }
@@ -264,11 +265,11 @@ public class CitaService {
             stmt.setInt(1, id);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Cita eliminada con ID: {}", id);
+            LOGGER.info("Cita eliminada con ID: {}", id);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al eliminar cita", e);
+            LOGGER.error("Error al eliminar cita", e);
             return false;
         }
     }
@@ -286,11 +287,11 @@ public class CitaService {
             stmt.setInt(2, id);
 
             int rowsAffected = stmt.executeUpdate();
-            logger.info("Estado de cita ID {} cambiado a: {}", id, nuevoEstado);
+            LOGGER.info("Estado de cita ID {} cambiado a: {}", id, nuevoEstado);
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            logger.error("Error al cambiar estado de cita", e);
+            LOGGER.error("Error al cambiar estado de cita", e);
             return false;
         }
     }
@@ -312,35 +313,36 @@ public class CitaService {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                Cita cita = new Cita();
-                cita.setId(rs.getInt("id"));
-                cita.setPacienteId(rs.getInt("paciente_id"));
-                cita.setProfesionalId(rs.getInt("profesional_id"));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Cita cita = new Cita();
+                    cita.setId(rs.getInt("id"));
+                    cita.setPacienteId(rs.getInt("paciente_id"));
+                    cita.setProfesionalId(rs.getInt("profesional_id"));
 
-                Timestamp timestamp = rs.getTimestamp("fecha_hora");
-                if (timestamp != null) {
-                    cita.setFechaHora(timestamp.toLocalDateTime());
+                    Timestamp timestamp = rs.getTimestamp("fecha_hora");
+                    if (timestamp != null) {
+                        cita.setFechaHora(timestamp.toLocalDateTime());
+                    }
+
+                    cita.setMotivo(rs.getString("motivo"));
+                    cita.setEstado(rs.getString("estado"));
+                    cita.setObservaciones(rs.getString("observaciones"));
+
+                    Timestamp fechaCreacion = rs.getTimestamp("fecha_creacion");
+                    if (fechaCreacion != null) {
+                        cita.setFechaCreacion(fechaCreacion.toLocalDateTime());
+                    }
+
+                    cita.setPacienteNombre(rs.getString("paciente_nombre"));
+                    cita.setProfesionalNombre(rs.getString("profesional_nombre"));
+
+                    return cita;
                 }
-
-                cita.setMotivo(rs.getString("motivo"));
-                cita.setEstado(rs.getString("estado"));
-                cita.setObservaciones(rs.getString("observaciones"));
-
-                Timestamp fechaCreacion = rs.getTimestamp("fecha_creacion");
-                if (fechaCreacion != null) {
-                    cita.setFechaCreacion(fechaCreacion.toLocalDateTime());
-                }
-
-                cita.setPacienteNombre(rs.getString("paciente_nombre"));
-                cita.setProfesionalNombre(rs.getString("profesional_nombre"));
-
-                return cita;
             }
         } catch (SQLException e) {
-            logger.error("Error al obtener cita por ID", e);
+            LOGGER.error("Error al obtener cita por ID", e);
         }
 
         return null;
@@ -366,12 +368,13 @@ public class CitaService {
                 stmt.setInt(3, citaIdExcluir);
             }
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
         } catch (SQLException e) {
-            logger.error("Error al verificar conflicto de horario", e);
+            LOGGER.error("Error al verificar conflicto de horario", e);
         }
 
         return false;

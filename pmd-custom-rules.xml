@@ -1,0 +1,359 @@
+<?xml version="1.0"?>
+<ruleset name="Reglas Personalizadas Ceragen"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        Reglas personalizadas para el proyecto Ceragen_2
+    </description>
+
+    <!-- ========== REGLAS DE NAMING CONVENTIONS ========== -->
+
+    <!-- REGLA 1: Nombres de clases deben iniciar con mayúscula -->
+    <rule name="ClassNamesMustStartWithUpperCase"
+          language="java"
+          message="Los nombres de clases deben iniciar con letra mayúscula"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Los nombres de clases deben seguir la convención PascalCase (iniciar con mayúscula)
+        </description>
+        <priority>2</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//ClassDeclaration[matches(@SimpleName, '^[a-z].*')]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- REGLA 2: Nombres de métodos deben estar en minúscula (camelCase) -->
+    <rule name="MethodNamesMustStartWithLowerCase"
+          language="java"
+          message="Los nombres de métodos deben iniciar con letra minúscula (camelCase)"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Los nombres de métodos deben seguir la convención camelCase (iniciar con minúscula)
+        </description>
+        <priority>2</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//MethodDeclaration[matches(@Name, '^[A-Z].*')]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- REGLA 3: Nombres de variables deben estar en minúscula (camelCase) -->
+    <rule name="VariableNamesMustStartWithLowerCase"
+          language="java"
+          message="Los nombres de variables deben iniciar con letra minúscula (camelCase)"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Los nombres de variables deben seguir la convención camelCase (iniciar con minúscula), excepto constantes
+        </description>
+        <priority>2</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//FieldDeclaration[not(ancestor::*/Modifiers/Modifier[@Static='true' and @Final='true'])]
+/VariableDeclarator[matches(@Name, '^[A-Z].*')]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- ========== REGLAS ANTI-HARDCODING ========== -->
+
+    <!-- REGLA 4: No hardcodear URLs -->
+    <rule name="NoHardcodedURLs"
+          language="java"
+          message="No hardcodear URLs, usar archivos de configuración o .env"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Las URLs deben estar en configuración (.env), no hardcodeadas en el código
+        </description>
+        <priority>2</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//Literal[
+    starts-with(@Image, '"http://') or
+    starts-with(@Image, '"https://') or
+    starts-with(@Image, "'http://") or
+    starts-with(@Image, "'https://")
+]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- REGLA 5: No hardcodear direcciones IP -->
+    <rule name="NoHardcodedIPAddresses"
+          language="java"
+          message="No hardcodear direcciones IP, usar configuración"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Las direcciones IP deben estar en .env o archivos de configuración
+        </description>
+        <priority>2</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//Literal[
+    matches(@Image, '.*\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}.*')
+]
+[not(ancestor::Annotation)]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- REGLA 6: No hardcodear credenciales de base de datos -->
+    <rule name="NoHardcodedDatabaseCredentials"
+          language="java"
+          message="Credenciales de BD deben estar en .env, no hardcodeadas"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Detecta posibles credenciales hardcodeadas (username, password, host, port de BD)
+        </description>
+        <priority>1</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//VariableDeclarator[
+    (
+        contains(@Name, 'dbUser') or
+        contains(@Name, 'dbPassword') or
+        contains(@Name, 'dbHost') or
+        contains(@Name, 'dbPort') or
+        contains(@Name, 'DB_USER') or
+        contains(@Name, 'DB_PASSWORD') or
+        contains(@Name, 'DB_HOST')
+    )
+    and
+    ../VariableInitializer/Expression/PrimaryExpression/PrimaryPrefix/Literal
+]
+[not(ancestor::ClassDeclaration[ends-with(@SimpleName, 'Test')])]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- REGLA 7: No hardcodear rutas de archivos absolutas -->
+    <rule name="NoHardcodedFilePaths"
+          language="java"
+          message="No usar rutas absolutas hardcodeadas, usar rutas relativas o configuración"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Las rutas absolutas (C:\, /home/, etc) no deben estar hardcodeadas
+        </description>
+        <priority>3</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//Literal[
+    starts-with(@Image, '"C:\\') or
+    starts-with(@Image, '"D:\\') or
+    starts-with(@Image, '"/home/') or
+    starts-with(@Image, '"/usr/') or
+    starts-with(@Image, "'C:\\") or
+    starts-with(@Image, "'D:\\") or
+    starts-with(@Image, "'/home/") or
+    starts-with(@Image, "'/usr/")
+]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- REGLA 8: No hardcodear queries SQL complejas -->
+    <rule name="NoHardcodedSQLQueries"
+          language="java"
+          message="Queries SQL complejas deben estar en archivos .sql o constantes separadas"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Queries SQL largas (más de una línea) deben estar en archivos o constantes
+        </description>
+        <priority>3</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//VariableDeclarator[
+    ../VariableInitializer/Expression/PrimaryExpression/PrimaryPrefix/Literal[
+        contains(@Image, 'SELECT') and
+        contains(@Image, 'FROM') and
+        string-length(@Image) > 100
+    ]
+]
+[not(../../../Modifiers/Modifier[@Static='true' and @Final='true'])]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- REGLA 9: No hardcodear API keys o tokens -->
+    <rule name="NoHardcodedAPIKeys"
+          language="java"
+          message="API keys y tokens deben estar en .env, no hardcodeados"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Detecta posibles API keys, tokens o secrets hardcodeados
+        </description>
+        <priority>1</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//VariableDeclarator[
+    (
+        contains(@Name, 'apiKey') or
+        contains(@Name, 'API_KEY') or
+        contains(@Name, 'token') or
+        contains(@Name, 'TOKEN') or
+        contains(@Name, 'secret') or
+        contains(@Name, 'SECRET') or
+        contains(@Name, 'privateKey')
+    )
+    and
+    ../VariableInitializer/Expression/PrimaryExpression/PrimaryPrefix/Literal
+]
+[not(ancestor::ClassDeclaration[ends-with(@SimpleName, 'Test')])]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- REGLA 10: No hardcodear puertos -->
+    <rule name="NoHardcodedPorts"
+          language="java"
+          message="Los puertos deben estar en configuración, no hardcodeados"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Los números de puerto deben estar en .env o archivos de configuración
+        </description>
+        <priority>3</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//VariableDeclarator[
+    (
+        contains(@Name, 'port') or
+        contains(@Name, 'Port') or
+        contains(@Name, 'PORT')
+    )
+    and
+    ../VariableInitializer/Expression/PrimaryExpression/PrimaryPrefix/Literal[@IntLiteral='true']
+    and
+    not(../../../Modifiers/Modifier[@Static='true' and @Final='true'])
+]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- REGLA 11: No hardcodear nombres de base de datos -->
+    <rule name="NoHardcodedDatabaseNames"
+          language="java"
+          message="Nombres de base de datos deben estar en .env"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Los nombres de bases de datos deben configurarse en .env
+        </description>
+        <priority>2</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//VariableDeclarator[
+    (
+        contains(@Name, 'database') or
+        contains(@Name, 'Database') or
+        contains(@Name, 'dbName') or
+        contains(@Name, 'DB_NAME')
+    )
+    and
+    ../VariableInitializer/Expression/PrimaryExpression/PrimaryPrefix/Literal
+]
+[not(ancestor::ClassDeclaration[ends-with(@SimpleName, 'Test')])]
+[not(../../../Modifiers/Modifier[@Static='true' and @Final='true'])]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- REGLA 12: No hardcodear emails o dominios -->
+    <rule name="NoHardcodedEmails"
+          language="java"
+          message="Emails o dominios no deben estar hardcodeados, usar configuración"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Los emails de sistema o dominios deben estar en configuración
+        </description>
+        <priority>3</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//Literal[
+    matches(@Image, '.*@.*\..*')
+]
+[not(ancestor::Annotation)]
+[not(ancestor::ClassDeclaration[ends-with(@SimpleName, 'Test')])]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- REGLA 13: Usar constantes para valores mágicos recurrentes -->
+    <rule name="NoMagicStrings"
+          language="java"
+          message="Strings repetidos deben definirse como constantes"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Strings literales usados múltiples veces deben ser constantes
+        </description>
+        <priority>3</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//Literal[
+    string-length(@Image) > 15 and
+    not(ancestor::Annotation) and
+    not(contains(@Image, 'SELECT')) and
+    not(contains(@Image, 'INSERT')) and
+    not(contains(@Image, 'UPDATE')) and
+    not(contains(@Image, 'DELETE'))
+]
+[not(ancestor::FieldDeclaration/parent::*/Modifiers/Modifier[@Static='true' and @Final='true'])]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+</ruleset>

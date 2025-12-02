@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ClienteController {
-    private static final Logger logger = LoggerFactory.getLogger(ClienteController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClienteController.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final ClienteService clienteService = ClienteService.getInstance();
@@ -65,7 +65,7 @@ public class ClienteController {
 
     @FXML
     public void initialize() {
-        logger.info("Inicializando modulo de Clientes");
+        LOGGER.info("Inicializando modulo de Clientes");
 
         configurarTabla();
         cargarDatos();
@@ -99,18 +99,18 @@ public class ClienteController {
                 btnEliminar.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
 
                 btnEditar.setOnAction(event -> {
-                    Cliente cliente = getTableView().getItems().get(getIndex());
+                    final Cliente cliente = getTableView().getItems().get(getIndex());
                     abrirEdicion(cliente);
                 });
 
                 btnEliminar.setOnAction(event -> {
-                    Cliente cliente = getTableView().getItems().get(getIndex());
+                    final Cliente cliente = getTableView().getItems().get(getIndex());
                     eliminarCliente(cliente);
                 });
             }
 
             @Override
-            protected void updateItem(Void item, boolean empty) {
+            protected void updateItem(final Void item, final boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : pane);
             }
@@ -120,7 +120,7 @@ public class ClienteController {
     private void cargarDatos() {
         loadingIndicator.setVisible(true);
 
-        Task<List<Cliente>> task = new Task<>() {
+        final Task<List<Cliente>> task = new Task<>() {
             @Override
             protected List<Cliente> call() {
                 return clienteService.getAllClientesCompletos();
@@ -128,15 +128,15 @@ public class ClienteController {
         };
 
         task.setOnSucceeded(event -> {
-            List<Cliente> clientes = task.getValue();
+            final List<Cliente> clientes = task.getValue();
             tableClientes.getItems().clear();
             tableClientes.getItems().addAll(clientes);
-            logger.info("Datos cargados: {} clientes", clientes.size());
+            LOGGER.info("Datos cargados: {} clientes", clientes.size());
             loadingIndicator.setVisible(false);
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al cargar datos", task.getException());
+            LOGGER.error("Error al cargar datos", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudieron cargar los datos", Alert.AlertType.ERROR);
         });
@@ -145,18 +145,19 @@ public class ClienteController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleBuscar() {
-        String criterio = txtBuscar.getText().trim();
+        final String criterio = txtBuscar.getText().trim();
 
         if (criterio.isEmpty()) {
             cargarDatos();
             return;
         }
 
-        logger.info("Buscando clientes con criterio: {}", criterio);
+        LOGGER.info("Buscando clientes con criterio: {}", criterio);
         loadingIndicator.setVisible(true);
 
-        Task<List<Cliente>> task = new Task<>() {
+        final Task<List<Cliente>> task = new Task<>() {
             @Override
             protected List<Cliente> call() {
                 return clienteService.buscarClientes(criterio);
@@ -164,15 +165,15 @@ public class ClienteController {
         };
 
         task.setOnSucceeded(event -> {
-            List<Cliente> clientes = task.getValue();
+            final List<Cliente> clientes = task.getValue();
             tableClientes.getItems().clear();
             tableClientes.getItems().addAll(clientes);
-            logger.info("Busqueda completa: {} clientes encontrados", clientes.size());
+            LOGGER.info("Busqueda completa: {} clientes encontrados", clientes.size());
             loadingIndicator.setVisible(false);
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al buscar clientes", task.getException());
+            LOGGER.error("Error al buscar clientes", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudo realizar la busqueda", Alert.AlertType.ERROR);
         });
@@ -181,13 +182,15 @@ public class ClienteController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleLimpiarFiltros() {
-        logger.info("Limpiando filtros");
+        LOGGER.info("Limpiando filtros");
         txtBuscar.clear();
         cargarDatos();
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleCrearCliente() {
         final String cedula = txtCrearCedula.getText().trim();
         final String nombres = txtCrearNombres.getText().trim();
@@ -204,16 +207,16 @@ public class ClienteController {
 
         loadingIndicator.setVisible(true);
 
-        Task<Boolean> task = new Task<>() {
+        final Task<Boolean> task = new Task<>() {
             @Override
             protected Boolean call() {
                 // Verificar si ya existe
-                Cliente existente = clienteService.getClienteByCedula(cedula);
+                final Cliente existente = clienteService.getClienteByCedula(cedula);
                 if (existente != null) {
                     return null; // Cedula ya existe
                 }
 
-                Cliente cliente = new Cliente();
+                final Cliente cliente = new Cliente();
                 cliente.setCedula(cedula);
                 cliente.setNombres(nombres);
                 cliente.setApellidos(apellidos);
@@ -226,25 +229,25 @@ public class ClienteController {
         };
 
         task.setOnSucceeded(event -> {
-            Boolean exito = task.getValue();
+            final Boolean exito = task.getValue();
             loadingIndicator.setVisible(false);
 
             if (exito == null) {
                 mostrarAlerta("Error", "Ya existe un cliente con esta cedula", Alert.AlertType.ERROR);
             } else if (exito) {
-                logger.info("Cliente creado exitosamente: {} {}", nombres, apellidos);
+                LOGGER.info("Cliente creado exitosamente: {} {}", nombres, apellidos);
                 mostrarAlerta("Exito", "Cliente creado exitosamente", Alert.AlertType.INFORMATION);
                 limpiarFormularioCrear();
                 cargarDatos();
                 tabPane.getSelectionModel().select(0);
             } else {
-                logger.error("Error al crear cliente");
+                LOGGER.error("Error al crear cliente");
                 mostrarAlerta("Error", "No se pudo crear el cliente", Alert.AlertType.ERROR);
             }
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al crear cliente", task.getException());
+            LOGGER.error("Error al crear cliente", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudo crear el cliente", Alert.AlertType.ERROR);
         });
@@ -253,6 +256,7 @@ public class ClienteController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleLimpiarFormCrear() {
         limpiarFormularioCrear();
     }
@@ -266,8 +270,8 @@ public class ClienteController {
         txtCrearDireccion.clear();
     }
 
-    private void abrirEdicion(Cliente cliente) {
-        logger.info("Abriendo edicion para cliente: {}", cliente.getNombreCompleto());
+    private void abrirEdicion(final Cliente cliente) {
+        LOGGER.info("Abriendo edicion para cliente: {}", cliente.getNombreCompleto());
         clienteEnEdicion = cliente;
 
         txtEditarId.setText(cliente.getId().toString());
@@ -283,6 +287,7 @@ public class ClienteController {
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleActualizarCliente() {
         if (clienteEnEdicion == null) {
             return;
@@ -305,16 +310,16 @@ public class ClienteController {
 
         final Integer clienteId = clienteEnEdicion.getId();
 
-        Task<Boolean> task = new Task<>() {
+        final Task<Boolean> task = new Task<>() {
             @Override
             protected Boolean call() {
                 // Verificar si la cedula ya existe en otro cliente
-                Cliente existente = clienteService.getClienteByCedula(cedula);
+                final Cliente existente = clienteService.getClienteByCedula(cedula);
                 if (existente != null && !existente.getId().equals(clienteId)) {
                     return null; // Cedula ya existe en otro cliente
                 }
 
-                Cliente cliente = new Cliente();
+                final Cliente cliente = new Cliente();
                 cliente.setId(clienteId);
                 cliente.setCedula(cedula);
                 cliente.setNombres(nombres);
@@ -328,24 +333,24 @@ public class ClienteController {
         };
 
         task.setOnSucceeded(event -> {
-            Boolean exito = task.getValue();
+            final Boolean exito = task.getValue();
             loadingIndicator.setVisible(false);
 
             if (exito == null) {
                 mostrarAlerta("Error", "Ya existe otro cliente con esta cedula", Alert.AlertType.ERROR);
             } else if (exito) {
-                logger.info("Cliente actualizado exitosamente: {} {}", nombres, apellidos);
+                LOGGER.info("Cliente actualizado exitosamente: {} {}", nombres, apellidos);
                 mostrarAlerta("Exito", "Cliente actualizado exitosamente", Alert.AlertType.INFORMATION);
                 cargarDatos();
                 handleCancelarEdicion();
             } else {
-                logger.error("Error al actualizar cliente");
+                LOGGER.error("Error al actualizar cliente");
                 mostrarAlerta("Error", "No se pudo actualizar el cliente", Alert.AlertType.ERROR);
             }
         });
 
         task.setOnFailed(event -> {
-            logger.error("Error al actualizar cliente", task.getException());
+            LOGGER.error("Error al actualizar cliente", task.getException());
             loadingIndicator.setVisible(false);
             mostrarAlerta("Error", "No se pudo actualizar el cliente", Alert.AlertType.ERROR);
         });
@@ -360,22 +365,22 @@ public class ClienteController {
         tabPane.getSelectionModel().select(0);
     }
 
-    private void eliminarCliente(Cliente cliente) {
-        logger.info("Intentando eliminar cliente: {}", cliente.getNombreCompleto());
+    private void eliminarCliente(final Cliente cliente) {
+        LOGGER.info("Intentando eliminar cliente: {}", cliente.getNombreCompleto());
 
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        final Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar Eliminacion");
         confirmacion.setHeaderText("Esta seguro de eliminar este cliente?");
         confirmacion.setContentText("Cliente: " + cliente.getNombreCompleto() + "\nCedula: " + cliente.getCedula() + "\nEsta accion no se puede deshacer.");
 
-        Optional<ButtonType> resultado = confirmacion.showAndWait();
+        final Optional<ButtonType> resultado = confirmacion.showAndWait();
 
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             final Integer clienteId = cliente.getId();
 
             loadingIndicator.setVisible(true);
 
-            Task<Boolean> task = new Task<>() {
+            final Task<Boolean> task = new Task<>() {
                 @Override
                 protected Boolean call() {
                     return clienteService.eliminarCliente(clienteId);
@@ -383,21 +388,21 @@ public class ClienteController {
             };
 
             task.setOnSucceeded(event -> {
-                Boolean exito = task.getValue();
+                final Boolean exito = task.getValue();
                 loadingIndicator.setVisible(false);
 
                 if (exito) {
-                    logger.info("Cliente eliminado exitosamente: {}", cliente.getNombreCompleto());
+                    LOGGER.info("Cliente eliminado exitosamente: {}", cliente.getNombreCompleto());
                     mostrarAlerta("Exito", "Cliente eliminado exitosamente", Alert.AlertType.INFORMATION);
                     cargarDatos();
                 } else {
-                    logger.error("Error al eliminar cliente: {}", cliente.getNombreCompleto());
+                    LOGGER.error("Error al eliminar cliente: {}", cliente.getNombreCompleto());
                     mostrarAlerta("Error", "No se pudo eliminar el cliente", Alert.AlertType.ERROR);
                 }
             });
 
             task.setOnFailed(event -> {
-                logger.error("Error al eliminar cliente", task.getException());
+                LOGGER.error("Error al eliminar cliente", task.getException());
                 loadingIndicator.setVisible(false);
                 mostrarAlerta("Error", "No se pudo eliminar el cliente", Alert.AlertType.ERROR);
             });
@@ -406,8 +411,8 @@ public class ClienteController {
         }
     }
 
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
-        Alert alerta = new Alert(tipo);
+    private void mostrarAlerta(final String titulo, final String mensaje, final Alert.AlertType tipo) {
+        final Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);

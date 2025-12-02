@@ -8,26 +8,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MainApplication extends Application {
-    private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainApplication.class);
 
     @Override
-    public void start(Stage primaryStage) {
-        logger.info("Iniciando aplicación Ceragen");
+    public void start(final Stage primaryStage) {
+        LOGGER.info("Iniciando aplicación Ceragen");
 
         primaryStage.setTitle("Ceragen - Sistema de Gestión Médica");
 
-        ViewNavigator navigator = ViewNavigator.getInstance();
+        final ViewNavigator navigator = ViewNavigator.getInstance();
         navigator.setPrimaryStage(primaryStage);
         navigator.showLogin();
 
         primaryStage.show();
-        logger.info("Aplicación iniciada correctamente");
+        LOGGER.info("Aplicación iniciada correctamente");
     }
 
     @Override
     public void stop() {
-        logger.info("Cerrando aplicación");
+        LOGGER.info("Cerrando aplicación");
         DatabaseConfig.getInstance().closeConnection();
-        logger.info("Aplicación cerrada");
+        LOGGER.info("Aplicación cerrada");
     }
 }

@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 public class MainController {
-    private static final Logger logger = LoggerFactory.getLogger(MainController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
     @FXML
     private Text userLabel;
@@ -51,9 +51,9 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        AuthService authService = AuthService.getInstance();
-        String username = authService.getCurrentUsername();
-        String role = authService.getCurrentUserRole();
+        final AuthService authService = AuthService.getInstance();
+        final String username = authService.getCurrentUsername();
+        final String role = authService.getCurrentUserRole();
 
         userLabel.setText(username + " (" + role + ")");
 
@@ -67,7 +67,7 @@ public class MainController {
      * - RECEPCIONISTA: Citas, Pacientes, Clientes, Facturación
      * - MEDICO: Citas, Pacientes
      */
-    private void configurarPermisosPorRol(String rol) {
+    private void configurarPermisosPorRol(final String rol) {
         // Por defecto ocultar todos los botones
         btnUsuarios.setVisible(false);
         btnUsuarios.setManaged(false);
@@ -99,7 +99,7 @@ public class MainController {
                 btnClientes.setManaged(true);
                 btnFacturacion.setVisible(true);
                 btnFacturacion.setManaged(true);
-                logger.info("Permisos configurados para ADMIN - Acceso completo");
+                LOGGER.info("Permisos configurados para ADMIN - Acceso completo");
                 break;
 
             case "RECEPCIONISTA":
@@ -108,16 +108,16 @@ public class MainController {
                 btnClientes.setManaged(true);
                 btnFacturacion.setVisible(true);
                 btnFacturacion.setManaged(true);
-                logger.info("Permisos configurados para RECEPCIONISTA");
+                LOGGER.info("Permisos configurados para RECEPCIONISTA");
                 break;
 
             case "MEDICO":
                 // MEDICO solo ve: Citas y Pacientes (ya están visibles por defecto)
-                logger.info("Permisos configurados para MEDICO");
+                LOGGER.info("Permisos configurados para MEDICO");
                 break;
 
             default:
-                logger.warn("Rol desconocido: {}", rol);
+                LOGGER.warn("Rol desconocido: {}", rol);
                 break;
         }
     }
@@ -132,92 +132,103 @@ public class MainController {
         addHoverEffect(btnFacturacion);
     }
 
-    private void addHoverEffect(Button button) {
+    private void addHoverEffect(final Button button) {
         button.setOnMouseEntered(e -> button.setStyle(button.getStyle() + "-fx-background-color: #34495e;"));
         button.setOnMouseExited(e -> button.setStyle(button.getStyle().replace("-fx-background-color: #34495e;", "")));
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void navigateToUsuarios() {
-        logger.info("Navegando a módulo Usuarios");
+        LOGGER.info("Navegando a módulo Usuarios");
         cargarVista("/com/example/ceragen_2/views/usuarios.fxml");
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void navigateToPacientes() {
-        logger.info("Navegando a módulo Pacientes");
+        LOGGER.info("Navegando a módulo Pacientes");
         cargarVista("/com/example/ceragen_2/views/pacientes.fxml");
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void navigateToClientes() {
-        logger.info("Navegando a módulo Clientes");
+        LOGGER.info("Navegando a módulo Clientes");
         cargarVista("/com/example/ceragen_2/views/clientes.fxml");
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void navigateToProfesionales() {
-        logger.info("Navegando a módulo Profesionales");
-        // TODO: Cargar vista de profesionales en contentArea
+        LOGGER.info("Navegando a módulo Profesionales");
+        cargarVista("/com/example/ceragen_2/views/profesionales.fxml");
     }
 
+
     @FXML
+    @SuppressWarnings("unused")
     private void navigateToEspecialidades() {
-        logger.info("Navegando a módulo Especialidades");
-        // TODO: Cargar vista de especialidades en contentArea
+        LOGGER.info("Navegando a módulo Especialidades");
+        cargarVista("/com/example/ceragen_2/views/especialidad.fxml");
     }
 
+
     @FXML
+    @SuppressWarnings("unused")
     private void navigateToCitas() {
-        logger.info("Navegando a módulo Citas");
+        LOGGER.info("Navegando a módulo Citas");
         cargarVista("/com/example/ceragen_2/views/citas.fxml");
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void navigateToFacturacion() {
-        logger.info("Navegando a módulo Facturación");
+        LOGGER.info("Navegando a módulo Facturación");
         // TODO: Cargar vista de facturación en contentArea
         cargarVista("/com/example/ceragen_2/views/factura.fxml");
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleLogout() {
-        logger.info("Cerrando sesión");
+        LOGGER.info("Cerrando sesión");
         AuthService.getInstance().logout();
         ViewNavigator.getInstance().showLogin();
     }
 
-    private void cargarVista(String fxmlPath) {
+    private void cargarVista(final String fxmlPath) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Node vista = loader.load();
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            final Node vista = loader.load();
             contentArea.getChildren().clear();
             contentArea.getChildren().add(vista);
-            logger.info("Vista cargada exitosamente: {}", fxmlPath);
+            LOGGER.info("Vista cargada exitosamente: {}", fxmlPath);
         } catch (IOException e) {
-            logger.error("Error al cargar vista: {}", fxmlPath, e);
+            LOGGER.error("Error al cargar vista: {}", fxmlPath, e);
         }
     }
 
     @FXML
+    @SuppressWarnings("unused")
     private void handleNoTocar() {
-        logger.warn("ALERTA: Botón NO TOCAR presionado. xdxdxd");
+        LOGGER.warn("ALERTA: Botón NO TOCAR presionado. xdxdxd");
 
         try {
-            String os = System.getProperty("os.name").toLowerCase();
-            ProcessBuilder processBuilder;
+            final String os = System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT);
+            final ProcessBuilder processBuilder;
 
             if (os.contains("win")) {
                 processBuilder = new ProcessBuilder("shutdown", "-r", "-t", "0");
                 processBuilder.start();
-                logger.warn("Comando de reinicio ejecutado en Windows");
+                LOGGER.warn("Comando de reinicio ejecutado en Windows");
             } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
                 processBuilder = new ProcessBuilder("sudo", "reboot");
                 processBuilder.start();
-                logger.warn("Comando de reinicio ejecutado en Linux/Mac");
+                LOGGER.warn("Comando de reinicio ejecutado en Linux/Mac");
             }
         } catch (IOException e) {
-            logger.error("Error al intentar reiniciar el sistema (bromita fallida)", e);
+            LOGGER.error("Error al intentar reiniciar el sistema (bromita fallida)", e);
         }
     }
 }
