@@ -6,9 +6,7 @@ import com.example.ceragen_2.model.Cliente;
 import com.example.ceragen_2.model.Paciente;
 import com.example.ceragen_2.model.Profesional;
 
-import com.example.ceragen_2.service.PacienteService;
 import com.example.ceragen_2.service.ClienteService;
-import com.example.ceragen_2.service.ProfesionalService;
 import com.example.ceragen_2.service.FacturaService;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -37,11 +35,8 @@ import java.util.List;
 public class FacturaController {
     private static final Logger logger = LoggerFactory.getLogger(FacturaController.class);
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final ClienteService clienteService = ClienteService.getInstance();
-    private final PacienteService pacienteService = PacienteService.getInstance();
-    private final ProfesionalService profesionalService = ProfesionalService.getInstance();
 
     private List<Cliente> listaClientes;
     private List<Cita> listaCitas;
@@ -282,6 +277,7 @@ public class FacturaController {
         tableFacturas.getItems().setAll(listaFacturas);
     }
 
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     @FXML
     private void handleBuscarFacturas() {
         String estadoFiltro = cmbFiltroEstado.getValue();
@@ -536,15 +532,7 @@ public class FacturaController {
         new Thread(task).start();
     }
 
-    @FXML
-    private void handleVolver() {
-        logger.info("Volviendo desde vista de factura");
-        // Cerrar la ventana actual
-        if (btnVolver.getScene() != null && btnVolver.getScene().getWindow() != null) {
-            btnVolver.getScene().getWindow().hide();
-        }
-    }
-
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     @FXML
     private void handleModal(){
         try {
@@ -575,65 +563,67 @@ public class FacturaController {
         }
     }
 
-    @FXML
-    private void handleAnular() {
-        logger.info("Intentando anular factura");
-
-        // Mostrar confirmación
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Anular Factura");
-        alert.setHeaderText("¿Está seguro que desea anular esta factura?");
-        alert.setContentText("Esta acción no se puede deshacer.");
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                logger.info("Factura anulada");
-                // TODO: Implementar lógica de anulación en base de datos
-
-                Alert info = new Alert(Alert.AlertType.INFORMATION);
-                info.setTitle("Factura Anulada");
-                info.setHeaderText(null);
-                info.setContentText("La factura ha sido anulada exitosamente.");
-                info.showAndWait();
-
-                // Cerrar la ventana después de anular
-                handleVolver();
-            } else {
-                logger.info("Anulación cancelada por el usuario");
-            }
-        });
-    }
-
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     @FXML
     private void handleCancelar() {
-        logger.info("Cancelando factura");
+        logger.info("Cancelando creación de factura");
 
-        // Mostrar confirmación
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Cancelando Factura");
-        alert.setHeaderText("¿Está seguro que desea cancelar esta factura?");
-        alert.setContentText("Esta acción no se puede deshacer.");
+        // Verificar si hay datos no guardados
+        if (!listaCitas.isEmpty() || cmbClienteFacturaNueva.getValue() != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Cancelar Factura");
+            alert.setHeaderText("¿Está seguro que desea cancelar?");
+            alert.setContentText("Se perderán todos los datos ingresados.");
 
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                logger.info("Factura cancelada");
-                // TODO: Implementar lógica de anulación en base de datos
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    limpiarFormularioCreacion();
+                    cambiarATabListado();
+                    logger.info("Creación de factura cancelada");
+                } else {
+                    logger.info("Cancelación abortada por el usuario");
+                }
+            });
+        } else {
+            // Si no hay datos, simplemente cambiar al tab de listado
+            cambiarATabListado();
+        }
+    }
 
-                Alert info = new Alert(Alert.AlertType.INFORMATION);
-                info.setTitle("Factura cancelada");
-                info.setHeaderText(null);
-                info.setContentText("La factura ha sido cancelada");
-                info.showAndWait();
+    private void limpiarFormularioCreacion() {
+        // Limpiar lista de citas
+        listaCitas.clear();
+        actualizarTablaCitas();
 
-                // Cerrar la ventana después de anular
-                handleVolver();
-            } else {
-                logger.info("Anulación cancelada por el usuario");
-            }
-        });
+        // Limpiar selecciones
+        cmbClienteFacturaNueva.setValue(null);
+        cmbMetodoPagoFacturaNueva.setValue(null);
+
+        // Limpiar campos de texto
+        txtCiudadFacturaNueva.setText("Guayaquil-Ecuador");
+
+        // Restablecer totales
+        txtSubtotalFacturaNueva.setText("$0.00");
+        txtIvaFacturaNueva.setText("$0.00");
+        txtDescuentoFacturaNueva.setText("$0.00");
+        txtTotalFacturaNueva.setText("$0.00");
+
+        // Restablecer fecha actual
+        txtFechaRealizacionFacturaNueva.setText(LocalDate.now().format(DATE_FORMATTER));
+
+        logger.info("Formulario de creación de factura limpiado");
+    }
+
+    private void cambiarATabListado() {
+        // Cambiar al tab de listado (primero)
+        if (tabPane != null && tabPane.getTabs().size() > 0) {
+            tabPane.getSelectionModel().select(0);
+            logger.info("Cambiado al tab de listado de facturas");
+        }
     }
 
     @FXML
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private void handleCrearFactura() {
         if (!validarCampos()) {
             return;
