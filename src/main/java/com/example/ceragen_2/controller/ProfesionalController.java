@@ -1,4 +1,5 @@
 package com.example.ceragen_2.controller;
+
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -515,13 +516,6 @@ public class ProfesionalController {
         String cedula = trimOrNull(txtCrearCedula.getText());
         String nombres = trimOrNull(txtCrearNombres.getText());
         String apellidos = trimOrNull(txtCrearApellidos.getText());
-
-        if (cedula == null || nombres == null || apellidos == null) {
-            new Alert(Alert.AlertType.WARNING,
-                    "Cédula, Nombres y Apellidos son obligatorios.").showAndWait();
-            return;
-        }
-
         String telefono = trimOrNull(txtCrearTelefono.getText());
         String email = trimOrNull(txtCrearEmail.getText());
         String numeroLicencia = trimOrNull(txtCrearNumeroLicencia.getText());
@@ -529,9 +523,15 @@ public class ProfesionalController {
 
         String especialidadNombre = cmbCrearEspecialidad.getSelectionModel().getSelectedItem();
         Integer especialidadId = mapEspecialidadNombreToId(especialidadNombre);
+
+        // Validaciones basadas en el requerimiento funcional
+        if (!validarDatosProfesional(cedula, nombres, apellidos, telefono, email, numeroLicencia)) {
+            return;
+        }
+
         if (especialidadId == null) {
             new Alert(Alert.AlertType.WARNING,
-                    "Debe seleccionar una especialidad.").showAndWait();
+                    "Debe seleccionar al menos una especialidad.").showAndWait();
             return;
         }
 
@@ -580,11 +580,8 @@ public class ProfesionalController {
     }
 
     // =====================================================
-    // ACCIONES COLUMNA "ACCIONES"
+    // ACCIONES COLUMNA "ACCIONES"  -> VER PROFESIONAL CON MEJOR DISEÑO
     // =====================================================
-    // =====================================================
-// ACCIONES COLUMNA "ACCIONES"  -> VER PROFESIONAL CON MEJOR DISEÑO
-// =====================================================
     private void handleVerProfesional(Profesional profesional) {
         if (profesional == null) return;
 
@@ -611,7 +608,7 @@ public class ProfesionalController {
         lblNombre.setStyle(
                 "-fx-font-size: 18px;" +
                         "-fx-font-weight: bold;" +
-                        "-fx-text-fill: #00695c;"   // verde tipo Ceragen
+                        "-fx-text-fill: #00695c;"
         );
 
         // Subtítulo
@@ -681,8 +678,8 @@ public class ProfesionalController {
                 "-fx-font-size: 13px;" +
                         "-fx-font-weight: bold;" +
                         (Boolean.TRUE.equals(profesional.getActivo())
-                                ? "-fx-text-fill: #2e7d32;"   // verde
-                                : "-fx-text-fill: #c62828;")  // rojo
+                                ? "-fx-text-fill: #2e7d32;"
+                                : "-fx-text-fill: #c62828;")
         );
         grid.add(lblEstado, 1, row);
 
@@ -706,8 +703,6 @@ public class ProfesionalController {
 
         dialog.showAndWait();
     }
-
-
 
     private void handleEditarProfesional(Profesional profesional) {
         if (profesional == null) return;
@@ -770,13 +765,12 @@ public class ProfesionalController {
         String cedula = trimOrNull(txtEditarCedula.getText());
         String nombres = trimOrNull(txtEditarNombres.getText());
         String apellidos = trimOrNull(txtEditarApellidos.getText());
+        String telefono = trimOrNull(txtEditarTelefono.getText());
+        String email = trimOrNull(txtEditarEmail.getText());
+        String numeroLicencia = trimOrNull(txtEditarNumeroLicencia.getText());
+        Boolean activo = chkEditarActivo.isSelected();
 
-        if (cedula == null || nombres == null || apellidos == null) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Campos obligatorios");
-            alert.setHeaderText("Faltan datos obligatorios");
-            alert.setContentText("Cédula, Nombres y Apellidos son obligatorios.");
-            alert.showAndWait();
+        if (!validarDatosProfesional(cedula, nombres, apellidos, telefono, email, numeroLicencia)) {
             return;
         }
 
@@ -786,11 +780,6 @@ public class ProfesionalController {
                 id = Integer.parseInt(txtEditarId.getText());
             } catch (NumberFormatException ignored) {}
         }
-
-        String telefono = trimOrNull(txtEditarTelefono.getText());
-        String email = trimOrNull(txtEditarEmail.getText());
-        String numeroLicencia = trimOrNull(txtEditarNumeroLicencia.getText());
-        Boolean activo = chkEditarActivo.isSelected();
 
         String especialidadNombre = cmbEditarEspecialidad.getSelectionModel().getSelectedItem();
         Integer especialidadId = mapEspecialidadNombreToId(especialidadNombre);
@@ -850,6 +839,103 @@ public class ProfesionalController {
     private void handleCancelarEdicion(ActionEvent event) {
         tabPane.getSelectionModel().selectFirst();
         tabEditar.setDisable(true);
+    }
+
+    // =====================================================
+    // VALIDACIONES COMUNES (basadas en el requerimiento)
+    // =====================================================
+    /**
+     * Valida:
+     * - Cédula: exactamente 10 dígitos, solo números.
+     * - Nombres / Apellidos: solo letras y espacios, máximo 100 caracteres.
+     * - Email: opcional, pero si viene debe ser formato válido y máximo 100 caracteres.
+     * - Teléfono: opcional, pero si viene debe tener exactamente 9 dígitos (solo números).
+     * - Número de licencia: obligatorio, alfanumérico, máximo 30 caracteres.
+     */
+    private boolean validarDatosProfesional(String cedula,
+                                            String nombres,
+                                            String apellidos,
+                                            String telefono,
+                                            String email,
+                                            String numeroLicencia) {
+
+        List<String> errores = new ArrayList<>();
+
+        // Cédula
+        if (cedula == null || cedula.isEmpty()) {
+            errores.add("La cédula es obligatoria.");
+        } else if (!cedula.matches("\\d{10}")) {
+            errores.add("La cédula debe contener exactamente 10 dígitos (solo números).");
+        }
+
+        // Nombres
+        if (nombres == null || nombres.isEmpty()) {
+            errores.add("Los nombres son obligatorios.");
+        } else {
+            if (nombres.length() > 100) {
+                errores.add("Los nombres no pueden superar los 100 caracteres.");
+            }
+            if (!nombres.matches("[A-Za-zÁÉÍÓÚáéíóúÑñ ]+")) {
+                errores.add("Los nombres solo deben contener letras y espacios.");
+            }
+        }
+
+        // Apellidos
+        if (apellidos == null || apellidos.isEmpty()) {
+            errores.add("Los apellidos son obligatorios.");
+        } else {
+            if (apellidos.length() > 100) {
+                errores.add("Los apellidos no pueden superar los 100 caracteres.");
+            }
+            if (!apellidos.matches("[A-Za-zÁÉÍÓÚáéíóúÑñ ]+")) {
+                errores.add("Los apellidos solo deben contener letras y espacios.");
+            }
+        }
+
+        // Teléfono (opcional pero validado si se ingresa)
+        if (telefono != null) {
+            if (!telefono.matches("\\d{9}")) {
+                errores.add("El número de celular debe contener exactamente 9 dígitos (solo números).");
+            }
+        }
+
+        // Email (opcional pero validado si se ingresa)
+        if (email != null) {
+            if (email.length() > 100) {
+                errores.add("El correo electrónico no puede superar los 100 caracteres.");
+            }
+            // Regex sencilla para formato de correo.
+            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                errores.add("El correo electrónico no tiene un formato válido.");
+            }
+        }
+
+        // Número de licencia (obligatorio, alfanumérico, máx 30)
+        if (numeroLicencia == null || numeroLicencia.isEmpty()) {
+            errores.add("El número de licencia / registro médico es obligatorio.");
+        } else {
+            if (numeroLicencia.length() > 30) {
+                errores.add("El número de licencia no puede superar los 30 caracteres.");
+            }
+            if (!numeroLicencia.matches("[A-Za-z0-9]+")) {
+                errores.add("El número de licencia debe ser alfanumérico (sin espacios ni símbolos especiales).");
+            }
+        }
+
+        if (!errores.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (String e : errores) {
+                sb.append("• ").append(e).append("\n");
+            }
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Validación de datos del profesional");
+            alert.setHeaderText("Por favor, corrige los siguientes campos:");
+            alert.setContentText(sb.toString());
+            alert.showAndWait();
+            return false;
+        }
+
+        return true;
     }
 
     // =====================================================
