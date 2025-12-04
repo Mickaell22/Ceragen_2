@@ -64,6 +64,7 @@ CREATE TABLE clientes (
     telefono VARCHAR(20),
     email VARCHAR(100),
     direccion TEXT,
+    activo BOOLEAN DEFAULT TRUE,
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_cedula (cedula),
     INDEX idx_nombre_completo (nombres, apellidos)
