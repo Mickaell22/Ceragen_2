@@ -1,9 +1,5 @@
 package com.example.ceragen_2.controller;
 
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.GridPane;
 import com.example.ceragen_2.model.Profesional;
 import com.example.ceragen_2.service.ProfesionalService;
 import javafx.application.Platform;
@@ -13,7 +9,22 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
@@ -21,246 +32,429 @@ import javafx.util.Callback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfesionalController {
+/**
+ * Controlador JavaFX para la gestión de profesionales.
+ */
+public final class ProfesionalController {
+
+    /** Registros por página por defecto. */
+    private static final int REGISTROS_PAGINA_DEFAULT = 10;
+    /** Longitud esperada para el número de cédula. */
+    private static final int CEDULA_LENGTH = 10;
+    /** Longitud esperada para el número de teléfono. */
+    private static final int TELEFONO_LENGTH = 9;
+    /** Longitud máxima para nombres. */
+    private static final int MAX_NOMBRE_LENGTH = 100;
+    /** Longitud máxima para apellidos. */
+    private static final int MAX_APELLIDO_LENGTH = 100;
+    /** Longitud máxima para email. */
+    private static final int MAX_EMAIL_LENGTH = 100;
+    /** Longitud máxima para el número de licencia. */
+    private static final int MAX_NUMERO_LICENCIA_LENGTH = 30;
+
+    /** Id de especialidad Fisioterapia. */
+    private static final int ESPECIALIDAD_FISIOTERAPIA_ID = 1;
+    /** Id de especialidad Traumatología. */
+    private static final int ESPECIALIDAD_TRAUMATOLOGIA_ID = 2;
+    /** Id de especialidad Rehabilitación. */
+    private static final int ESPECIALIDAD_REHABILITACION_ID = 3;
+
+    /** Espaciado por defecto para contenedores VBox. */
+    private static final int DEFAULT_VBOX_SPACING = 12;
+    /** Separación por defecto para filas/columnas en grids. */
+    private static final int DEFAULT_GRID_GAP = 8;
 
     // ----------------- Service -----------------
-    private final ProfesionalService profesionalService = ProfesionalService.getInstance();
+
+    /** Servicio para operaciones con profesionales. */
+    private final ProfesionalService profesionalService =
+            ProfesionalService.getInstance();
 
     // ----------------- General / Tabs -----------------
+
+    /** Contenedor principal de pestañas. */
     @FXML
     private TabPane tabPane;
+    /** Pestaña de edición. */
     @FXML
     private Tab tabEditar;
+    /** Pestaña de creación. */
     @FXML
     private Tab tabCrear;
 
     // ----------------- Filtros (Tab Listar) -----------------
+
+    /** Campo de filtro por cédula. */
     @FXML
     private TextField txtFiltroCedula;
+    /** Campo de filtro por nombres. */
     @FXML
     private TextField txtFiltroNombres;
+    /** Campo de filtro por apellidos. */
     @FXML
     private TextField txtFiltroApellidos;
+    /** Combo de filtro por especialidad. */
     @FXML
     private ComboBox<String> cmbEspecialidadFiltro;
+    /** Combo de filtro por estado (activo/inactivo). */
     @FXML
     private ComboBox<String> cmbActivoFiltro;
 
     // ----------------- Tabla y loading -----------------
+
+    /** Tabla de profesionales. */
     @FXML
     private TableView<Profesional> tableProfesionales;
+    /** Columna de id. */
     @FXML
     private TableColumn<Profesional, Integer> colId;
+    /** Columna de cédula. */
     @FXML
     private TableColumn<Profesional, String> colCedula;
+    /** Columna de nombres. */
     @FXML
     private TableColumn<Profesional, String> colNombres;
+    /** Columna de apellidos. */
     @FXML
     private TableColumn<Profesional, String> colApellidos;
+    /** Columna de especialidad. */
     @FXML
     private TableColumn<Profesional, String> colEspecialidad;
+    /** Columna de teléfono. */
     @FXML
     private TableColumn<Profesional, String> colTelefono;
+    /** Columna de email. */
     @FXML
     private TableColumn<Profesional, String> colEmail;
+    /** Columna de número de licencia. */
     @FXML
     private TableColumn<Profesional, String> colNumeroLicencia;
+    /** Columna de estado activo/inactivo. */
     @FXML
     private TableColumn<Profesional, String> colActivo;
+    /** Columna de usuario asociado. */
     @FXML
     private TableColumn<Profesional, String> colUsuario;
+    /** Columna de acciones (ver/editar/eliminar). */
     @FXML
     private TableColumn<Profesional, Void> colAcciones;
 
+    /** Indicador visual de carga. */
     @FXML
     private VBox loadingIndicator;
 
     // ----------------- Paginación -----------------
+
+    /** Botón para ir a la primera página. */
     @FXML
     private Button btnPrimera;
+    /** Botón para ir a la página anterior. */
     @FXML
     private Button btnAnterior;
+    /** Botón para ir a la página siguiente. */
     @FXML
     private Button btnSiguiente;
+    /** Botón para ir a la última página. */
     @FXML
     private Button btnUltima;
+    /** Combo para seleccionar registros por página. */
     @FXML
     private ComboBox<String> cmbRegistrosPorPagina;
+    /** Texto con el estado de paginación. */
     @FXML
     private Text txtPaginacion;
 
     // ----------------- Campos de creación (Tab Crear) -----------------
+
+    /** Campo de cédula para creación. */
     @FXML
     private TextField txtCrearCedula;
+    /** Campo de nombres para creación. */
     @FXML
     private TextField txtCrearNombres;
+    /** Campo de apellidos para creación. */
     @FXML
     private TextField txtCrearApellidos;
+    /** Campo de teléfono para creación. */
     @FXML
     private TextField txtCrearTelefono;
+    /** Campo de email para creación. */
     @FXML
     private TextField txtCrearEmail;
+    /** Campo de número de licencia para creación. */
     @FXML
     private TextField txtCrearNumeroLicencia;
+    /** Combo de especialidad para creación. */
     @FXML
     private ComboBox<String> cmbCrearEspecialidad;
+    /** Combo de usuarios (solo decorativo) para creación. */
     @FXML
-    private ComboBox<String> cmbCrearUsuario; // visual, pero NO se usa para guardar
+    private ComboBox<String> cmbCrearUsuario;
+    /** Check de activo para creación. */
     @FXML
     private CheckBox chkCrearActivo;
 
     // ----------------- Campos de edición (Tab Editar) -----------------
+
+    /** Campo de id para edición. */
     @FXML
     private TextField txtEditarId;
+    /** Campo de cédula para edición. */
     @FXML
     private TextField txtEditarCedula;
+    /** Campo de nombres para edición. */
     @FXML
     private TextField txtEditarNombres;
+    /** Campo de apellidos para edición. */
     @FXML
     private TextField txtEditarApellidos;
+    /** Combo de especialidad para edición. */
     @FXML
     private ComboBox<String> cmbEditarEspecialidad;
+    /** Combo de usuarios (solo decorativo) para edición. */
     @FXML
-    private ComboBox<String> cmbEditarUsuario; // visual, pero NO se usa para guardar
+    private ComboBox<String> cmbEditarUsuario;
+    /** Campo de teléfono para edición. */
     @FXML
     private TextField txtEditarTelefono;
+    /** Campo de email para edición. */
     @FXML
     private TextField txtEditarEmail;
+    /** Campo de número de licencia para edición. */
     @FXML
     private TextField txtEditarNumeroLicencia;
+    /** Check de activo para edición. */
     @FXML
     private CheckBox chkEditarActivo;
 
     // ----------------- Datos internos / paginación -----------------
-    private final ObservableList<Profesional> profesionales = FXCollections.observableArrayList();
+
+    /** Lista observable de profesionales para la tabla. */
+    private final ObservableList<Profesional> profesionales =
+            FXCollections.observableArrayList();
+    /** Lista completa de profesionales filtrados. */
     private List<Profesional> listaCompleta = new ArrayList<>();
 
+    /** Página actual de la paginación. */
     private int paginaActual = 1;
+    /** Total de páginas calculadas. */
     private int totalPaginas = 1;
-    private int registrosPorPagina = 10;
+    /** Cantidad de registros por página. */
+    private int registrosPorPagina = REGISTROS_PAGINA_DEFAULT;
+    /** Total de registros encontrados. */
     private long totalRegistros = 0;
 
     // =====================================================
     // Mapeo nombre → ID de especialidad
     // =====================================================
-    private Integer mapEspecialidadNombreToId(String nombre) {
-        if (nombre == null) return null;
+
+    /**
+     * Mapea el nombre de la especialidad a su identificador.
+     *
+     * @param nombre nombre de la especialidad
+     * @return id de la especialidad o {@code null} si no se reconoce
+     */
+    private Integer mapEspecialidadNombreToId(final String nombre) {
+        if (nombre == null) {
+            return null;
+        }
         switch (nombre) {
             case "Fisioterapia":
-                return 1;
+                return ESPECIALIDAD_FISIOTERAPIA_ID;
             case "Traumatología":
-                return 2;
+                return ESPECIALIDAD_TRAUMATOLOGIA_ID;
             case "Rehabilitación":
-                return 3;
+                return ESPECIALIDAD_REHABILITACION_ID;
             default:
-                return null; // por si agregas más y aún no los mapeas
+                // por si agregas más y aún no los mapeas
+                return null;
         }
     }
 
     // ----------------- Inicialización -----------------
+
+    /**
+     * Método de inicialización del controlador.
+     * Se ejecuta automáticamente al cargar el FXML.
+     */
     @FXML
     public void initialize() {
         configurarTabla();
         configurarPaginacion();
         configurarCombos();
-        cargarProfesionales(); // Primera carga
+        cargarProfesionales();
     }
 
     // =====================================================
     // CONFIGURACIÓN TABLA
     // =====================================================
+
+    /** Configura las columnas y el origen de datos de la tabla. */
     private void configurarTabla() {
-        colId.setCellValueFactory(cellData ->
-                new ReadOnlyObjectWrapper<>(cellData.getValue().getId())
+        colId.setCellValueFactory(
+                cellData ->
+                        new ReadOnlyObjectWrapper<>(
+                                cellData.getValue().getId()
+                        )
         );
 
-        colCedula.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getCedula())
+        colCedula.setCellValueFactory(
+                cellData ->
+                        new SimpleStringProperty(
+                                cellData.getValue().getCedula()
+                        )
         );
 
-        colNombres.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getNombres())
+        colNombres.setCellValueFactory(
+                cellData ->
+                        new SimpleStringProperty(
+                                cellData.getValue().getNombres()
+                        )
         );
 
-        colApellidos.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getApellidos())
+        colApellidos.setCellValueFactory(
+                cellData ->
+                        new SimpleStringProperty(
+                                cellData.getValue().getApellidos()
+                        )
         );
 
-        colEspecialidad.setCellValueFactory(cellData ->
-                new SimpleStringProperty(
-                        cellData.getValue().getEspecialidadNombre() != null
-                                ? cellData.getValue().getEspecialidadNombre()
-                                : (cellData.getValue().getEspecialidadId() != null
-                                ? "ID " + cellData.getValue().getEspecialidadId()
-                                : "")
-                )
+        colEspecialidad.setCellValueFactory(
+                cellData -> {
+                    Profesional profesional = cellData.getValue();
+                    String especialidadNombre =
+                            profesional.getEspecialidadNombre();
+                    String value;
+                    if (especialidadNombre != null) {
+                        value = especialidadNombre;
+                    } else if (profesional.getEspecialidadId() != null) {
+                        value = "ID " + profesional.getEspecialidadId();
+                    } else {
+                        value = "";
+                    }
+                    return new SimpleStringProperty(value);
+                }
         );
 
-        colTelefono.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getTelefono())
+        colTelefono.setCellValueFactory(
+                cellData ->
+                        new SimpleStringProperty(
+                                cellData.getValue().getTelefono()
+                        )
         );
 
-        colEmail.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getEmail())
+        colEmail.setCellValueFactory(
+                cellData ->
+                        new SimpleStringProperty(
+                                cellData.getValue().getEmail()
+                        )
         );
 
-        colNumeroLicencia.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getNumeroLicencia())
+        colNumeroLicencia.setCellValueFactory(
+                cellData ->
+                        new SimpleStringProperty(
+                                cellData.getValue().getNumeroLicencia()
+                        )
         );
 
-        colActivo.setCellValueFactory(cellData -> {
-            Boolean activo = cellData.getValue().getActivo();
-            String texto = Boolean.TRUE.equals(activo) ? "Sí" : "No";
-            return new SimpleStringProperty(texto);
-        });
+        colActivo.setCellValueFactory(
+                cellData -> {
+                    Boolean activo = cellData.getValue().getActivo();
+                    String textoActivo =
+                            Boolean.TRUE.equals(activo) ? "Sí" : "No";
+                    return new SimpleStringProperty(textoActivo);
+                }
+        );
 
-        colUsuario.setCellValueFactory(cellData -> {
-            Integer usuarioId = cellData.getValue().getUsuarioId();
-            String texto = (usuarioId == null) ? "" : "ID " + usuarioId;
-            return new SimpleStringProperty(texto);
-        });
+        colUsuario.setCellValueFactory(
+                cellData -> {
+                    Integer usuarioId = cellData.getValue().getUsuarioId();
+                    String textoUsuario;
+                    if (usuarioId == null) {
+                        textoUsuario = "";
+                    } else {
+                        textoUsuario = "ID " + usuarioId;
+                    }
+                    return new SimpleStringProperty(textoUsuario);
+                }
+        );
 
         configurarColumnaAcciones();
         tableProfesionales.setItems(profesionales);
     }
 
+    /** Configura la columna de acciones (ver, editar, eliminar). */
     private void configurarColumnaAcciones() {
-        Callback<TableColumn<Profesional, Void>, TableCell<Profesional, Void>> cellFactory =
-                new Callback<>() {
+        Callback<TableColumn<Profesional, Void>, TableCell<Profesional, Void>>
+                cellFactory =
+                new Callback<TableColumn<Profesional, Void>,
+                        TableCell<Profesional, Void>>() {
                     @Override
-                    public TableCell<Profesional, Void> call(TableColumn<Profesional, Void> param) {
-                        return new TableCell<>() {
+                    public TableCell<Profesional, Void> call(
+                            final TableColumn<Profesional, Void> param) {
+                        return new TableCell<Profesional, Void>() {
 
-                            private final Button btnVer = new Button("Ver");
-                            private final Button btnEditar = new Button("Editar");
-                            private final Button btnEliminar = new Button("Eliminar");
+                            private final Button btnVer =
+                                    new Button("Ver");
+                            private final Button btnEditar =
+                                    new Button("Editar");
+                            private final Button btnEliminar =
+                                    new Button("Eliminar");
                             private final javafx.scene.layout.HBox container =
-                                    new javafx.scene.layout.HBox(5, btnVer, btnEditar, btnEliminar);
+                                    new javafx.scene.layout.HBox(
+                                            DEFAULT_GRID_GAP,
+                                            btnVer,
+                                            btnEditar,
+                                            btnEliminar
+                                    );
 
                             {
-                                container.getStyleClass().add("actions-container");
-                                btnVer.getStyleClass().addAll("btn", "btn-secondary");
-                                btnEditar.getStyleClass().addAll("btn", "btn-warning");
-                                btnEliminar.getStyleClass().addAll("btn", "btn-danger");
+                                container.getStyleClass().add(
+                                        "actions-container"
+                                );
+                                btnVer.getStyleClass().addAll(
+                                        "btn",
+                                        "btn-secondary"
+                                );
+                                btnEditar.getStyleClass().addAll(
+                                        "btn",
+                                        "btn-warning"
+                                );
+                                btnEliminar.getStyleClass().addAll(
+                                        "btn",
+                                        "btn-danger"
+                                );
 
                                 btnVer.setOnAction(e -> {
-                                    Profesional profesional = getTableView().getItems().get(getIndex());
+                                    Profesional profesional =
+                                            getTableView()
+                                                    .getItems()
+                                                    .get(getIndex());
                                     handleVerProfesional(profesional);
                                 });
 
                                 btnEditar.setOnAction(e -> {
-                                    Profesional profesional = getTableView().getItems().get(getIndex());
+                                    Profesional profesional =
+                                            getTableView()
+                                                    .getItems()
+                                                    .get(getIndex());
                                     handleEditarProfesional(profesional);
                                 });
 
                                 btnEliminar.setOnAction(e -> {
-                                    Profesional profesional = getTableView().getItems().get(getIndex());
+                                    Profesional profesional =
+                                            getTableView()
+                                                    .getItems()
+                                                    .get(getIndex());
                                     handleEliminarProfesional(profesional);
                                 });
                             }
 
                             @Override
-                            protected void updateItem(Void item, boolean empty) {
+                            protected void updateItem(
+                                    final Void item,
+                                    final boolean empty
+                            ) {
                                 super.updateItem(item, empty);
                                 if (empty) {
                                     setGraphic(null);
@@ -278,31 +472,43 @@ public class ProfesionalController {
     // =====================================================
     // CONFIGURACIÓN Paginación y Combos
     // =====================================================
+
+    /** Configura el combo y comportamiento de paginación. */
     private void configurarPaginacion() {
-        cmbRegistrosPorPagina.setItems(FXCollections.observableArrayList("10", "25", "50"));
+        cmbRegistrosPorPagina.setItems(
+                FXCollections.observableArrayList("10", "25", "50")
+        );
         cmbRegistrosPorPagina.getSelectionModel().select("10");
 
-        cmbRegistrosPorPagina.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                registrosPorPagina = Integer.parseInt(newVal);
-                paginaActual = 1;
-                cargarProfesionales();
-            }
-        });
+        cmbRegistrosPorPagina.valueProperty().addListener(
+                (obs, oldVal, newVal) -> {
+                    if (newVal != null) {
+                        registrosPorPagina = Integer.parseInt(newVal);
+                        paginaActual = 1;
+                        cargarProfesionales();
+                    }
+                }
+        );
 
         actualizarTextoPaginacion();
     }
 
+    /** Configura los combos de filtros y selección. */
     private void configurarCombos() {
-        // Estado filtro
         if (cmbActivoFiltro.getItems().isEmpty()) {
-            cmbActivoFiltro.setItems(FXCollections.observableArrayList("TODOS", "ACTIVO", "INACTIVO"));
+            cmbActivoFiltro.setItems(
+                    FXCollections.observableArrayList(
+                            "TODOS",
+                            "ACTIVO",
+                            "INACTIVO"
+                    )
+            );
         }
         cmbActivoFiltro.getSelectionModel().selectFirst();
 
-        // Especialidades en filtro: las construimos a partir de los profesionales
         new Thread(() -> {
-            List<Profesional> todos = profesionalService.getAllProfesionales();
+            List<Profesional> todos =
+                    profesionalService.getAllProfesionales();
             List<String> nombres = new ArrayList<>();
             nombres.add("Todas");
             for (Profesional p : todos) {
@@ -313,99 +519,150 @@ public class ProfesionalController {
             }
 
             Platform.runLater(() -> {
-                cmbEspecialidadFiltro.setItems(FXCollections.observableArrayList(nombres));
+                cmbEspecialidadFiltro.setItems(
+                        FXCollections.observableArrayList(nombres)
+                );
                 cmbEspecialidadFiltro.getSelectionModel().selectFirst();
             });
         }).start();
 
-        // Combos de edición/creación (aquí podrías cargar catálogos reales desde BD)
         ObservableList<String> especialidades =
-                FXCollections.observableArrayList("Fisioterapia", "Traumatología", "Rehabilitación");
+                FXCollections.observableArrayList(
+                        "Fisioterapia",
+                        "Traumatología",
+                        "Rehabilitación"
+                );
         ObservableList<String> usuarios =
-                FXCollections.observableArrayList("1", "2", "3"); // solo decorativo
+                FXCollections.observableArrayList(
+                        "1",
+                        "2",
+                        "3"
+                );
 
-        if (cmbEditarEspecialidad != null) cmbEditarEspecialidad.setItems(especialidades);
-        if (cmbCrearEspecialidad != null) cmbCrearEspecialidad.setItems(especialidades);
+        if (cmbEditarEspecialidad != null) {
+            cmbEditarEspecialidad.setItems(especialidades);
+        }
+        if (cmbCrearEspecialidad != null) {
+            cmbCrearEspecialidad.setItems(especialidades);
+        }
 
-        if (cmbEditarUsuario != null) cmbEditarUsuario.setItems(usuarios);
-        if (cmbCrearUsuario != null) cmbCrearUsuario.setItems(usuarios);
+        if (cmbEditarUsuario != null) {
+            cmbEditarUsuario.setItems(usuarios);
+        }
+        if (cmbCrearUsuario != null) {
+            cmbCrearUsuario.setItems(usuarios);
+        }
     }
 
     // =====================================================
     // CARGA DE DATOS (usando ProfesionalService)
     // =====================================================
+
+    /** Carga la lista de profesionales aplicando filtros y paginación. */
     private void cargarProfesionales() {
         mostrarLoading(true);
 
-        String cedulaFiltro = trimOrNull(txtFiltroCedula.getText());
-        String nombresFiltro = trimOrNull(txtFiltroNombres.getText());
-        String apellidosFiltro = trimOrNull(txtFiltroApellidos.getText());
-        String especialidadFiltro = cmbEspecialidadFiltro.getSelectionModel().getSelectedItem();
-        String estadoFiltro = cmbActivoFiltro.getSelectionModel().getSelectedItem();
+        final String cedulaFiltro = trimOrNull(txtFiltroCedula.getText());
+        final String nombresFiltro = trimOrNull(txtFiltroNombres.getText());
+        final String apellidosFiltro = trimOrNull(
+                txtFiltroApellidos.getText()
+        );
+        final String especialidadFiltro =
+                cmbEspecialidadFiltro
+                        .getSelectionModel()
+                        .getSelectedItem();
+        final String estadoFiltro =
+                cmbActivoFiltro
+                        .getSelectionModel()
+                        .getSelectedItem();
 
         new Thread(() -> {
-            List<Profesional> todos = profesionalService.getAllProfesionales();
+            List<Profesional> todos =
+                    profesionalService.getAllProfesionales();
 
-            // Filtros en memoria
             List<Profesional> filtrados = new ArrayList<>();
             for (Profesional p : todos) {
 
-                if (cedulaFiltro != null &&
-                        (p.getCedula() == null || !p.getCedula().contains(cedulaFiltro))) {
+                if (cedulaFiltro != null
+                        && (p.getCedula() == null
+                        || !p.getCedula().contains(cedulaFiltro))) {
                     continue;
                 }
 
-                if (nombresFiltro != null &&
-                        (p.getNombres() == null ||
-                                !p.getNombres().toLowerCase().contains(nombresFiltro.toLowerCase()))) {
+                if (nombresFiltro != null
+                        && (p.getNombres() == null
+                        || !p.getNombres()
+                        .toLowerCase()
+                        .contains(
+                                nombresFiltro.toLowerCase()
+                        ))) {
                     continue;
                 }
 
-                if (apellidosFiltro != null &&
-                        (p.getApellidos() == null ||
-                                !p.getApellidos().toLowerCase().contains(apellidosFiltro.toLowerCase()))) {
+                if (apellidosFiltro != null
+                        && (p.getApellidos() == null
+                        || !p.getApellidos()
+                        .toLowerCase()
+                        .contains(
+                                apellidosFiltro.toLowerCase()
+                        ))) {
                     continue;
                 }
 
-                if (especialidadFiltro != null &&
-                        !"Todas".equalsIgnoreCase(especialidadFiltro)) {
+                if (especialidadFiltro != null
+                        && !"Todas".equalsIgnoreCase(
+                        especialidadFiltro
+                )) {
                     String espNombre = p.getEspecialidadNombre();
-                    if (espNombre == null ||
-                            !espNombre.equalsIgnoreCase(especialidadFiltro)) {
+                    if (espNombre == null
+                            || !espNombre.equalsIgnoreCase(
+                            especialidadFiltro
+                    )) {
                         continue;
                     }
                 }
 
-                if ("ACTIVO".equalsIgnoreCase(estadoFiltro) &&
-                        !Boolean.TRUE.equals(p.getActivo())) {
+                if ("ACTIVO".equalsIgnoreCase(estadoFiltro)
+                        && !Boolean.TRUE.equals(p.getActivo())) {
                     continue;
                 }
 
-                if ("INACTIVO".equalsIgnoreCase(estadoFiltro) &&
-                        Boolean.TRUE.equals(p.getActivo())) {
+                if ("INACTIVO".equalsIgnoreCase(estadoFiltro)
+                        && Boolean.TRUE.equals(p.getActivo())) {
                     continue;
                 }
 
                 filtrados.add(p);
             }
 
-            // Paginación en memoria
             listaCompleta = filtrados;
             totalRegistros = listaCompleta.size();
-            totalPaginas = (int) Math.max(1, Math.ceil((double) totalRegistros / registrosPorPagina));
+            totalPaginas = (int) Math.max(
+                    1,
+                    Math.ceil(
+                            (double) totalRegistros / registrosPorPagina
+                    )
+            );
 
-            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
-            if (paginaActual < 1) paginaActual = 1;
+            if (paginaActual > totalPaginas) {
+                paginaActual = totalPaginas;
+            }
+            if (paginaActual < 1) {
+                paginaActual = 1;
+            }
 
             int fromIndex = (paginaActual - 1) * registrosPorPagina;
-            int toIndex = Math.min(fromIndex + registrosPorPagina, listaCompleta.size());
+            int toIndex = Math.min(
+                    fromIndex + registrosPorPagina,
+                    listaCompleta.size()
+            );
 
             List<Profesional> pagina = new ArrayList<>();
             if (fromIndex < toIndex) {
                 pagina = listaCompleta.subList(fromIndex, toIndex);
             }
 
-            List<Profesional> paginaFinal = pagina;
+            final List<Profesional> paginaFinal = pagina;
 
             Platform.runLater(() -> {
                 profesionales.setAll(paginaFinal);
@@ -415,30 +672,50 @@ public class ProfesionalController {
         }).start();
     }
 
-    private void mostrarLoading(boolean mostrar) {
+    /**
+     * Muestra u oculta el indicador de carga.
+     *
+     * @param mostrar {@code true} para mostrar; {@code false} para ocultar
+     */
+    private void mostrarLoading(final boolean mostrar) {
         if (loadingIndicator != null) {
             loadingIndicator.setVisible(mostrar);
             loadingIndicator.setManaged(mostrar);
         }
     }
 
+    /** Actualiza el texto de paginación. */
     private void actualizarTextoPaginacion() {
         if (txtPaginacion != null) {
-            txtPaginacion.setText("Página " + paginaActual + " de " + totalPaginas);
+            txtPaginacion.setText(
+                    "Página " + paginaActual
+                            + " de " + totalPaginas
+            );
         }
     }
 
     // =====================================================
     // HANDLERS - LISTAR
     // =====================================================
+
+    /**
+     * Maneja la acción de buscar con filtros.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handleBuscar(ActionEvent event) {
+    private void handleBuscar(final ActionEvent event) {
         paginaActual = 1;
         cargarProfesionales();
     }
 
+    /**
+     * Limpia los filtros y recarga la lista.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handleLimpiarFiltros(ActionEvent event) {
+    private void handleLimpiarFiltros(final ActionEvent event) {
         txtFiltroCedula.clear();
         txtFiltroNombres.clear();
         txtFiltroApellidos.clear();
@@ -454,41 +731,70 @@ public class ProfesionalController {
         cargarProfesionales();
     }
 
+    /**
+     * Va a la primera página.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handlePrimeraPagina(ActionEvent event) {
+    private void handlePrimeraPagina(final ActionEvent event) {
         if (paginaActual != 1) {
             paginaActual = 1;
             cargarProfesionales();
         }
     }
 
+    /**
+     * Va a la página anterior.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handlePaginaAnterior(ActionEvent event) {
+    private void handlePaginaAnterior(final ActionEvent event) {
         if (paginaActual > 1) {
             paginaActual--;
             cargarProfesionales();
         }
     }
 
+    /**
+     * Va a la página siguiente.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handlePaginaSiguiente(ActionEvent event) {
+    private void handlePaginaSiguiente(final ActionEvent event) {
         if (paginaActual < totalPaginas) {
             paginaActual++;
             cargarProfesionales();
         }
     }
 
+    /**
+     * Va a la última página.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handleUltimaPagina(ActionEvent event) {
+    private void handleUltimaPagina(final ActionEvent event) {
         if (paginaActual != totalPaginas) {
             paginaActual = totalPaginas;
             cargarProfesionales();
         }
     }
 
+    /**
+     * Maneja el cambio de registros por página.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handleCambioRegistrosPorPagina(ActionEvent event) {
-        String value = cmbRegistrosPorPagina.getSelectionModel().getSelectedItem();
+    private void handleCambioRegistrosPorPagina(
+            final ActionEvent event
+    ) {
+        String value = cmbRegistrosPorPagina
+                .getSelectionModel()
+                .getSelectedItem();
         if (value != null) {
             registrosPorPagina = Integer.parseInt(value);
             paginaActual = 1;
@@ -499,43 +805,65 @@ public class ProfesionalController {
     // =====================================================
     // HANDLERS - CREAR
     // =====================================================
+
+    /**
+     * Abre la pestaña de creación de profesional.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handleNuevoProfesional(ActionEvent event) {
-        // Limpia el formulario de creación
+    private void handleNuevoProfesional(final ActionEvent event) {
         handleLimpiarFormCrear(null);
 
-        // Habilita (por si acaso) y selecciona la pestaña Crear
         if (tabCrear != null) {
             tabCrear.setDisable(false);
             tabPane.getSelectionModel().select(tabCrear);
         }
     }
 
+    /**
+     * Maneja la creación de un nuevo profesional.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handleCrearProfesional(ActionEvent event) {
+    private void handleCrearProfesional(final ActionEvent event) {
         String cedula = trimOrNull(txtCrearCedula.getText());
         String nombres = trimOrNull(txtCrearNombres.getText());
         String apellidos = trimOrNull(txtCrearApellidos.getText());
         String telefono = trimOrNull(txtCrearTelefono.getText());
         String email = trimOrNull(txtCrearEmail.getText());
-        String numeroLicencia = trimOrNull(txtCrearNumeroLicencia.getText());
-        Boolean activo = chkCrearActivo != null && chkCrearActivo.isSelected();
+        String numeroLicencia =
+                trimOrNull(txtCrearNumeroLicencia.getText());
+        Boolean activo = chkCrearActivo != null
+                && chkCrearActivo.isSelected();
 
-        String especialidadNombre = cmbCrearEspecialidad.getSelectionModel().getSelectedItem();
-        Integer especialidadId = mapEspecialidadNombreToId(especialidadNombre);
+        String especialidadNombre =
+                cmbCrearEspecialidad
+                        .getSelectionModel()
+                        .getSelectedItem();
+        Integer especialidadId =
+                mapEspecialidadNombreToId(especialidadNombre);
 
-        // Validaciones basadas en el requerimiento funcional
-        if (!validarDatosProfesional(cedula, nombres, apellidos, telefono, email, numeroLicencia)) {
+        if (!validarDatosProfesional(
+                cedula,
+                nombres,
+                apellidos,
+                telefono,
+                email,
+                numeroLicencia
+        )) {
             return;
         }
 
         if (especialidadId == null) {
-            new Alert(Alert.AlertType.WARNING,
-                    "Debe seleccionar al menos una especialidad.").showAndWait();
+            new Alert(
+                    Alert.AlertType.WARNING,
+                    "Debe seleccionar al menos una especialidad."
+            ).showAndWait();
             return;
         }
 
-        // <<< NO DEPENDEMOS DE USUARIOS >>>
         Integer usuarioId = null;
 
         Profesional p = new Profesional();
@@ -546,103 +874,137 @@ public class ProfesionalController {
         p.setEmail(email);
         p.setNumeroLicencia(numeroLicencia);
         p.setActivo(activo);
-        p.setUsuarioId(usuarioId); // siempre null
+        p.setUsuarioId(usuarioId);
         p.setEspecialidadNombre(especialidadNombre);
         p.setEspecialidadId(especialidadId);
 
         boolean ok = profesionalService.crearProfesional(p);
 
         if (ok) {
-            new Alert(Alert.AlertType.INFORMATION,
-                    "Profesional creado correctamente.").showAndWait();
+            new Alert(
+                    Alert.AlertType.INFORMATION,
+                    "Profesional creado correctamente."
+            ).showAndWait();
             handleLimpiarFormCrear(null);
-            tabPane.getSelectionModel().selectFirst(); // vuelve a Listar
+            tabPane.getSelectionModel().selectFirst();
             cargarProfesionales();
         } else {
-            new Alert(Alert.AlertType.ERROR,
-                    "No se pudo crear el profesional. Revisa la consola para más detalles.")
-                    .showAndWait();
+            new Alert(
+                    Alert.AlertType.ERROR,
+                    "No se pudo crear el profesional. "
+                            + "Revisa la consola para más detalles."
+            ).showAndWait();
         }
     }
 
+    /**
+     * Limpia los campos del formulario de creación.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handleLimpiarFormCrear(ActionEvent event) {
-        if (txtCrearCedula != null) txtCrearCedula.clear();
-        if (txtCrearNombres != null) txtCrearNombres.clear();
-        if (txtCrearApellidos != null) txtCrearApellidos.clear();
-        if (txtCrearTelefono != null) txtCrearTelefono.clear();
-        if (txtCrearEmail != null) txtCrearEmail.clear();
-        if (txtCrearNumeroLicencia != null) txtCrearNumeroLicencia.clear();
+    private void handleLimpiarFormCrear(final ActionEvent event) {
+        if (txtCrearCedula != null) {
+            txtCrearCedula.clear();
+        }
+        if (txtCrearNombres != null) {
+            txtCrearNombres.clear();
+        }
+        if (txtCrearApellidos != null) {
+            txtCrearApellidos.clear();
+        }
+        if (txtCrearTelefono != null) {
+            txtCrearTelefono.clear();
+        }
+        if (txtCrearEmail != null) {
+            txtCrearEmail.clear();
+        }
+        if (txtCrearNumeroLicencia != null) {
+            txtCrearNumeroLicencia.clear();
+        }
 
-        if (cmbCrearEspecialidad != null) cmbCrearEspecialidad.getSelectionModel().clearSelection();
-        if (cmbCrearUsuario != null) cmbCrearUsuario.getSelectionModel().clearSelection();
-        if (chkCrearActivo != null) chkCrearActivo.setSelected(true);
+        if (cmbCrearEspecialidad != null) {
+            cmbCrearEspecialidad
+                    .getSelectionModel()
+                    .clearSelection();
+        }
+        if (cmbCrearUsuario != null) {
+            cmbCrearUsuario
+                    .getSelectionModel()
+                    .clearSelection();
+        }
+        if (chkCrearActivo != null) {
+            chkCrearActivo.setSelected(true);
+        }
     }
 
     // =====================================================
-    // ACCIONES COLUMNA "ACCIONES"  -> VER PROFESIONAL CON MEJOR DISEÑO
+    // ACCIONES COLUMNA "ACCIONES"  -> VER PROFESIONAL
     // =====================================================
-    private void handleVerProfesional(Profesional profesional) {
-        if (profesional == null) return;
+
+    /**
+     * Muestra el detalle de un profesional en un diálogo.
+     *
+     * @param profesional profesional a mostrar
+     */
+    private void handleVerProfesional(final Profesional profesional) {
+        if (profesional == null) {
+            return;
+        }
 
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Detalle del profesional");
-        dialog.setHeaderText(null); // usamos nuestro propio header
+        dialog.setHeaderText(null);
 
         DialogPane pane = dialog.getDialogPane();
         pane.getButtonTypes().add(ButtonType.CLOSE);
 
-        // Fondo y padding del diálogo
         pane.setStyle(
-                "-fx-background-color: linear-gradient(to bottom, #f4f7fb, #ffffff);" +
-                        "-fx-padding: 20;" +
-                        "-fx-font-family: 'Segoe UI', sans-serif;"
+                "-fx-background-color: linear-gradient(to bottom, "
+                        + "#f4f7fb, #ffffff);"
+                        + "-fx-padding: 20;"
+                        + "-fx-font-family: 'Segoe UI', sans-serif;"
         );
 
-        // Contenedor principal
-        VBox root = new VBox(12);
+        VBox root = new VBox(DEFAULT_VBOX_SPACING);
         root.setFillWidth(true);
 
-        // Nombre del profesional (título)
         Label lblNombre = new Label(profesional.getNombreCompleto());
         lblNombre.setStyle(
-                "-fx-font-size: 18px;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-text-fill: #00695c;"
+                "-fx-font-size: 18px;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-text-fill: #00695c;"
         );
 
-        // Subtítulo
         Label lblSubtitulo = new Label("Información del profesional");
         lblSubtitulo.setStyle(
-                "-fx-font-size: 13px;" +
-                        "-fx-text-fill: #607d8b;" +
-                        "-fx-font-weight: bold;"
+                "-fx-font-size: 13px;"
+                        + "-fx-text-fill: #607d8b;"
+                        + "-fx-font-weight: bold;"
         );
 
         Separator separator = new Separator();
 
-        // Grid con los datos
         GridPane grid = new GridPane();
-        grid.setHgap(12);
-        grid.setVgap(8);
+        grid.setHgap(DEFAULT_GRID_GAP);
+        grid.setVgap(DEFAULT_GRID_GAP);
 
-        // Helper para crear labels de título (izquierda)
         java.util.function.Function<String, Label> leftLabel = text -> {
             Label l = new Label(text);
             l.setStyle(
-                    "-fx-font-weight: bold;" +
-                            "-fx-text-fill: #455a64;" +
-                            "-fx-font-size: 13px;"
+                    "-fx-font-weight: bold;"
+                            + "-fx-text-fill: #455a64;"
+                            + "-fx-font-size: 13px;"
             );
             return l;
         };
 
-        // Helper para crear labels de valor (derecha)
         java.util.function.Function<String, Label> rightLabel = text -> {
-            Label l = new Label(text != null ? text : "-");
+            String value = text != null ? text : "-";
+            Label l = new Label(value);
             l.setStyle(
-                    "-fx-font-size: 13px;" +
-                            "-fx-text-fill: #37474f;"
+                    "-fx-font-size: 13px;"
+                            + "-fx-text-fill: #37474f;"
             );
             return l;
         };
@@ -653,104 +1015,180 @@ public class ProfesionalController {
                 ? "ID " + profesional.getEspecialidadId()
                 : "-");
 
-        String estado = Boolean.TRUE.equals(profesional.getActivo()) ? "ACTIVO" : "INACTIVO";
+        String estado;
+        if (Boolean.TRUE.equals(profesional.getActivo())) {
+            estado = "ACTIVO";
+        } else {
+            estado = "INACTIVO";
+        }
 
         int row = 0;
-        grid.add(leftLabel.apply("Cédula:"),            0, row);
-        grid.add(rightLabel.apply(profesional.getCedula()), 1, row++);
+        grid.add(leftLabel.apply("Cédula:"), 0, row);
+        grid.add(
+                rightLabel.apply(profesional.getCedula()),
+                1,
+                row
+        );
+        row++;
 
-        grid.add(leftLabel.apply("Especialidad:"),      0, row);
-        grid.add(rightLabel.apply(especialidad),        1, row++);
+        grid.add(leftLabel.apply("Especialidad:"), 0, row);
+        grid.add(
+                rightLabel.apply(especialidad),
+                1,
+                row
+        );
+        row++;
 
-        grid.add(leftLabel.apply("Teléfono:"),          0, row);
-        grid.add(rightLabel.apply(profesional.getTelefono()), 1, row++);
+        grid.add(leftLabel.apply("Teléfono:"), 0, row);
+        grid.add(
+                rightLabel.apply(profesional.getTelefono()),
+                1,
+                row
+        );
+        row++;
 
-        grid.add(leftLabel.apply("Email:"),             0, row);
-        grid.add(rightLabel.apply(profesional.getEmail()), 1, row++);
+        grid.add(leftLabel.apply("Email:"), 0, row);
+        grid.add(
+                rightLabel.apply(profesional.getEmail()),
+                1,
+                row
+        );
+        row++;
 
-        grid.add(leftLabel.apply("Número de licencia:"),0, row);
-        grid.add(rightLabel.apply(profesional.getNumeroLicencia()), 1, row++);
+        grid.add(leftLabel.apply("Número de licencia:"), 0, row);
+        grid.add(
+                rightLabel.apply(profesional.getNumeroLicencia()),
+                1,
+                row
+        );
+        row++;
 
-        grid.add(leftLabel.apply("Estado:"),            0, row);
+        grid.add(leftLabel.apply("Estado:"), 0, row);
         Label lblEstado = rightLabel.apply(estado);
-        // Color según estado
         lblEstado.setStyle(
-                "-fx-font-size: 13px;" +
-                        "-fx-font-weight: bold;" +
-                        (Boolean.TRUE.equals(profesional.getActivo())
-                                ? "-fx-text-fill: #2e7d32;"
-                                : "-fx-text-fill: #c62828;")
+                "-fx-font-size: 13px;"
+                        + "-fx-font-weight: bold;"
+                        + (Boolean.TRUE.equals(profesional.getActivo())
+                        ? "-fx-text-fill: #2e7d32;"
+                        : "-fx-text-fill: #c62828;")
         );
         grid.add(lblEstado, 1, row);
 
-        // Armamos el contenido
-        root.getChildren().addAll(lblNombre, lblSubtitulo, separator, grid);
+        root.getChildren().addAll(
+                lblNombre,
+                lblSubtitulo,
+                separator,
+                grid
+        );
 
         pane.setContent(root);
 
-        // Botón cerrar con un poco de estilo
         Button btnCerrar = (Button) pane.lookupButton(ButtonType.CLOSE);
         if (btnCerrar != null) {
             btnCerrar.setText("Cerrar");
             btnCerrar.setStyle(
-                    "-fx-background-color: #00695c;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-padding: 6 20 6 20;" +
-                            "-fx-background-radius: 20;"
+                    "-fx-background-color: #00695c;"
+                            + "-fx-text-fill: white;"
+                            + "-fx-font-weight: bold;"
+                            + "-fx-padding: 6 20 6 20;"
+                            + "-fx-background-radius: 20;"
             );
         }
 
         dialog.showAndWait();
     }
 
-    private void handleEditarProfesional(Profesional profesional) {
-        if (profesional == null) return;
+    /**
+     * Prepara los datos de un profesional para ser editado.
+     *
+     * @param profesional profesional a editar
+     */
+    private void handleEditarProfesional(final Profesional profesional) {
+        if (profesional == null) {
+            return;
+        }
 
-        // Opcional pero recomendado: refrescar desde BD para traer todo actualizado
+        Profesional profesionalMostrar = profesional;
         if (profesional.getId() != null) {
-            Profesional desdeBd = profesionalService.getProfesionalById(profesional.getId());
+            Profesional desdeBd =
+                    profesionalService.getProfesionalById(
+                            profesional.getId()
+                    );
             if (desdeBd != null) {
-                profesional = desdeBd;
+                profesionalMostrar = desdeBd;
             }
         }
 
-        txtEditarId.setText(profesional.getId() != null ? profesional.getId().toString() : "");
-        txtEditarCedula.setText(profesional.getCedula());
-        txtEditarNombres.setText(profesional.getNombres());
-        txtEditarApellidos.setText(profesional.getApellidos());
-        txtEditarTelefono.setText(profesional.getTelefono());
-        txtEditarEmail.setText(profesional.getEmail());
-        txtEditarNumeroLicencia.setText(profesional.getNumeroLicencia());
-        chkEditarActivo.setSelected(Boolean.TRUE.equals(profesional.getActivo()));
+        txtEditarId.setText(
+                profesionalMostrar.getId() != null
+                        ? profesionalMostrar.getId().toString()
+                        : ""
+        );
+        txtEditarCedula.setText(profesionalMostrar.getCedula());
+        txtEditarNombres.setText(profesionalMostrar.getNombres());
+        txtEditarApellidos.setText(profesionalMostrar.getApellidos());
+        txtEditarTelefono.setText(profesionalMostrar.getTelefono());
+        txtEditarEmail.setText(profesionalMostrar.getEmail());
+        txtEditarNumeroLicencia.setText(
+                profesionalMostrar.getNumeroLicencia()
+        );
+        chkEditarActivo.setSelected(
+                Boolean.TRUE.equals(profesionalMostrar.getActivo())
+        );
 
-        if (profesional.getEspecialidadNombre() != null) {
-            cmbEditarEspecialidad.getSelectionModel().select(profesional.getEspecialidadNombre());
+        if (profesionalMostrar.getEspecialidadNombre() != null) {
+            cmbEditarEspecialidad
+                    .getSelectionModel()
+                    .select(
+                            profesionalMostrar.getEspecialidadNombre()
+                    );
         } else {
-            cmbEditarEspecialidad.getSelectionModel().clearSelection();
+            cmbEditarEspecialidad
+                    .getSelectionModel()
+                    .clearSelection();
         }
 
-        if (profesional.getUsuarioId() != null) {
-            cmbEditarUsuario.getSelectionModel().select(profesional.getUsuarioId().toString());
+        if (profesionalMostrar.getUsuarioId() != null) {
+            cmbEditarUsuario
+                    .getSelectionModel()
+                    .select(
+                            profesionalMostrar
+                                    .getUsuarioId()
+                                    .toString()
+                    );
         } else {
-            cmbEditarUsuario.getSelectionModel().clearSelection();
+            cmbEditarUsuario
+                    .getSelectionModel()
+                    .clearSelection();
         }
 
         tabEditar.setDisable(false);
         tabPane.getSelectionModel().select(tabEditar);
     }
 
-    private void handleEliminarProfesional(Profesional profesional) {
-        if (profesional == null) return;
+    /**
+     * Maneja el borrado de un profesional de la tabla.
+     * (Sin eliminar todavía de la base de datos).
+     *
+     * @param profesional profesional a eliminar
+     */
+    private void handleEliminarProfesional(
+            final Profesional profesional
+    ) {
+        if (profesional == null) {
+            return;
+        }
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Eliminar Profesional");
-        confirm.setHeaderText("¿Desea eliminar al profesional seleccionado?");
+        confirm.setHeaderText(
+                "¿Desea eliminar al profesional seleccionado?"
+        );
         confirm.setContentText(profesional.getNombreCompleto());
 
         confirm.showAndWait().ifPresent(result -> {
             if (result == ButtonType.OK) {
-                // TODO: implementar eliminado real en la BD si lo deseas
+                // Pendiente de implementar eliminado real en la BD
                 // profesionalService.eliminarProfesional(profesional.getId());
                 profesionales.remove(profesional);
             }
@@ -760,17 +1198,33 @@ public class ProfesionalController {
     // =====================================================
     // HANDLERS - EDITAR
     // =====================================================
+
+    /**
+     * Maneja la actualización de los datos del profesional.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handleActualizarProfesional(ActionEvent event) {
+    private void handleActualizarProfesional(
+            final ActionEvent event
+    ) {
         String cedula = trimOrNull(txtEditarCedula.getText());
         String nombres = trimOrNull(txtEditarNombres.getText());
         String apellidos = trimOrNull(txtEditarApellidos.getText());
         String telefono = trimOrNull(txtEditarTelefono.getText());
         String email = trimOrNull(txtEditarEmail.getText());
-        String numeroLicencia = trimOrNull(txtEditarNumeroLicencia.getText());
+        String numeroLicencia =
+                trimOrNull(txtEditarNumeroLicencia.getText());
         Boolean activo = chkEditarActivo.isSelected();
 
-        if (!validarDatosProfesional(cedula, nombres, apellidos, telefono, email, numeroLicencia)) {
+        if (!validarDatosProfesional(
+                cedula,
+                nombres,
+                apellidos,
+                telefono,
+                email,
+                numeroLicencia
+        )) {
             return;
         }
 
@@ -778,13 +1232,18 @@ public class ProfesionalController {
         if (!txtEditarId.getText().isBlank()) {
             try {
                 id = Integer.parseInt(txtEditarId.getText());
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+                // ignorar
+            }
         }
 
-        String especialidadNombre = cmbEditarEspecialidad.getSelectionModel().getSelectedItem();
-        Integer especialidadId = mapEspecialidadNombreToId(especialidadNombre);
+        String especialidadNombre =
+                cmbEditarEspecialidad
+                        .getSelectionModel()
+                        .getSelectedItem();
+        Integer especialidadId =
+                mapEspecialidadNombreToId(especialidadNombre);
 
-        // <<< NO DEPENDEMOS DE USUARIOS TAMPOCO AL EDITAR >>>
         Integer usuarioId = null;
 
         Profesional p = new Profesional();
@@ -796,13 +1255,13 @@ public class ProfesionalController {
         p.setEmail(email);
         p.setNumeroLicencia(numeroLicencia);
         p.setActivo(activo);
-        p.setUsuarioId(usuarioId); // siempre null
+        p.setUsuarioId(usuarioId);
         p.setEspecialidadNombre(especialidadNombre);
         p.setEspecialidadId(especialidadId);
 
-        // Respaldo: si estás editando y el mapa devolvió null, conserva el ID original
         if (id != null && especialidadId == null) {
-            Profesional original = profesionalService.getProfesionalById(id);
+            Profesional original =
+                    profesionalService.getProfesionalById(id);
             if (original != null) {
                 p.setEspecialidadId(original.getEspecialidadId());
             }
@@ -820,7 +1279,10 @@ public class ProfesionalController {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Éxito");
             alert.setHeaderText(null);
-            alert.setContentText("Los datos del profesional se guardaron correctamente.");
+            alert.setContentText(
+                    "Los datos del profesional "
+                            + "se guardaron correctamente."
+            );
             alert.showAndWait();
 
             tabPane.getSelectionModel().selectFirst();
@@ -829,14 +1291,23 @@ public class ProfesionalController {
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            alert.setHeaderText("No se pudo guardar el profesional");
-            alert.setContentText("Revisa la consola para más detalles.");
+            alert.setHeaderText(
+                    "No se pudo guardar el profesional"
+            );
+            alert.setContentText(
+                    "Revisa la consola para más detalles."
+            );
             alert.showAndWait();
         }
     }
 
+    /**
+     * Cancela la edición y vuelve a la pestaña de listado.
+     *
+     * @param event evento de acción
+     */
     @FXML
-    private void handleCancelarEdicion(ActionEvent event) {
+    private void handleCancelarEdicion(final ActionEvent event) {
         tabPane.getSelectionModel().selectFirst();
         tabEditar.setDisable(true);
     }
@@ -844,92 +1315,149 @@ public class ProfesionalController {
     // =====================================================
     // VALIDACIONES COMUNES (basadas en el requerimiento)
     // =====================================================
+
     /**
-     * Valida:
-     * - Cédula: exactamente 10 dígitos, solo números.
-     * - Nombres / Apellidos: solo letras y espacios, máximo 100 caracteres.
-     * - Email: opcional, pero si viene debe ser formato válido y máximo 100 caracteres.
-     * - Teléfono: opcional, pero si viene debe tener exactamente 9 dígitos (solo números).
-     * - Número de licencia: obligatorio, alfanumérico, máximo 30 caracteres.
+     * Valida los datos del profesional.
+     * <ul>
+     *     <li>Cédula: exactamente 10 dígitos, solo números.</li>
+     *     <li>Nombres / Apellidos: solo letras y espacios,
+     *     máximo 100 caracteres.</li>
+     *     <li>Email: opcional, formato válido y máximo 100
+     *     caracteres.</li>
+     *     <li>Teléfono: opcional, exactamente 9 dígitos.</li>
+     *     <li>Número de licencia: obligatorio, alfanumérico,
+     *     máximo 30 caracteres.</li>
+     * </ul>
+     *
+     * @param cedula         cédula del profesional
+     * @param nombres        nombres del profesional
+     * @param apellidos      apellidos del profesional
+     * @param telefono       número de teléfono (opcional)
+     * @param email          correo electrónico (opcional)
+     * @param numeroLicencia número de licencia o registro médico
+     * @return {@code true} si todos los datos son válidos;
+     *         {@code false} en caso contrario
      */
-    private boolean validarDatosProfesional(String cedula,
-                                            String nombres,
-                                            String apellidos,
-                                            String telefono,
-                                            String email,
-                                            String numeroLicencia) {
+    private boolean validarDatosProfesional(
+            final String cedula,
+            final String nombres,
+            final String apellidos,
+            final String telefono,
+            final String email,
+            final String numeroLicencia
+    ) {
 
         List<String> errores = new ArrayList<>();
 
-        // Cédula
         if (cedula == null || cedula.isEmpty()) {
             errores.add("La cédula es obligatoria.");
-        } else if (!cedula.matches("\\d{10}")) {
-            errores.add("La cédula debe contener exactamente 10 dígitos (solo números).");
+        } else if (!cedula.matches("\\d{" + CEDULA_LENGTH + "}")) {
+            errores.add(
+                    "La cédula debe contener exactamente "
+                            + CEDULA_LENGTH
+                            + " dígitos (solo números)."
+            );
         }
 
-        // Nombres
         if (nombres == null || nombres.isEmpty()) {
             errores.add("Los nombres son obligatorios.");
         } else {
-            if (nombres.length() > 100) {
-                errores.add("Los nombres no pueden superar los 100 caracteres.");
+            if (nombres.length() > MAX_NOMBRE_LENGTH) {
+                errores.add(
+                        "Los nombres no pueden superar los "
+                                + MAX_NOMBRE_LENGTH
+                                + " caracteres."
+                );
             }
             if (!nombres.matches("[A-Za-zÁÉÍÓÚáéíóúÑñ ]+")) {
-                errores.add("Los nombres solo deben contener letras y espacios.");
+                errores.add(
+                        "Los nombres solo deben contener "
+                                + "letras y espacios."
+                );
             }
         }
 
-        // Apellidos
         if (apellidos == null || apellidos.isEmpty()) {
             errores.add("Los apellidos son obligatorios.");
         } else {
-            if (apellidos.length() > 100) {
-                errores.add("Los apellidos no pueden superar los 100 caracteres.");
+            if (apellidos.length() > MAX_APELLIDO_LENGTH) {
+                errores.add(
+                        "Los apellidos no pueden superar los "
+                                + MAX_APELLIDO_LENGTH
+                                + " caracteres."
+                );
             }
             if (!apellidos.matches("[A-Za-zÁÉÍÓÚáéíóúÑñ ]+")) {
-                errores.add("Los apellidos solo deben contener letras y espacios.");
+                errores.add(
+                        "Los apellidos solo deben contener "
+                                + "letras y espacios."
+                );
             }
         }
 
-        // Teléfono (opcional pero validado si se ingresa)
         if (telefono != null) {
-            if (!telefono.matches("\\d{9}")) {
-                errores.add("El número de celular debe contener exactamente 9 dígitos (solo números).");
+            if (!telefono.matches("\\d{" + TELEFONO_LENGTH + "}")) {
+                errores.add(
+                        "El número de celular debe contener "
+                                + "exactamente "
+                                + TELEFONO_LENGTH
+                                + " dígitos (solo números)."
+                );
             }
         }
 
-        // Email (opcional pero validado si se ingresa)
         if (email != null) {
-            if (email.length() > 100) {
-                errores.add("El correo electrónico no puede superar los 100 caracteres.");
+            if (email.length() > MAX_EMAIL_LENGTH) {
+                errores.add(
+                        "El correo electrónico no puede superar "
+                                + "los "
+                                + MAX_EMAIL_LENGTH
+                                + " caracteres."
+                );
             }
-            // Regex sencilla para formato de correo.
             if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-                errores.add("El correo electrónico no tiene un formato válido.");
+                errores.add(
+                        "El correo electrónico no tiene un "
+                                + "formato válido."
+                );
             }
         }
 
-        // Número de licencia (obligatorio, alfanumérico, máx 30)
         if (numeroLicencia == null || numeroLicencia.isEmpty()) {
-            errores.add("El número de licencia / registro médico es obligatorio.");
+            errores.add(
+                    "El número de licencia / registro médico "
+                            + "es obligatorio."
+            );
         } else {
-            if (numeroLicencia.length() > 30) {
-                errores.add("El número de licencia no puede superar los 30 caracteres.");
+            if (numeroLicencia.length()
+                    > MAX_NUMERO_LICENCIA_LENGTH) {
+                errores.add(
+                        "El número de licencia no puede superar "
+                                + "los "
+                                + MAX_NUMERO_LICENCIA_LENGTH
+                                + " caracteres."
+                );
             }
             if (!numeroLicencia.matches("[A-Za-z0-9]+")) {
-                errores.add("El número de licencia debe ser alfanumérico (sin espacios ni símbolos especiales).");
+                errores.add(
+                        "El número de licencia debe ser "
+                                + "alfanumérico "
+                                + "(sin espacios ni símbolos "
+                                + "especiales)."
+                );
             }
         }
 
         if (!errores.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (String e : errores) {
-                sb.append("• ").append(e).append("\n");
+                sb.append("• ").append(e).append('\n');
             }
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Validación de datos del profesional");
-            alert.setHeaderText("Por favor, corrige los siguientes campos:");
+            alert.setHeaderText(
+                    "Por favor, corrige los siguientes campos:"
+            );
             alert.setContentText(sb.toString());
             alert.showAndWait();
             return false;
@@ -941,8 +1469,17 @@ public class ProfesionalController {
     // =====================================================
     // UTILS
     // =====================================================
-    private String trimOrNull(String text) {
-        if (text == null) return null;
+
+    /**
+     * Aplica trim al texto; devuelve {@code null} si queda vacío.
+     *
+     * @param text texto a procesar
+     * @return texto recortado o {@code null} si está vacío
+     */
+    private String trimOrNull(final String text) {
+        if (text == null) {
+            return null;
+        }
         String t = text.trim();
         return t.isEmpty() ? null : t;
     }
