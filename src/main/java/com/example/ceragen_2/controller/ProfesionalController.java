@@ -31,6 +31,8 @@ import javafx.util.Callback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Controlador JavaFX para la gestión de profesionales.
@@ -592,9 +594,9 @@ public final class ProfesionalController {
                 if (nombresFiltro != null
                         && (p.getNombres() == null
                         || !p.getNombres()
-                        .toLowerCase()
+                        .toLowerCase(Locale.ROOT)
                         .contains(
-                                nombresFiltro.toLowerCase()
+                                nombresFiltro.toLowerCase(Locale.ROOT)
                         ))) {
                     continue;
                 }
@@ -602,9 +604,9 @@ public final class ProfesionalController {
                 if (apellidosFiltro != null
                         && (p.getApellidos() == null
                         || !p.getApellidos()
-                        .toLowerCase()
+                        .toLowerCase(Locale.ROOT)
                         .contains(
-                                apellidosFiltro.toLowerCase()
+                                apellidosFiltro.toLowerCase(Locale.ROOT)
                         ))) {
                     continue;
                 }
@@ -704,7 +706,8 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handleBuscar(final ActionEvent event) {
+    public void handleBuscar(final ActionEvent event) {
+        Objects.requireNonNull(event, "event");
         paginaActual = 1;
         cargarProfesionales();
     }
@@ -715,7 +718,8 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handleLimpiarFiltros(final ActionEvent event) {
+    public void handleLimpiarFiltros(final ActionEvent event) {
+        Objects.requireNonNull(event, "event");
         txtFiltroCedula.clear();
         txtFiltroNombres.clear();
         txtFiltroApellidos.clear();
@@ -737,7 +741,8 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handlePrimeraPagina(final ActionEvent event) {
+    public void handlePrimeraPagina(final ActionEvent event) {
+        Objects.requireNonNull(event, "event");
         if (paginaActual != 1) {
             paginaActual = 1;
             cargarProfesionales();
@@ -750,7 +755,8 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handlePaginaAnterior(final ActionEvent event) {
+    public void handlePaginaAnterior(final ActionEvent event) {
+        Objects.requireNonNull(event, "event");
         if (paginaActual > 1) {
             paginaActual--;
             cargarProfesionales();
@@ -763,7 +769,8 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handlePaginaSiguiente(final ActionEvent event) {
+    public void handlePaginaSiguiente(final ActionEvent event) {
+        Objects.requireNonNull(event, "event");
         if (paginaActual < totalPaginas) {
             paginaActual++;
             cargarProfesionales();
@@ -776,7 +783,8 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handleUltimaPagina(final ActionEvent event) {
+    public void handleUltimaPagina(final ActionEvent event) {
+        Objects.requireNonNull(event, "event");
         if (paginaActual != totalPaginas) {
             paginaActual = totalPaginas;
             cargarProfesionales();
@@ -789,9 +797,10 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handleCambioRegistrosPorPagina(
+    public void handleCambioRegistrosPorPagina(
             final ActionEvent event
     ) {
+        Objects.requireNonNull(event, "event");
         String value = cmbRegistrosPorPagina
                 .getSelectionModel()
                 .getSelectedItem();
@@ -812,7 +821,8 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handleNuevoProfesional(final ActionEvent event) {
+    public void handleNuevoProfesional(final ActionEvent event) {
+        Objects.requireNonNull(event, "event");
         handleLimpiarFormCrear(null);
 
         if (tabCrear != null) {
@@ -827,7 +837,8 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handleCrearProfesional(final ActionEvent event) {
+    public void handleCrearProfesional(final ActionEvent event) {
+        Objects.requireNonNull(event, "event");
         String cedula = trimOrNull(txtCrearCedula.getText());
         String nombres = trimOrNull(txtCrearNombres.getText());
         String apellidos = trimOrNull(txtCrearApellidos.getText());
@@ -903,7 +914,11 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handleLimpiarFormCrear(final ActionEvent event) {
+    public void handleLimpiarFormCrear(final ActionEvent event) {
+        if (event != null) {
+            Objects.requireNonNull(event, "event");
+        }
+
         if (txtCrearCedula != null) {
             txtCrearCedula.clear();
         }
@@ -1011,9 +1026,9 @@ public final class ProfesionalController {
 
         String especialidad = profesional.getEspecialidadNombre() != null
                 ? profesional.getEspecialidadNombre()
-                : (profesional.getEspecialidadId() != null
+                : profesional.getEspecialidadId() != null
                 ? "ID " + profesional.getEspecialidadId()
-                : "-");
+                : "-";
 
         String estado;
         if (Boolean.TRUE.equals(profesional.getActivo())) {
@@ -1205,9 +1220,10 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handleActualizarProfesional(
+    public void handleActualizarProfesional(
             final ActionEvent event
     ) {
+        Objects.requireNonNull(event, "event");
         String cedula = trimOrNull(txtEditarCedula.getText());
         String nombres = trimOrNull(txtEditarNombres.getText());
         String apellidos = trimOrNull(txtEditarApellidos.getText());
@@ -1307,7 +1323,8 @@ public final class ProfesionalController {
      * @param event evento de acción
      */
     @FXML
-    private void handleCancelarEdicion(final ActionEvent event) {
+    public void handleCancelarEdicion(final ActionEvent event) {
+        Objects.requireNonNull(event, "event");
         tabPane.getSelectionModel().selectFirst();
         tabEditar.setDisable(true);
     }
