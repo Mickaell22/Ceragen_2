@@ -59,6 +59,8 @@ public class MainController {
 
         configurarPermisosPorRol(role);
         setupHoverEffects();
+
+        LOGGER.info("MainController inicializado correctamente");
     }
 
     /**
