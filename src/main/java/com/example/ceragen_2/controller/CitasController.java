@@ -3,6 +3,7 @@ package com.example.ceragen_2.controller;
 import com.example.ceragen_2.model.Cita;
 import com.example.ceragen_2.model.Paciente;
 import com.example.ceragen_2.model.Profesional;
+import com.example.ceragen_2.service.AuthService;
 import com.example.ceragen_2.service.CitaService;
 import com.example.ceragen_2.service.PacienteService;
 import com.example.ceragen_2.service.ProfesionalService;
@@ -43,6 +44,7 @@ public class CitasController {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
+    private final AuthService authService = AuthService.getInstance();
     private final CitaService citaService = CitaService.getInstance();
     private final PacienteService pacienteService = PacienteService.getInstance();
     private final ProfesionalService profesionalService = ProfesionalService.getInstance();
@@ -50,6 +52,9 @@ public class CitasController {
     private int paginaActual;
     private int registrosPorPagina = 10;
     private int totalPaginas;
+
+    private String rolUsuario;
+    private Integer profesionalIdUsuario;
 
     @FXML private TabPane tabPane;
     @FXML private Tab tabEditar;
@@ -106,10 +111,17 @@ public class CitasController {
     @FXML
     public void initialize() {
         LOGGER.info("Inicializando módulo de Citas");
+
+        rolUsuario = authService.getCurrentUserRole();
+        profesionalIdUsuario = authService.getCurrentProfesionalId();
+
+        LOGGER.info("Usuario con rol: {} - ProfesionalId: {}", rolUsuario, profesionalIdUsuario);
+
         configurarTabla();
         configurarFiltros();
         configurarPaginacion();
         configurarVistaHorario();
+        configurarPermisosPorRol();
         cargarCatalogos();
     }
 
@@ -170,6 +182,22 @@ public class CitasController {
         dpFechaHorario.setValue(LocalDate.now());
     }
 
+    private void configurarPermisosPorRol() {
+        if ("MEDICO".equals(rolUsuario)) {
+            // Si es médico, deshabilitar filtro de profesional y ocultarlo
+            cmbProfesionalFiltro.setVisible(false);
+            cmbProfesionalFiltro.setManaged(false);
+            txtFiltroCedulaProfesional.setVisible(false);
+            txtFiltroCedulaProfesional.setManaged(false);
+
+            // Deshabilitar selección de profesional en edición
+            cmbEditarProfesional.setDisable(true);
+            txtEditarCedulaProfesional.setDisable(true);
+
+            LOGGER.info("Filtros configurados para MEDICO - Solo verá sus propias citas");
+        }
+    }
+
     private void cargarCatalogos() {
         final Task<CatalogosResult> task = new Task<>() {
             @Override
@@ -209,20 +237,28 @@ public class CitasController {
         deshabilitarControles(true);
 
         final Integer pacienteId = cmbPacienteFiltro.getValue() != null ? cmbPacienteFiltro.getValue().getId() : null;
-        final Integer profesionalId = cmbProfesionalFiltro.getValue() != null ? cmbProfesionalFiltro.getValue().getId() : null;
+        Integer profesionalId = cmbProfesionalFiltro.getValue() != null ? cmbProfesionalFiltro.getValue().getId() : null;
+
+        // Si es MEDICO, forzar filtro por su profesional_id
+        if ("MEDICO".equals(rolUsuario) && profesionalIdUsuario != null) {
+            profesionalId = profesionalIdUsuario;
+            LOGGER.info("Aplicando filtro automático para MEDICO - ProfesionalId: {}", profesionalId);
+        }
+
         final String estadoFilter = cmbEstadoFiltro.getValue();
         final int offset = paginaActual * registrosPorPagina;
+        final Integer profesionalIdFinal = profesionalId;
 
         final Task<DatosCitasResult> task = new Task<>() {
             @Override
             protected DatosCitasResult call() {
-                final int totalRegistros = citaService.countCitas(pacienteId, profesionalId, estadoFilter, null, null);
+                final int totalRegistros = citaService.countCitas(pacienteId, profesionalIdFinal, estadoFilter, null, null);
                 int totalPaginasTemp = (int) Math.ceil((double) totalRegistros / registrosPorPagina);
                 if (totalPaginasTemp == 0) {
                     totalPaginasTemp = 1;
                 }
 
-                final List<Cita> citas = citaService.getCitas(offset, registrosPorPagina, pacienteId, profesionalId, estadoFilter, null, null);
+                final List<Cita> citas = citaService.getCitas(offset, registrosPorPagina, pacienteId, profesionalIdFinal, estadoFilter, null, null);
                 return new DatosCitasResult(citas, totalPaginasTemp);
             }
         };
@@ -324,6 +360,15 @@ public class CitasController {
 
     private void abrirEdicion(final Cita cita) {
         LOGGER.info("Abriendo edición para cita ID: {}", cita.getId());
+
+        // Si es MEDICO, verificar que la cita le pertenece
+        if ("MEDICO".equals(rolUsuario) && profesionalIdUsuario != null) {
+            if (!profesionalIdUsuario.equals(cita.getProfesionalId())) {
+                mostrarAlerta("Acceso Denegado", "Solo puede editar sus propias citas", Alert.AlertType.WARNING);
+                return;
+            }
+        }
+
         citaEnEdicion = cita;
 
         txtEditarId.setText(cita.getId().toString());

@@ -16,6 +16,7 @@ public final class AuthService {
     private String currentUsername;
     private String currentUserRole;
     private Integer currentUserId;
+    private Integer currentProfesionalId;
 
     private AuthService() {}
 
@@ -43,7 +44,15 @@ public final class AuthService {
                         currentUsername = rs.getString("username");
                         currentUserRole = rs.getString("rol");
 
-                        LOGGER.info("Usuario autenticado: {} - Rol: {}", currentUsername, currentUserRole);
+                        // Si es MEDICO, obtener su profesional_id
+                        if ("MEDICO".equals(currentUserRole)) {
+                            currentProfesionalId = obtenerProfesionalIdPorUsuario(currentUserId);
+                        } else {
+                            currentProfesionalId = null;
+                        }
+
+                        LOGGER.info("Usuario autenticado: {} - Rol: {} - ProfesionalId: {}",
+                                    currentUsername, currentUserRole, currentProfesionalId);
                         return true;
                     } else {
                         LOGGER.warn("Contraseña incorrecta para usuario: {}", username);
@@ -64,6 +73,7 @@ public final class AuthService {
         currentUserId = null;
         currentUsername = null;
         currentUserRole = null;
+        currentProfesionalId = null;
     }
 
     public boolean isAuthenticated() {
@@ -80,5 +90,33 @@ public final class AuthService {
 
     public Integer getCurrentUserId() {
         return currentUserId;
+    }
+
+    public Integer getCurrentProfesionalId() {
+        return currentProfesionalId;
+    }
+
+    private Integer obtenerProfesionalIdPorUsuario(Integer usuarioId) {
+        String query = "SELECT id FROM profesionales WHERE usuario_id = ? AND activo = TRUE";
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, usuarioId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Integer profesionalId = rs.getInt("id");
+                    LOGGER.info("Profesional ID {} encontrado para usuario ID {}", profesionalId, usuarioId);
+                    return profesionalId;
+                } else {
+                    LOGGER.warn("No se encontró profesional para usuario ID {}", usuarioId);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Error al obtener profesional_id para usuario: {}", usuarioId, e);
+        }
+
+        return null;
     }
 }

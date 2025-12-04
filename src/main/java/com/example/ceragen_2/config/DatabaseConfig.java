@@ -41,7 +41,7 @@ public final class DatabaseConfig {
                 final String password = dotenv.get("MYSQLPASSWORD");
 
                 final String url = String.format(
-                        "jdbc:mysql://%s:%s/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
+                        "jdbc:mysql://%s:%s/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8&connectionCollation=utf8mb4_unicode_ci",
                         host, port, database);
 
                 connection = DriverManager.getConnection(url, user, password);

@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MainApplication" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.example.ceragen_2.Launcher" />
-    <option name="VM_PARAMETERS" value="--add-reads com.example.ceragen_2=ALL-UNNAMED" />
+    <option name="VM_PARAMETERS" value="--add-reads com.example.ceragen_2=ALL-UNNAMED -Dfile.encoding=UTF-8" />
     <module name="Ceragen_2" />
     <extension name="coverage">
       <pattern>

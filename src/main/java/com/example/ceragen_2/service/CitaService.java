@@ -34,8 +34,8 @@ public final class CitaService {
         StringBuilder sql = new StringBuilder(
             "SELECT c.id, c.paciente_id, c.profesional_id, c.fecha_hora, c.motivo, c.estado, " +
             "c.observaciones, c.fecha_creacion, " +
-            "CONCAT(pac.nombres, ' ', pac.apellidos) as paciente_nombre, " +
-            "CONCAT('Dr. ', prof.nombres, ' ', prof.apellidos) as profesional_nombre " +
+            "pac.nombres, pac.apellidos, " +
+            "prof.nombres as prof_nombres, prof.apellidos as prof_apellidos " +
             "FROM citas c " +
             "INNER JOIN pacientes pac ON c.paciente_id = pac.id " +
             "INNER JOIN profesionales prof ON c.profesional_id = prof.id " +
@@ -105,8 +105,13 @@ public final class CitaService {
                         cita.setFechaCreacion(fechaCreacion.toLocalDateTime());
                     }
 
-                    cita.setPacienteNombre(rs.getString("paciente_nombre"));
-                    cita.setProfesionalNombre(rs.getString("profesional_nombre"));
+                    String pacNombres = rs.getString("nombres");
+                    String pacApellidos = rs.getString("apellidos");
+                    cita.setPacienteNombre(pacNombres + " " + pacApellidos);
+
+                    String profNombres = rs.getString("prof_nombres");
+                    String profApellidos = rs.getString("prof_apellidos");
+                    cita.setProfesionalNombre("Dr. " + profNombres + " " + profApellidos);
 
                     citas.add(cita);
                 }
@@ -302,8 +307,8 @@ public final class CitaService {
     public Cita getCitaById(Integer id) {
         String sql = "SELECT c.id, c.paciente_id, c.profesional_id, c.fecha_hora, c.motivo, c.estado, " +
                      "c.observaciones, c.fecha_creacion, " +
-                     "CONCAT(pac.nombres, ' ', pac.apellidos) as paciente_nombre, " +
-                     "CONCAT('Dr. ', prof.nombres, ' ', prof.apellidos) as profesional_nombre " +
+                     "pac.nombres, pac.apellidos, " +
+                     "prof.nombres as prof_nombres, prof.apellidos as prof_apellidos " +
                      "FROM citas c " +
                      "INNER JOIN pacientes pac ON c.paciente_id = pac.id " +
                      "INNER JOIN profesionales prof ON c.profesional_id = prof.id " +
@@ -335,8 +340,13 @@ public final class CitaService {
                         cita.setFechaCreacion(fechaCreacion.toLocalDateTime());
                     }
 
-                    cita.setPacienteNombre(rs.getString("paciente_nombre"));
-                    cita.setProfesionalNombre(rs.getString("profesional_nombre"));
+                    String pacNombres = rs.getString("nombres");
+                    String pacApellidos = rs.getString("apellidos");
+                    cita.setPacienteNombre(pacNombres + " " + pacApellidos);
+
+                    String profNombres = rs.getString("prof_nombres");
+                    String profApellidos = rs.getString("prof_apellidos");
+                    cita.setProfesionalNombre("Dr. " + profNombres + " " + profApellidos);
 
                     return cita;
                 }
