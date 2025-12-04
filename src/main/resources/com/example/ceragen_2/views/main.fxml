@@ -4,6 +4,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.ceragen_2.controller.MainController"
@@ -12,15 +15,17 @@
 
     <!-- Navbar Izquierdo -->
     <left>
-        <VBox spacing="5.0" styleClass="navbar">
+        <VBox spacing="8.0" styleClass="navbar">
             <padding>
                 <Insets top="20.0" bottom="20.0"/>
             </padding>
 
             <!-- Header del Navbar -->
-            <VBox alignment="CENTER" spacing="5.0" style="-fx-padding: 0 0 20 0;">
-                <Text text="Ceragen" styleClass="title-xl, text-white"/>
-                <Text fx:id="userLabel" styleClass="subtitle, text-white" style="-fx-fill: #bdc3c7;"/>
+            <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 0 15 25 15;">
+                <Text text="CERAGEN" styleClass="title-xl, text-white"
+                      style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-letter-spacing: 3px;"/>
+                <Text fx:id="userLabel" styleClass="subtitle, text-white"
+                      style="-fx-fill: #bdc3c7; -fx-font-size: 13px;"/>
                 <Separator styleClass="separator-dark">
                     <VBox.margin>
                         <Insets top="10.0"/>
@@ -28,38 +33,83 @@
                 </Separator>
             </VBox>
 
-            <!-- Botones de Navegación -->
-            <VBox spacing="5.0" VBox.vgrow="ALWAYS">
-                <Button fx:id="btnUsuarios" text="Usuarios" onAction="#navigateToUsuarios"
-                        styleClass="nav-button"/>
+            <!-- Botones de Navegación con Iconos -->
+            <VBox spacing="8.0" VBox.vgrow="ALWAYS" style="-fx-padding: 0 15 0 15;">
+                <Button fx:id="btnUsuarios" onAction="#navigateToUsuarios" styleClass="nav-button">
+                    <graphic>
+                        <HBox spacing="12.0" alignment="CENTER_LEFT">
+                            <FontIcon iconLiteral="fas-users" iconSize="18" styleClass="nav-icon"/>
+                            <Text text="Usuarios" styleClass="nav-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
 
-                <Button fx:id="btnPacientes" text="Pacientes" onAction="#navigateToPacientes"
-                        styleClass="nav-button"/>
+                <Button fx:id="btnPacientes" onAction="#navigateToPacientes" styleClass="nav-button">
+                    <graphic>
+                        <HBox spacing="12.0" alignment="CENTER_LEFT">
+                            <FontIcon iconLiteral="fas-user-injured" iconSize="18" styleClass="nav-icon"/>
+                            <Text text="Pacientes" styleClass="nav-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
 
-                <Button fx:id="btnClientes" text="Clientes" onAction="#navigateToClientes"
-                        styleClass="nav-button"/>
+                <Button fx:id="btnClientes" onAction="#navigateToClientes" styleClass="nav-button">
+                    <graphic>
+                        <HBox spacing="12.0" alignment="CENTER_LEFT">
+                            <FontIcon iconLiteral="fas-address-book" iconSize="18" styleClass="nav-icon"/>
+                            <Text text="Clientes" styleClass="nav-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
 
-                <Button fx:id="btnProfesionales" text="Profesionales" onAction="#navigateToProfesionales"
-                        styleClass="nav-button"/>
+                <Button fx:id="btnProfesionales" onAction="#navigateToProfesionales" styleClass="nav-button">
+                    <graphic>
+                        <HBox spacing="12.0" alignment="CENTER_LEFT">
+                            <FontIcon iconLiteral="fas-user-md" iconSize="18" styleClass="nav-icon"/>
+                            <Text text="Profesionales" styleClass="nav-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
 
-                <Button fx:id="btnEspecialidades" text="Especialidades" onAction="#navigateToEspecialidades"
-                        styleClass="nav-button"/>
+                <Button fx:id="btnEspecialidades" onAction="#navigateToEspecialidades" styleClass="nav-button">
+                    <graphic>
+                        <HBox spacing="12.0" alignment="CENTER_LEFT">
+                            <FontIcon iconLiteral="fas-stethoscope" iconSize="18" styleClass="nav-icon"/>
+                            <Text text="Especialidades" styleClass="nav-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
 
-                <Button fx:id="btnCitas" text="Citas" onAction="#navigateToCitas"
-                        styleClass="nav-button"/>
+                <Button fx:id="btnCitas" onAction="#navigateToCitas" styleClass="nav-button">
+                    <graphic>
+                        <HBox spacing="12.0" alignment="CENTER_LEFT">
+                            <FontIcon iconLiteral="fas-calendar-alt" iconSize="18" styleClass="nav-icon"/>
+                            <Text text="Citas" styleClass="nav-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
 
-                <Button fx:id="btnFacturacion" text="Facturación" onAction="#navigateToFacturacion"
-                        styleClass="nav-button"/>
+                <Button fx:id="btnFacturacion" onAction="#navigateToFacturacion" styleClass="nav-button">
+                    <graphic>
+                        <HBox spacing="12.0" alignment="CENTER_LEFT">
+                            <FontIcon iconLiteral="fas-file-invoice-dollar" iconSize="18" styleClass="nav-icon"/>
+                            <Text text="Facturación" styleClass="nav-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
             </VBox>
 
             <!-- Botón de Cerrar Sesión -->
-            <Button fx:id="btnLogout" text="Cerrar Sesión" onAction="#handleLogout"
-                    styleClass="btn, btn-danger"
-                    style="-fx-pref-width: 210; -fx-pref-height: 40;">
-                <VBox.margin>
-                    <Insets left="20.0" right="20.0" top="20.0"/>
-                </VBox.margin>
-            </Button>
+            <VBox spacing="10.0" style="-fx-padding: 15 15 0 15;">
+                <Button fx:id="btnLogout" onAction="#handleLogout" styleClass="btn-logout">
+                    <graphic>
+                        <HBox spacing="12.0" alignment="CENTER">
+                            <FontIcon iconLiteral="fas-sign-out-alt" iconSize="18" styleClass="nav-icon"/>
+                            <Text text="Cerrar Sesión" styleClass="nav-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </VBox>
         </VBox>
     </left>
 
@@ -71,12 +121,12 @@
                 <Text text="Seleccione un módulo del menú lateral" styleClass="subtitle" style="-fx-font-size: 16px;"/>
 
                 <!-- Botón de condicionales -->
-                <Button fx:id="btnNoTocar" text="NO TOCAR" onAction="#handleNoTocar"
-                        style="-fx-background-color: #ff0000; -fx-text-fill: white; -fx-pref-width: 150; -fx-pref-height: 50; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand; -fx-border-color: #8B0000; -fx-border-width: 3; -fx-border-radius: 10;">
-                    <VBox.margin>
-                        <Insets top="30.0"/>
-                    </VBox.margin>
-                </Button>
+<!--                <Button fx:id="btnNoTocar" text="NO TOCAR" onAction="#handleNoTocar"-->
+<!--                        style="-fx-background-color: #ff0000; -fx-text-fill: white; -fx-pref-width: 150; -fx-pref-height: 50; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand; -fx-border-color: #8B0000; -fx-border-width: 3; -fx-border-radius: 10;">-->
+<!--                    <VBox.margin>-->
+<!--                        <Insets top="30.0"/>-->
+<!--                    </VBox.margin>-->
+<!--                </Button>-->
             </VBox>
         </StackPane>
     </center>

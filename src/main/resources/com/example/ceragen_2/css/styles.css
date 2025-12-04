@@ -276,3 +276,68 @@
     -fx-font-size: 14px;
     -fx-text-fill: #7f8c8d;
 }
+
+/* ============================================
+   NAVBAR MEJORADO
+   ============================================ */
+
+/* Botones de navegación mejorados */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-alignment: center-left;
+    -fx-pref-width: 220;
+    -fx-pref-height: 48;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 12 20;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+.nav-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.nav-button:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Iconos de navegación */
+.nav-icon {
+    -fx-icon-color: white;
+    -fx-icon-size: 18px;
+}
+
+.nav-text {
+    -fx-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+}
+
+/* Botón de logout mejorado */
+.btn-logout {
+    -fx-background-color: linear-gradient(to right, #e74c3c, #c0392b);
+    -fx-text-fill: white;
+    -fx-alignment: center;
+    -fx-pref-width: 220;
+    -fx-pref-height: 45;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 12 20;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 8, 0, 0, 2);
+}
+
+.btn-logout:hover {
+    -fx-background-color: linear-gradient(to right, #c0392b, #a93226);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.btn-logout:pressed {
+    -fx-background-color: #a93226;
+}
