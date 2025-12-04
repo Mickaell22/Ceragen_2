@@ -1,35 +1,50 @@
 package com.example.ceragen_2.controller;
 
-import com.example.ceragen_2.model.DocumentoPaciente;
-import com.example.ceragen_2.model.Paciente;
-import com.example.ceragen_2.service.DocumentoPacienteService;
-import com.example.ceragen_2.service.PacienteService;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.concurrent.Task;
-import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.control.OverrunStyle;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.awt.Desktop;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.format.DateTimeFormatter;
-import java.util.function.UnaryOperator;
-import java.util.regex.Pattern;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
 
+import com.example.ceragen_2.model.DocumentoPaciente;
+import com.example.ceragen_2.model.Paciente;
+import com.example.ceragen_2.service.DocumentoPacienteService;
+import com.example.ceragen_2.service.PacienteService;
+
+import javafx.beans.property.SimpleStringProperty;
+import javafx.concurrent.Task;
+import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class PacientesController {
     private static final Logger logger = LoggerFactory.getLogger(PacientesController.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -112,7 +127,11 @@ public class PacientesController {
 
     @FXML
     public void initialize() {
-        logger.info("Inicializando módulo de Pacientes");
+        // PMD: Logger call should be guarded to avoid unnecessary string building
+        if (logger.isInfoEnabled()) {
+            logger.info("Inicializando módulo de Pacientes");
+        }
+
         configurarTabla();
         configurarFiltros();
         configurarPaginacion();
@@ -261,6 +280,7 @@ public class PacientesController {
     }
 
     @FXML private void handleBuscar() { paginaActual = 0; cargarDatos(); }
+    // PMD: Method used by JavaFX FXML
     @FXML private void handleLimpiarFiltros() { txtBuscar.clear(); cmbGeneroFiltro.setValue("TODOS"); paginaActual = 0; cargarDatos(); }
     @FXML private void handlePrimeraPagina() { paginaActual = 0; cargarDatos(); }
     @FXML private void handlePaginaAnterior() { if (paginaActual > 0) { paginaActual--; cargarDatos(); } }
@@ -281,10 +301,12 @@ public class PacientesController {
         }
 
         loadingIndicator.setVisible(true);
+
         Task<Boolean> task = new Task<>() {
             @Override
             protected Boolean call() {
                 if (pacienteService.existeCedula(cedula)) return null;
+
                 Paciente p = new Paciente();
                 p.setCedula(cedula);
                 p.setNombres(nombres);
@@ -296,6 +318,7 @@ public class PacientesController {
                 p.setDireccion(txtCrearDireccion.getText());
                 p.setGrupoSanguineo(txtCrearGrupoSanguineo.getText());
                 p.setAlergias(txtCrearAlergias.getText());
+
                 return pacienteService.crearPaciente(p);
             }
         };
@@ -303,6 +326,7 @@ public class PacientesController {
         task.setOnSucceeded(ev -> {
             Boolean exito = task.getValue();
             loadingIndicator.setVisible(false);
+
             if (exito == null) {
                 mostrarAlerta("Error", "La cédula ya existe", Alert.AlertType.ERROR);
             } else if (exito) {
