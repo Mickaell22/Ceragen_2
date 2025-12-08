@@ -140,6 +140,9 @@ CREATE TABLE profesionales (
     -- Licencia / Registro médico (obligatoria y única)
     numero_licencia VARCHAR(30) NOT NULL,
 
+    -- Especialidad principal (opcional - se puede usar tabla puente para varias)
+    especialidad_id INT NULL,
+
     -- Modalidad de atención
     modalidad_atencion ENUM('PRESENCIAL', 'TELECONSULTA', 'MIXTA')
         NOT NULL DEFAULT 'PRESENCIAL',
@@ -153,6 +156,7 @@ CREATE TABLE profesionales (
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL,
+    FOREIGN KEY (especialidad_id) REFERENCES especialidades(id) ON DELETE SET NULL,
 
     -- Unicidad
     UNIQUE KEY uk_profesionales_cedula (cedula),
@@ -160,7 +164,8 @@ CREATE TABLE profesionales (
     UNIQUE KEY uk_profesionales_licencia (numero_licencia),
 
     INDEX idx_cedula (cedula),
-    INDEX idx_activo (activo)
+    INDEX idx_activo (activo),
+    INDEX idx_prof_especialidad (especialidad_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Relación muchos-a-muchos Profesional <-> Especialidad
@@ -171,7 +176,7 @@ CREATE TABLE profesional_especialidades (
     es_principal BOOLEAN DEFAULT FALSE,
 
     FOREIGN KEY (profesional_id) REFERENCES profesionales(id) ON DELETE CASCADE,
-    FOREIGN KEY (especialidad_id) REFERENCES especialidades(id) ON DELETE RESTRICT,
+    FOREIGN KEY (especialidad_id) REFERENCES especialidades(id) ON DELETE CASCADE,
 
     UNIQUE KEY uk_prof_esp (profesional_id, especialidad_id),
     INDEX idx_profesional (profesional_id),
