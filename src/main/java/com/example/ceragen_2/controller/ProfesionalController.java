@@ -9,7 +9,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -17,142 +31,225 @@ import javafx.util.Callback;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
+/**
+ * Controlador JavaFX para la gestión de profesionales.
+ *
+ * <p>Permite listar, filtrar, crear, editar y eliminar
+ * profesionales, así como paginar los resultados.</p>
+ */
 public final class ProfesionalController {
 
+    /** Número de registros por página por defecto. */
     private static final int REGISTROS_PAGINA_DEFAULT = 10;
+    /** Longitud esperada de la cédula. */
     private static final int CEDULA_LENGTH = 10;
+    /** Longitud esperada del teléfono celular. */
     private static final int TELEFONO_LENGTH = 9;
+    /** Longitud máxima de nombres. */
     private static final int MAX_NOMBRE_LENGTH = 100;
+    /** Longitud máxima de apellidos. */
     private static final int MAX_APELLIDO_LENGTH = 100;
+    /** Longitud máxima del email. */
     private static final int MAX_EMAIL_LENGTH = 100;
+    /** Longitud máxima del número de licencia. */
     private static final int MAX_NUMERO_LICENCIA_LENGTH = 30;
 
+    /** ID de especialidad de Fisioterapia. */
     private static final int ESPECIALIDAD_FISIOTERAPIA_ID = 1;
+    /** ID de especialidad de Traumatología. */
     private static final int ESPECIALIDAD_TRAUMATOLOGIA_ID = 2;
+    /** ID de especialidad de Rehabilitación. */
     private static final int ESPECIALIDAD_REHABILITACION_ID = 3;
 
+    /** Espaciado por defecto para contenedores VBox. */
     private static final int DEFAULT_VBOX_SPACING = 12;
+    /** Separación horizontal/vertical por defecto en GridPane. */
     private static final int DEFAULT_GRID_GAP = 8;
 
+    /** Servicio de profesionales (capa de negocio). */
     private final ProfesionalService profesionalService =
             ProfesionalService.getInstance();
 
+    /** Pestañas principales del módulo. */
     @FXML
     private TabPane tabPane;
+    /** Pestaña de edición. */
     @FXML
     private Tab tabEditar;
+    /** Pestaña de creación. */
     @FXML
     private Tab tabCrear;
 
+    /** Filtro de cédula. */
     @FXML
     private TextField txtFiltroCedula;
+    /** Filtro de nombres. */
     @FXML
     private TextField txtFiltroNombres;
+    /** Filtro de apellidos. */
     @FXML
     private TextField txtFiltroApellidos;
+    /** Filtro de especialidad. */
     @FXML
     private ComboBox<String> cmbEspecialidadFiltro;
+    /** Filtro de estado activo/inactivo. */
     @FXML
     private ComboBox<String> cmbActivoFiltro;
 
+    /** Tabla principal de profesionales. */
     @FXML
     private TableView<Profesional> tableProfesionales;
+    /** Columna ID. */
     @FXML
     private TableColumn<Profesional, Integer> colId;
+    /** Columna cédula. */
     @FXML
     private TableColumn<Profesional, String> colCedula;
+    /** Columna nombres. */
     @FXML
     private TableColumn<Profesional, String> colNombres;
+    /** Columna apellidos. */
     @FXML
     private TableColumn<Profesional, String> colApellidos;
+    /** Columna especialidad. */
     @FXML
     private TableColumn<Profesional, String> colEspecialidad;
+    /** Columna teléfono. */
     @FXML
     private TableColumn<Profesional, String> colTelefono;
+    /** Columna email. */
     @FXML
     private TableColumn<Profesional, String> colEmail;
+    /** Columna número de licencia. */
     @FXML
     private TableColumn<Profesional, String> colNumeroLicencia;
+    /** Columna modalidad. */
     @FXML
     private TableColumn<Profesional, String> colModalidad;
+    /** Columna estado activo. */
     @FXML
     private TableColumn<Profesional, String> colActivo;
+    /** Columna usuario asociado. */
     @FXML
     private TableColumn<Profesional, String> colUsuario;
+    /** Columna de botones de acción. */
     @FXML
     private TableColumn<Profesional, Void> colAcciones;
 
+    /** Indicador visual de carga. */
     @FXML
     private VBox loadingIndicator;
 
+    /** Botón ir a la primera página. */
     @FXML
     private Button btnPrimera;
+    /** Botón ir a la página anterior. */
     @FXML
     private Button btnAnterior;
+    /** Botón ir a la página siguiente. */
     @FXML
     private Button btnSiguiente;
+    /** Botón ir a la última página. */
     @FXML
     private Button btnUltima;
+    /** Combo para seleccionar registros por página. */
     @FXML
     private ComboBox<String> cmbRegistrosPorPagina;
+    /** Texto que muestra la información de paginación. */
     @FXML
     private Text txtPaginacion;
 
+    /** Campo de cédula en el formulario de creación. */
     @FXML
     private TextField txtCrearCedula;
+    /** Campo de nombres en el formulario de creación. */
     @FXML
     private TextField txtCrearNombres;
+    /** Campo de apellidos en el formulario de creación. */
     @FXML
     private TextField txtCrearApellidos;
+    /** Campo de teléfono en el formulario de creación. */
     @FXML
     private TextField txtCrearTelefono;
+    /** Campo de email en el formulario de creación. */
     @FXML
     private TextField txtCrearEmail;
+    /** Campo de número de licencia en el formulario de creación. */
     @FXML
     private TextField txtCrearNumeroLicencia;
+    /** Combo de especialidad en el formulario de creación. */
     @FXML
     private ComboBox<String> cmbCrearEspecialidad;
+    /** Combo de usuario en el formulario de creación. */
     @FXML
     private ComboBox<String> cmbCrearUsuario;
+    /** Combo de modalidad en el formulario de creación. */
     @FXML
     private ComboBox<String> cmbCrearModalidad;
+    /** Check de estado activo en el formulario de creación. */
     @FXML
     private CheckBox chkCrearActivo;
 
+    /** ID del profesional en el formulario de edición. */
     @FXML
     private TextField txtEditarId;
+    /** Cédula en el formulario de edición. */
     @FXML
     private TextField txtEditarCedula;
+    /** Nombres en el formulario de edición. */
     @FXML
     private TextField txtEditarNombres;
+    /** Apellidos en el formulario de edición. */
     @FXML
     private TextField txtEditarApellidos;
+    /** Combo de especialidad en el formulario de edición. */
     @FXML
     private ComboBox<String> cmbEditarEspecialidad;
+    /** Combo de usuario en el formulario de edición. */
     @FXML
     private ComboBox<String> cmbEditarUsuario;
+    /** Teléfono en el formulario de edición. */
     @FXML
     private TextField txtEditarTelefono;
+    /** Email en el formulario de edición. */
     @FXML
     private TextField txtEditarEmail;
+    /** Número de licencia en el formulario de edición. */
     @FXML
     private TextField txtEditarNumeroLicencia;
+    /** Combo de modalidad en el formulario de edición. */
     @FXML
     private ComboBox<String> cmbEditarModalidad;
+    /** Check de estado activo en el formulario de edición. */
     @FXML
     private CheckBox chkEditarActivo;
 
+    /** Lista observable utilizada por la tabla. */
     private final ObservableList<Profesional> profesionales =
             FXCollections.observableArrayList();
+    /** Lista completa (sin paginar) de profesionales. */
     private List<Profesional> listaCompleta = new ArrayList<>();
 
+    /** Página actual de la paginación. */
     private int paginaActual = 1;
+    /** Total de páginas calculadas. */
     private int totalPaginas = 1;
+    /** Registros por página configurados. */
     private int registrosPorPagina = REGISTROS_PAGINA_DEFAULT;
+    /** Total de registros después del filtrado. */
     private long totalRegistros = 0;
 
+    /**
+     * Mapea el nombre de la especialidad a su identificador.
+     *
+     * @param nombre nombre de la especialidad
+     * @return identificador de especialidad o {@code null} si no coincide
+     */
     private Integer mapEspecialidadNombreToId(final String nombre) {
         if (nombre == null) {
             return null;
@@ -169,6 +266,12 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Método de inicialización de JavaFX.
+     *
+     * <p>Configura la tabla, la paginación y los combos, y realiza
+     * la primera carga de profesionales.</p>
+     */
     @FXML
     public void initialize() {
         configurarTabla();
@@ -177,6 +280,9 @@ public final class ProfesionalController {
         cargarProfesionales();
     }
 
+    /**
+     * Configura las columnas de la tabla de profesionales.
+     */
     private void configurarTabla() {
         colId.setCellValueFactory(
                 cellData -> new ReadOnlyObjectWrapper<>(
@@ -282,6 +388,9 @@ public final class ProfesionalController {
         tableProfesionales.setItems(profesionales);
     }
 
+    /**
+     * Configura la columna de acciones (ver, editar, eliminar).
+     */
     private void configurarColumnaAcciones() {
         Callback<TableColumn<Profesional, Void>, TableCell<Profesional, Void>>
                 cellFactory =
@@ -360,6 +469,9 @@ public final class ProfesionalController {
         colAcciones.setCellFactory(cellFactory);
     }
 
+    /**
+     * Configura la paginación y el combo de registros por página.
+     */
     private void configurarPaginacion() {
         cmbRegistrosPorPagina.setItems(
                 FXCollections.observableArrayList("10", "25", "50")
@@ -379,6 +491,9 @@ public final class ProfesionalController {
         actualizarTextoPaginacion();
     }
 
+    /**
+     * Configura los combos de filtros, creación y edición.
+     */
     private void configurarCombos() {
         if (cmbActivoFiltro.getItems().isEmpty()) {
             cmbActivoFiltro.setItems(
@@ -450,6 +565,9 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Carga la lista de profesionales aplicando filtros y paginación.
+     */
     private void cargarProfesionales() {
         mostrarLoading(true);
 
@@ -564,6 +682,11 @@ public final class ProfesionalController {
         }).start();
     }
 
+    /**
+     * Muestra u oculta el indicador de carga.
+     *
+     * @param mostrar {@code true} para mostrar, {@code false} para ocultar
+     */
     private void mostrarLoading(final boolean mostrar) {
         if (loadingIndicator != null) {
             loadingIndicator.setVisible(mostrar);
@@ -571,6 +694,9 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Actualiza el texto de paginación.
+     */
     private void actualizarTextoPaginacion() {
         if (txtPaginacion != null) {
             txtPaginacion.setText(
@@ -580,6 +706,11 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Ejecuta la búsqueda con los filtros actuales.
+     *
+     * @param event evento de acción del botón buscar
+     */
     @FXML
     public void handleBuscar(final ActionEvent event) {
         Objects.requireNonNull(event, "event");
@@ -587,6 +718,11 @@ public final class ProfesionalController {
         cargarProfesionales();
     }
 
+    /**
+     * Limpia los filtros y recarga la primera página.
+     *
+     * @param event evento de acción del botón limpiar
+     */
     @FXML
     public void handleLimpiarFiltros(final ActionEvent event) {
         Objects.requireNonNull(event, "event");
@@ -605,6 +741,11 @@ public final class ProfesionalController {
         cargarProfesionales();
     }
 
+    /**
+     * Navega a la primera página.
+     *
+     * @param event evento del botón primera página
+     */
     @FXML
     public void handlePrimeraPagina(final ActionEvent event) {
         Objects.requireNonNull(event, "event");
@@ -614,6 +755,11 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Navega a la página anterior.
+     *
+     * @param event evento del botón anterior
+     */
     @FXML
     public void handlePaginaAnterior(final ActionEvent event) {
         Objects.requireNonNull(event, "event");
@@ -623,6 +769,11 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Navega a la página siguiente.
+     *
+     * @param event evento del botón siguiente
+     */
     @FXML
     public void handlePaginaSiguiente(final ActionEvent event) {
         Objects.requireNonNull(event, "event");
@@ -632,6 +783,11 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Navega a la última página.
+     *
+     * @param event evento del botón última página
+     */
     @FXML
     public void handleUltimaPagina(final ActionEvent event) {
         Objects.requireNonNull(event, "event");
@@ -641,6 +797,11 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Cambia la cantidad de registros por página desde el combo.
+     *
+     * @param event evento del combo de registros por página
+     */
     @FXML
     public void handleCambioRegistrosPorPagina(
             final ActionEvent event
@@ -656,6 +817,11 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Abre la pestaña de creación de un nuevo profesional.
+     *
+     * @param event evento del botón nuevo profesional
+     */
     @FXML
     public void handleNuevoProfesional(final ActionEvent event) {
         Objects.requireNonNull(event, "event");
@@ -667,6 +833,11 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Procesa el formulario de creación de un nuevo profesional.
+     *
+     * @param event evento del botón guardar (crear)
+     */
     @FXML
     public void handleCrearProfesional(final ActionEvent event) {
         Objects.requireNonNull(event, "event");
@@ -762,6 +933,11 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Limpia los campos del formulario de creación.
+     *
+     * @param event evento del botón limpiar (puede ser {@code null})
+     */
     @FXML
     public void handleLimpiarFormCrear(final ActionEvent event) {
         if (event != null) {
@@ -805,11 +981,28 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Maneja la acción de ver en detalle un profesional.
+     *
+     * @param profesional profesional a mostrar
+     */
     private void handleVerProfesional(final Profesional profesional) {
         if (profesional == null) {
             return;
         }
+        Dialog<Void> dialog = createDetalleProfesionalDialog(profesional);
+        dialog.showAndWait();
+    }
 
+    /**
+     * Crea el diálogo con la información detallada del profesional.
+     *
+     * @param profesional profesional a mostrar
+     * @return diálogo configurado
+     */
+    private Dialog<Void> createDetalleProfesionalDialog(
+            final Profesional profesional
+    ) {
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Detalle del profesional");
         dialog.setHeaderText(null);
@@ -824,6 +1017,32 @@ public final class ProfesionalController {
                         + "-fx-font-family: 'Segoe UI', sans-serif;"
         );
 
+        VBox root = createDetalleProfesionalRoot(profesional);
+        pane.setContent(root);
+
+        Button btnCerrar = (Button) pane.lookupButton(ButtonType.CLOSE);
+        if (btnCerrar != null) {
+            btnCerrar.setText("Cerrar");
+            btnCerrar.setStyle(
+                    "-fx-background-color: #00695c;"
+                            + "-fx-text-fill: white;"
+                            + "-fx-font-weight: bold;"
+                            + "-fx-padding: 6 20 6 20;"
+                            + "-fx-background-radius: 20;"
+            );
+        }
+        return dialog;
+    }
+
+    /**
+     * Crea el contenido principal del diálogo de detalle.
+     *
+     * @param profesional profesional a mostrar
+     * @return contenedor raíz
+     */
+    private VBox createDetalleProfesionalRoot(
+            final Profesional profesional
+    ) {
         VBox root = new VBox(DEFAULT_VBOX_SPACING);
         root.setFillWidth(true);
 
@@ -842,7 +1061,26 @@ public final class ProfesionalController {
         );
 
         Separator separator = new Separator();
+        GridPane grid = createDetalleProfesionalGrid(profesional);
 
+        root.getChildren().addAll(
+                lblNombre,
+                lblSubtitulo,
+                separator,
+                grid
+        );
+        return root;
+    }
+
+    /**
+     * Construye el GridPane con los campos del detalle del profesional.
+     *
+     * @param profesional profesional a mostrar
+     * @return grid con etiquetas y valores
+     */
+    private GridPane createDetalleProfesionalGrid(
+            final Profesional profesional
+    ) {
         GridPane grid = new GridPane();
         grid.setHgap(DEFAULT_GRID_GAP);
         grid.setVgap(DEFAULT_GRID_GAP);
@@ -988,30 +1226,14 @@ public final class ProfesionalController {
         );
         grid.add(lblEstado, 1, row);
 
-        root.getChildren().addAll(
-                lblNombre,
-                lblSubtitulo,
-                separator,
-                grid
-        );
-
-        pane.setContent(root);
-
-        Button btnCerrar = (Button) pane.lookupButton(ButtonType.CLOSE);
-        if (btnCerrar != null) {
-            btnCerrar.setText("Cerrar");
-            btnCerrar.setStyle(
-                    "-fx-background-color: #00695c;"
-                            + "-fx-text-fill: white;"
-                            + "-fx-font-weight: bold;"
-                            + "-fx-padding: 6 20 6 20;"
-                            + "-fx-background-radius: 20;"
-            );
-        }
-
-        dialog.showAndWait();
+        return grid;
     }
 
+    /**
+     * Carga los datos del profesional seleccionado en el formulario de edición.
+     *
+     * @param profesional profesional seleccionado en la tabla
+     */
     private void handleEditarProfesional(final Profesional profesional) {
         if (profesional == null) {
             return;
@@ -1087,6 +1309,11 @@ public final class ProfesionalController {
         tabPane.getSelectionModel().select(tabEditar);
     }
 
+    /**
+     * Elimina un profesional tras la confirmación del usuario.
+     *
+     * @param profesional profesional a eliminar
+     */
     private void handleEliminarProfesional(
             final Profesional profesional
     ) {
@@ -1125,6 +1352,11 @@ public final class ProfesionalController {
         });
     }
 
+    /**
+     * Guarda los cambios realizados en el formulario de edición.
+     *
+     * @param event evento del botón guardar (editar)
+     */
     @FXML
     public void handleActualizarProfesional(
             final ActionEvent event
@@ -1246,6 +1478,11 @@ public final class ProfesionalController {
         }
     }
 
+    /**
+     * Cancela la edición y vuelve a la pestaña principal.
+     *
+     * @param event evento del botón cancelar
+     */
     @FXML
     public void handleCancelarEdicion(final ActionEvent event) {
         Objects.requireNonNull(event, "event");
@@ -1253,6 +1490,17 @@ public final class ProfesionalController {
         tabEditar.setDisable(true);
     }
 
+    /**
+     * Valida los datos del profesional antes de guardar.
+     *
+     * @param cedula          cédula del profesional
+     * @param nombres         nombres del profesional
+     * @param apellidos       apellidos del profesional
+     * @param telefono        teléfono/celular
+     * @param email           correo electrónico
+     * @param numeroLicencia  número de licencia médica
+     * @return {@code true} si los datos son válidos
+     */
     private boolean validarDatosProfesional(
             final String cedula,
             final String nombres,
@@ -1381,6 +1629,12 @@ public final class ProfesionalController {
         return true;
     }
 
+    /**
+     * Recorta un texto y devuelve {@code null} si queda vacío.
+     *
+     * @param text texto original
+     * @return texto recortado o {@code null} si está vacío
+     */
     private String trimOrNull(final String text) {
         if (text == null) {
             return null;
