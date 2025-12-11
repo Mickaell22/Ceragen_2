@@ -202,20 +202,13 @@
                             </VBox>
                         </HBox>
 
-                        <!-- Número Licencia y Usuario -->
+                        <!-- Número Licencia (Usuario eliminado en Crear) -->
                         <HBox spacing="15">
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Text text="Número de Licencia" styleClass="text-primary-dark"
                                       style="-fx-font-size: 14px;"/>
                                 <TextField fx:id="txtCrearNumeroLicencia" prefWidth="312"
                                            style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
-                            </VBox>
-
-                            <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                <Text text="Usuario (ID del sistema)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                                <ComboBox fx:id="cmbCrearUsuario" prefWidth="312"
-                                          promptText="Opcional"
-                                          style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
                         </HBox>
 
