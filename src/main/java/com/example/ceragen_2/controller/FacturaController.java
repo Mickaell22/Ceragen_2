@@ -9,6 +9,8 @@ import com.example.ceragen_2.model.Profesional;
 import com.example.ceragen_2.service.ClienteService;
 import com.example.ceragen_2.service.FacturaService;
 
+import com.example.ceragen_2.service.PacienteService;
+import com.example.ceragen_2.service.ProfesionalService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -253,8 +255,8 @@ public class FacturaController {
         txtFechaRealizacion.setText(LocalDate.now().format(formatter));
 
         // Inicializar ciudad por defecto
-        txtCiudadFacturaNueva.setText("Guayaquil-Ecuador");
-        txtCiudad.setText("Guayaquil-Ecuador");
+        txtCiudadFacturaNueva.setText("Guayaquil");
+        txtCiudad.setText("Guayaquil");
 
         // Inicializar valores por defecto
         txtSubtotalFacturaNueva.setText("$0.00");
@@ -781,7 +783,7 @@ public class FacturaController {
         cmbMetodoPagoFacturaNueva.setValue(null);
 
         // Limpiar campos de texto
-        txtCiudadFacturaNueva.setText("Guayaquil-Ecuador");
+        txtCiudadFacturaNueva.setText("Guayaquil");
 
         // Restablecer totales
         txtSubtotalFacturaNueva.setText("$0.00");
