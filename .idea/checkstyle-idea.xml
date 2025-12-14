@@ -4,7 +4,6 @@
     <checkstyleVersion>12.1.2</checkstyleVersion>
     <scanScope>JavaOnly</scanScope>
     <copyLibs>true</copyLibs>
-    <scrollToSource>true</scrollToSource>
     <option name="thirdPartyClasspath" />
     <option name="activeLocationIds">
       <option value="bundled-google-checks" />

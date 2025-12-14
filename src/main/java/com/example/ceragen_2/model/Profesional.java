@@ -1,29 +1,45 @@
 package com.example.ceragen_2.model;
 
+import java.time.LocalDateTime;
+
 public class Profesional {
+
+    // ==============================
+    // Campos principales de la tabla
+    // ==============================
     private Integer id;
     private String cedula;
     private String nombres;
     private String apellidos;
     private Integer especialidadId;
-    private String telefono;
+    private String telefono;           // mapeado a columna "celular" en BD
     private String email;
     private String numeroLicencia;
     private Boolean activo;
     private Integer usuarioId;
 
-    // Para mostrar datos relacionados
+    // Nuevos campos según el esquema
+    private String modalidadAtencion;     // PRESENCIAL / TELECONSULTA / MIXTA
+    private String tipoUsuarioRegistra;   // ADMIN / RECEPCIONISTA
+    private LocalDateTime fechaRegistro;  // fecha_registro de la BD
+
+    // ==============================
+    // Campos derivados / relacionados
+    // ==============================
     private String especialidadNombre;
 
     public Profesional() {
     }
 
+    // ==============================
     // Getters y Setters
+    // ==============================
+
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(final Integer id) {
         this.id = id;
     }
 
@@ -31,7 +47,7 @@ public class Profesional {
         return cedula;
     }
 
-    public void setCedula(String cedula) {
+    public void setCedula(final String cedula) {
         this.cedula = cedula;
     }
 
@@ -39,7 +55,7 @@ public class Profesional {
         return nombres;
     }
 
-    public void setNombres(String nombres) {
+    public void setNombres(final String nombres) {
         this.nombres = nombres;
     }
 
@@ -47,7 +63,7 @@ public class Profesional {
         return apellidos;
     }
 
-    public void setApellidos(String apellidos) {
+    public void setApellidos(final String apellidos) {
         this.apellidos = apellidos;
     }
 
@@ -55,7 +71,7 @@ public class Profesional {
         return especialidadId;
     }
 
-    public void setEspecialidadId(Integer especialidadId) {
+    public void setEspecialidadId(final Integer especialidadId) {
         this.especialidadId = especialidadId;
     }
 
@@ -63,7 +79,7 @@ public class Profesional {
         return telefono;
     }
 
-    public void setTelefono(String telefono) {
+    public void setTelefono(final String telefono) {
         this.telefono = telefono;
     }
 
@@ -71,7 +87,7 @@ public class Profesional {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -79,7 +95,7 @@ public class Profesional {
         return numeroLicencia;
     }
 
-    public void setNumeroLicencia(String numeroLicencia) {
+    public void setNumeroLicencia(final String numeroLicencia) {
         this.numeroLicencia = numeroLicencia;
     }
 
@@ -87,7 +103,7 @@ public class Profesional {
         return activo;
     }
 
-    public void setActivo(Boolean activo) {
+    public void setActivo(final Boolean activo) {
         this.activo = activo;
     }
 
@@ -95,17 +111,45 @@ public class Profesional {
         return usuarioId;
     }
 
-    public void setUsuarioId(Integer usuarioId) {
+    public void setUsuarioId(final Integer usuarioId) {
         this.usuarioId = usuarioId;
+    }
+
+    public String getModalidadAtencion() {
+        return modalidadAtencion;
+    }
+
+    public void setModalidadAtencion(final String modalidadAtencion) {
+        this.modalidadAtencion = modalidadAtencion;
+    }
+
+    public String getTipoUsuarioRegistra() {
+        return tipoUsuarioRegistra;
+    }
+
+    public void setTipoUsuarioRegistra(final String tipoUsuarioRegistra) {
+        this.tipoUsuarioRegistra = tipoUsuarioRegistra;
+    }
+
+    public LocalDateTime getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(final LocalDateTime fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
     }
 
     public String getEspecialidadNombre() {
         return especialidadNombre;
     }
 
-    public void setEspecialidadNombre(String especialidadNombre) {
+    public void setEspecialidadNombre(final String especialidadNombre) {
         this.especialidadNombre = especialidadNombre;
     }
+
+    // ==============================
+    // Métodos de ayuda
+    // ==============================
 
     public String getNombreCompleto() {
         return "Dr. " + nombres + " " + apellidos;
@@ -113,6 +157,13 @@ public class Profesional {
 
     @Override
     public String toString() {
-        return getNombreCompleto() + (especialidadNombre != null ? " - " + especialidadNombre : "");
+        String base = getNombreCompleto();
+        if (especialidadNombre != null && !especialidadNombre.isBlank()) {
+            base += " - " + especialidadNombre;
+        }
+        if (modalidadAtencion != null && !modalidadAtencion.isBlank()) {
+            base += " (" + modalidadAtencion + ")";
+        }
+        return base;
     }
 }

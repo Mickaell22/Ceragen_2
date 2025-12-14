@@ -69,7 +69,6 @@
 
                     <!-- Botones de acciones de filtros -->
                     <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
-                        <!-- NUEVO PROFESIONAL -->
                         <Button text="Nuevo Profesional" onAction="#handleNuevoProfesional"
                                 styleClass="btn, btn-success"
                                 style="-fx-pref-width: 150; -fx-pref-height: 35;"/>
@@ -92,11 +91,12 @@
                             <TableColumn fx:id="colNombres" text="Nombres" prefWidth="160"/>
                             <TableColumn fx:id="colApellidos" text="Apellidos" prefWidth="160"/>
                             <TableColumn fx:id="colEspecialidad" text="Especialidad" prefWidth="150"/>
-                            <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="120"/>
+                            <TableColumn fx:id="colTelefono" text="Celular" prefWidth="110"/>
                             <TableColumn fx:id="colEmail" text="Email" prefWidth="180"/>
                             <TableColumn fx:id="colNumeroLicencia" text="N° Licencia" prefWidth="120"/>
+                            <TableColumn fx:id="colModalidad" text="Modalidad" prefWidth="120"/>
                             <TableColumn fx:id="colActivo" text="Activo" prefWidth="80"/>
-                            <TableColumn fx:id="colUsuario" text="Usuario" prefWidth="120"/>
+                            <TableColumn fx:id="colUsuario" text="Usuario" prefWidth="100"/>
                             <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="220"/>
                         </columns>
                     </TableView>
@@ -158,12 +158,14 @@
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Text text="Cédula" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <TextField fx:id="txtCrearCedula" prefWidth="312"
+                                           promptText="10 dígitos"
                                            style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
 
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Text text="Especialidad" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <ComboBox fx:id="cmbCrearEspecialidad" prefWidth="312"
+                                          promptText="Seleccione..."
                                           style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
                         </HBox>
@@ -183,22 +185,24 @@
                             </VBox>
                         </HBox>
 
-                        <!-- Teléfono y Email -->
+                        <!-- Celular y Email -->
                         <HBox spacing="15">
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                <Text text="Teléfono" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <Text text="Celular (9 dígitos)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <TextField fx:id="txtCrearTelefono" prefWidth="312"
+                                           promptText="Ej: 987654321"
                                            style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
 
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Text text="Email" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <TextField fx:id="txtCrearEmail" prefWidth="312"
+                                           promptText="correo@ejemplo.com"
                                            style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
                         </HBox>
 
-                        <!-- Número Licencia y Usuario -->
+                        <!-- Número Licencia (Usuario eliminado en Crear) -->
                         <HBox spacing="15">
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Text text="Número de Licencia" styleClass="text-primary-dark"
@@ -206,20 +210,24 @@
                                 <TextField fx:id="txtCrearNumeroLicencia" prefWidth="312"
                                            style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
-
-                            <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                <Text text="Usuario" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                                <ComboBox fx:id="cmbCrearUsuario" prefWidth="312"
-                                          style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
-                            </VBox>
                         </HBox>
 
-                        <!-- Estado -->
-                        <VBox spacing="8">
-                            <Text text="Estado" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                            <CheckBox fx:id="chkCrearActivo" text="Activo"
-                                      style="-fx-font-size: 14px; -fx-padding: 8 0 0 0;"/>
-                        </VBox>
+                        <!-- Modalidad y Estado -->
+                        <HBox spacing="15">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Text text="Modalidad de atención" styleClass="text-primary-dark"
+                                      style="-fx-font-size: 14px;"/>
+                                <ComboBox fx:id="cmbCrearModalidad" prefWidth="312"
+                                          promptText="PRESENCIAL / TELECONSULTA / MIXTA"
+                                          style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Text text="Estado" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <CheckBox fx:id="chkCrearActivo" text="Activo"
+                                          style="-fx-font-size: 14px; -fx-padding: 8 0 0 0;"/>
+                            </VBox>
+                        </HBox>
 
                         <!-- Botones -->
                         <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
@@ -255,6 +263,7 @@
                         <VBox spacing="8">
                             <Text text="Cédula" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <TextField fx:id="txtEditarCedula" prefWidth="640"
+                                       promptText="10 dígitos"
                                        style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                         </VBox>
 
@@ -277,32 +286,36 @@
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Text text="Especialidad" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <ComboBox fx:id="cmbEditarEspecialidad" prefWidth="312"
+                                          promptText="Seleccione..."
                                           style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
 
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                <Text text="Usuario" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <Text text="Usuario (ID del sistema)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <ComboBox fx:id="cmbEditarUsuario" prefWidth="312"
+                                          promptText="Opcional"
                                           style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
                         </HBox>
 
-                        <!-- Teléfono y Email -->
+                        <!-- Celular y Email -->
                         <HBox spacing="15">
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                <Text text="Teléfono" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <Text text="Celular (9 dígitos)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <TextField fx:id="txtEditarTelefono" prefWidth="312"
+                                           promptText="Ej: 987654321"
                                            style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
 
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Text text="Email" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                                 <TextField fx:id="txtEditarEmail" prefWidth="312"
+                                           promptText="correo@ejemplo.com"
                                            style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
                         </HBox>
 
-                        <!-- Número Licencia y Activo -->
+                        <!-- Número Licencia y Modalidad / Estado -->
                         <HBox spacing="15">
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Text text="Número de Licencia" styleClass="text-primary-dark"
@@ -312,11 +325,20 @@
                             </VBox>
 
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                <Text text="Estado" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                                <CheckBox fx:id="chkEditarActivo" text="Activo"
-                                          style="-fx-font-size: 14px; -fx-padding: 8 0 0 0;"/>
+                                <Text text="Modalidad de atención" styleClass="text-primary-dark"
+                                      style="-fx-font-size: 14px;"/>
+                                <ComboBox fx:id="cmbEditarModalidad" prefWidth="312"
+                                          promptText="PRESENCIAL / TELECONSULTA / MIXTA"
+                                          style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                             </VBox>
                         </HBox>
+
+                        <!-- Estado -->
+                        <VBox spacing="8">
+                            <Text text="Estado" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <CheckBox fx:id="chkEditarActivo" text="Activo"
+                                      style="-fx-font-size: 14px; -fx-padding: 8 0 0 0;"/>
+                        </VBox>
 
                         <!-- Botones -->
                         <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">

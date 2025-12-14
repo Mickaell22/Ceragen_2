@@ -70,8 +70,7 @@
                     <HBox spacing="20" alignment="CENTER">
                         <HBox spacing="10" HBox.hgrow="ALWAYS">
                             <Label text="Fecha de realización:" styleClass="text-primary-dark-control" minWidth="150"/>
-                            <TextField fx:id="txtFechaRealizacionFacturaNueva" HBox.hgrow="ALWAYS"/>
-                            <!-- editable="true" styleClass="disabled-field" -->
+                            <TextField fx:id="txtFechaRealizacionFacturaNueva" HBox.hgrow="ALWAYS" editable="false" styleClass="disabled-field"/>
                         </HBox>
 
                         <HBox spacing="10" HBox.hgrow="ALWAYS">
