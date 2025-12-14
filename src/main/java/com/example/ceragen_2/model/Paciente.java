@@ -20,7 +20,6 @@ public class Paciente {
     public Paciente() {
     }
 
-    // Getters y Setters
     public Integer getId() {
         return id;
     }

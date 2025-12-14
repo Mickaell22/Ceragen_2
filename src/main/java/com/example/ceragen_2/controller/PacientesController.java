@@ -46,28 +46,29 @@ import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 public class PacientesController {
-    private static final Logger logger = LoggerFactory.getLogger(PacientesController.class);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(PacientesController.class);
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final PacienteService pacienteService = PacienteService.getInstance();
     private final DocumentoPacienteService documentoService = DocumentoPacienteService.getInstance();
 
-    // Paginación
+
     private int paginaActual = 0;
-    private int registrosPorPagina = 10;
+    private int registrosPorPagina = DEFAULT_PAGE_SIZE;
     private int totalPaginas = 0;
 
-    // Tabs
     @FXML private TabPane tabPane;
     @FXML private Tab tabCrear;
     @FXML private Tab tabEditar;
     @FXML private Tab tabDocumentos;
 
-    // Filtros
     @FXML private TextField txtBuscar;
     @FXML private ComboBox<String> cmbGeneroFiltro;
 
-    // Tabla
     @FXML private TableView<Paciente> tablePacientes;
     @FXML private TableColumn<Paciente, String> colId;
     @FXML private TableColumn<Paciente, String> colCedula;
@@ -78,7 +79,6 @@ public class PacientesController {
     @FXML private TableColumn<Paciente, String> colFechaRegistro;
     @FXML private TableColumn<Paciente, Void> colAcciones;
 
-    // Documentos (pestaña Editar)
     @FXML private TableView<DocumentoPaciente> tableDocumentos;
     @FXML private TableColumn<DocumentoPaciente, String> colDocNombre;
     @FXML private TableColumn<DocumentoPaciente, String> colDocTipo;
@@ -87,7 +87,6 @@ public class PacientesController {
     @FXML private TableColumn<DocumentoPaciente, Void> colDocAcciones;
     @FXML private ComboBox<String> cmbTipoDocumento;
 
-    // Paginación
     @FXML private Button btnPrimera;
     @FXML private Button btnAnterior;
     @FXML private Button btnSiguiente;
@@ -95,7 +94,6 @@ public class PacientesController {
     @FXML private Text txtPaginacion;
     @FXML private ComboBox<String> cmbRegistrosPorPagina;
 
-    // Formulario Crear
     @FXML private TextField txtCrearCedula;
     @FXML private TextField txtCrearNombres;
     @FXML private TextField txtCrearApellidos;
@@ -107,7 +105,6 @@ public class PacientesController {
     @FXML private TextField txtCrearGrupoSanguineo;
     @FXML private TextArea txtCrearAlergias;
 
-    // Formulario Editar
     @FXML private TextField txtEditarId;
     @FXML private TextField txtEditarCedula;
     @FXML private TextField txtEditarNombres;
@@ -120,16 +117,14 @@ public class PacientesController {
     @FXML private TextField txtEditarGrupoSanguineo;
     @FXML private TextArea txtEditarAlergias;
 
-    // Indicador de carga
     @FXML private VBox loadingIndicator;
 
     private Paciente pacienteEnEdicion;
 
     @FXML
     public void initialize() {
-        // PMD: Logger call should be guarded to avoid unnecessary string building
-        if (logger.isInfoEnabled()) {
-            logger.info("Inicializando módulo de Pacientes");
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Inicializando módulo de Pacientes");
         }
 
         configurarTabla();
@@ -139,24 +134,40 @@ public class PacientesController {
         cargarDatos();
     }
 
-    private void abrirArchivoDocumento(DocumentoPaciente d) {
+    private void abrirArchivoDocumento(final DocumentoPaciente d) {
         try {
             if (d == null || d.getRutaArchivo() == null) {
-                mostrarAlerta("Error", "Ruta de archivo no disponible", Alert.AlertType.ERROR);
+                mostrarAlerta(
+                        "Error",
+                        "Ruta de archivo no disponible",
+                        Alert.AlertType.ERROR
+                );
                 return;
             }
             File archivo = new File(d.getRutaArchivo());
             if (!archivo.exists()) {
-                mostrarAlerta("No encontrado", "El archivo no existe en la ruta: " + d.getRutaArchivo(), Alert.AlertType.WARNING);
+                mostrarAlerta(
+                        "No encontrado",
+                        "El archivo no existe en la ruta: " + d.getRutaArchivo(),
+                        Alert.AlertType.WARNING
+                );
                 return;
             }
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().open(archivo);
             } else {
-                mostrarAlerta("No soportado", "La apertura de archivos no es soportada en este sistema.", Alert.AlertType.ERROR);
+                mostrarAlerta(
+                        "No soportado",
+                        "La apertura de archivos no es soportada en este sistema.",
+                        Alert.AlertType.ERROR
+                );
             }
         } catch (IOException ex) {
-            mostrarAlerta("Error", "No se pudo abrir el archivo: " + ex.getMessage(), Alert.AlertType.ERROR);
+            mostrarAlerta(
+                    "Error",
+                    "No se pudo abrir el archivo: " + ex.getMessage(),
+                    Alert.AlertType.ERROR
+            );
         }
     }
 
@@ -243,7 +254,9 @@ public class PacientesController {
         });
 
         task.setOnFailed(ev -> {
-            logger.error("Error al cargar pacientes", task.getException());
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("Error al cargar pacientes", task.getException());
+            }
             loadingIndicator.setVisible(false);
             deshabilitarControles(false);
             mostrarAlerta("Error", "No se pudieron cargar los datos", Alert.AlertType.ERROR);
@@ -252,7 +265,7 @@ public class PacientesController {
         new Thread(task).start();
     }
 
-    private void deshabilitarControles(boolean deshabilitar) {
+    private void deshabilitarControles(final boolean deshabilitar) {
         btnPrimera.setDisable(deshabilitar);
         btnAnterior.setDisable(deshabilitar);
         btnSiguiente.setDisable(deshabilitar);
@@ -265,7 +278,7 @@ public class PacientesController {
     private static class DatosPacientesResult {
         List<Paciente> pacientes;
         int totalPaginas;
-        DatosPacientesResult(List<Paciente> pacientes, int totalPaginas) {
+        DatosPacientesResult(final List<Paciente> pacientes, final int totalPaginas) {
             this.pacientes = pacientes;
             this.totalPaginas = totalPaginas;
         }
@@ -279,15 +292,47 @@ public class PacientesController {
         btnUltima.setDisable(paginaActual >= totalPaginas - 1);
     }
 
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     @FXML private void handleBuscar() { paginaActual = 0; cargarDatos(); }
-    // PMD: Method used by JavaFX FXML
-    @FXML private void handleLimpiarFiltros() { txtBuscar.clear(); cmbGeneroFiltro.setValue("TODOS"); paginaActual = 0; cargarDatos(); }
-    @FXML private void handlePrimeraPagina() { paginaActual = 0; cargarDatos(); }
-    @FXML private void handlePaginaAnterior() { if (paginaActual > 0) { paginaActual--; cargarDatos(); } }
-    @FXML private void handlePaginaSiguiente() { if (paginaActual < totalPaginas - 1) { paginaActual++; cargarDatos(); } }
-    @FXML private void handleUltimaPagina() { paginaActual = totalPaginas - 1; cargarDatos(); }
-    @FXML private void handleCambioRegistrosPorPagina() { registrosPorPagina = Integer.parseInt(cmbRegistrosPorPagina.getValue()); paginaActual = 0; cargarDatos(); }
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    @FXML private void handleLimpiarFiltros() {
+        txtBuscar.clear();
+        cmbGeneroFiltro.setValue("TODOS");
+        paginaActual = 0;
+        cargarDatos();
+    }
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    @FXML private void handlePrimeraPagina() {
+        paginaActual = 0;
+        cargarDatos();
+    }
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    @FXML private void handlePaginaAnterior() {
+        if (paginaActual > 0) {
+            paginaActual--;
+            cargarDatos();
+        }
+    }
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    @FXML private void handlePaginaSiguiente() {
+        if (paginaActual < totalPaginas - 1) {
+            paginaActual++;
+            cargarDatos();
+        }
+    }
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    @FXML private void handleUltimaPagina() {
+        paginaActual = totalPaginas - 1;
+        cargarDatos();
+    }
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    @FXML private void handleCambioRegistrosPorPagina() {
+        registrosPorPagina = Integer.parseInt(cmbRegistrosPorPagina.getValue());
+        paginaActual = 0;
+        cargarDatos();
+    }
 
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     @FXML
     private void handleCrearPaciente() {
         final String cedula = txtCrearCedula.getText().trim();
@@ -295,8 +340,16 @@ public class PacientesController {
         final String apellidos = txtCrearApellidos.getText().trim();
         final String genero = cmbCrearGenero.getValue();
 
-        if (cedula.isEmpty() || nombres.isEmpty() || apellidos.isEmpty()) {
-            mostrarAlerta("Error", "Cédula, nombres y apellidos son obligatorios", Alert.AlertType.ERROR);
+        if (cedula.isEmpty()) {
+            mostrarAlerta("Error", "La cédula es obligatoria", Alert.AlertType.ERROR);
+            return;
+        }
+        if (nombres.isEmpty()) {
+            mostrarAlerta("Error", "Los nombres son obligatorios", Alert.AlertType.ERROR);
+            return;
+        }
+        if (apellidos.isEmpty()) {
+            mostrarAlerta("Error", "Los apellidos son obligatorios", Alert.AlertType.ERROR);
             return;
         }
 
@@ -347,7 +400,10 @@ public class PacientesController {
         new Thread(task).start();
     }
 
-    @FXML private void handleLimpiarFormCrear() { limpiarFormularioCrear(); }
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    @FXML private void handleLimpiarFormCrear() {
+        limpiarFormularioCrear();
+    }
     private void limpiarFormularioCrear() {
         txtCrearCedula.clear();
         txtCrearNombres.clear();
@@ -361,7 +417,7 @@ public class PacientesController {
         txtCrearAlergias.clear();
     }
 
-    private void abrirEdicion(Paciente p) {
+    private void abrirEdicion(final Paciente p) {
         pacienteEnEdicion = p;
         txtEditarId.setText(String.valueOf(p.getId()));
         txtEditarCedula.setText(p.getCedula());
@@ -378,16 +434,20 @@ public class PacientesController {
         tabPane.getSelectionModel().select(tabEditar);
     }
 
-    private void abrirDocumentos(Paciente p) {
+    private void abrirDocumentos(final Paciente p) {
         pacienteEnEdicion = p;
-        if (tabDocumentos != null) tabDocumentos.setDisable(false);
+        if (tabDocumentos != null) {
+            tabDocumentos.setDisable(false);
+        }
         configurarTablaDocumentos();
         cargarDocumentos();
         tabPane.getSelectionModel().select(tabDocumentos);
     }
 
     private void configurarTablaDocumentos() {
-        if (tableDocumentos == null) return; // Por seguridad si la vista aún no tiene la sección
+        if (tableDocumentos == null) {
+            return;
+        }
         colDocNombre.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNombreArchivo()));
         colDocTipo.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTipoDocumento()));
         colDocFecha.setCellValueFactory(data -> new SimpleStringProperty(
@@ -395,7 +455,6 @@ public class PacientesController {
         );
         colDocRuta.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getRutaArchivo()));
 
-        // Celdas con elipsis y tooltip para columnas anchas
         colDocNombre.setCellFactory(col -> createEllipsisCell());
         colDocTipo.setCellFactory(col -> createEllipsisCell());
         colDocRuta.setCellFactory(col -> createEllipsisCell());
@@ -425,7 +484,12 @@ public class PacientesController {
         });
 
         if (cmbTipoDocumento != null && cmbTipoDocumento.getItems().isEmpty()) {
-            cmbTipoDocumento.getItems().addAll("HISTORIA_CLINICA", "EXAMEN", "RECETA", "OTRO");
+            cmbTipoDocumento.getItems().addAll(
+                    "HISTORIA_CLINICA",
+                    "EXAMEN",
+                    "RECETA",
+                    "OTRO"
+            );
         }
     }
 
@@ -450,11 +514,14 @@ public class PacientesController {
     }
 
     private void cargarDocumentos() {
-        if (pacienteEnEdicion == null || tableDocumentos == null) return;
+        if (pacienteEnEdicion == null || tableDocumentos == null) {
+            return;
+        }
         tableDocumentos.getItems().clear();
         tableDocumentos.getItems().addAll(documentoService.listarPorPaciente(pacienteEnEdicion.getId()));
     }
 
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     @FXML
     private void handleSubirDocumento() {
         if (pacienteEnEdicion == null) {
@@ -473,7 +540,6 @@ public class PacientesController {
         if (archivo == null) return;
 
         try {
-            // Copiar archivo a una carpeta local de almacenamiento (e.g., user.home/ceragen_docs)
             Path baseDir = Paths.get(System.getProperty("user.home"), "ceragen_docs", "pacientes", String.valueOf(pacienteEnEdicion.getId()));
             Files.createDirectories(baseDir);
             Path destino = baseDir.resolve(archivo.getName());
@@ -497,7 +563,7 @@ public class PacientesController {
         }
     }
 
-    private void eliminarDocumento(DocumentoPaciente d) {
+    private void eliminarDocumento(final DocumentoPaciente d) {
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar Eliminación");
         confirmacion.setHeaderText("¿Eliminar documento?");
@@ -506,14 +572,18 @@ public class PacientesController {
         if (res.isPresent() && res.get() == ButtonType.OK) {
             boolean ok = documentoService.eliminarDocumento(d.getId());
             if (ok) {
-                // No borramos físicamente el archivo para evitar riesgos; se puede añadir si se requiere.
                 cargarDocumentos();
             } else {
-                mostrarAlerta("Error", "No se pudo eliminar el documento", Alert.AlertType.ERROR);
+                mostrarAlerta(
+                        "Error",
+                        "No se pudo eliminar el documento",
+                        Alert.AlertType.ERROR
+                );
             }
         }
     }
 
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     @FXML
     private void handleActualizarPaciente() {
         if (pacienteEnEdicion == null) return;
@@ -521,7 +591,11 @@ public class PacientesController {
         final String nombres = txtEditarNombres.getText().trim();
         final String apellidos = txtEditarApellidos.getText().trim();
         if (cedula.isEmpty() || nombres.isEmpty() || apellidos.isEmpty()) {
-            mostrarAlerta("Error", "Cédula, nombres y apellidos son obligatorios", Alert.AlertType.ERROR);
+            mostrarAlerta(
+                    "Error",
+                    "Cédula, nombres y apellidos son obligatorios",
+                    Alert.AlertType.ERROR
+            );
             return;
         }
         loadingIndicator.setVisible(true);
@@ -567,6 +641,7 @@ public class PacientesController {
         new Thread(task).start();
     }
 
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     @FXML
     private void handleCancelarEdicion() {
         pacienteEnEdicion = null;
@@ -574,7 +649,7 @@ public class PacientesController {
         tabPane.getSelectionModel().select(0);
     }
 
-    private void eliminarPaciente(Paciente p) {
+    private void eliminarPaciente(final Paciente p) {
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar Eliminación");
         confirmacion.setHeaderText("¿Está seguro de eliminar este paciente?");
@@ -606,7 +681,9 @@ public class PacientesController {
         }
     }
 
-    private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
+    private void mostrarAlerta(final String titulo,
+                               final String mensaje,
+                               final Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
@@ -614,14 +691,12 @@ public class PacientesController {
         alerta.showAndWait();
     }
 
-    // Validaciones de entrada
     private void configurarValidaciones() {
-        // Solo dígitos, sin espacios
+
         UnaryOperator<TextFormatter.Change> digitsFilter = change -> {
             String newText = change.getControlNewText();
             return newText.matches("\\d*") ? change : null;
         };
-        // Solo letras y espacios (incluye acentos y ñ)
         Pattern lettersPattern = Pattern.compile("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]*");
         UnaryOperator<TextFormatter.Change> lettersFilter = change -> {
             String newText = change.getControlNewText();

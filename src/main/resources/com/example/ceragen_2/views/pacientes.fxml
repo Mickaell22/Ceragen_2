@@ -113,9 +113,9 @@
                             <ComboBox fx:id="cmbCrearGenero" prefWidth="240" style="-fx-pref-height: 40; -fx-font-size: 14px;">
                                 <items>
                                     <javafx.collections.FXCollections fx:factory="observableArrayList">
-                                        <java.lang.String fx:value="M"/>
-                                        <java.lang.String fx:value="F"/>
-                                        <java.lang.String fx:value="OTRO"/>
+                                        <java.lang.String fx:value="Masculino"/>
+                                        <java.lang.String fx:value="Femenino"/>
+                                        <java.lang.String fx:value="Otro"/>
                                     </javafx.collections.FXCollections>
                                 </items>
                             </ComboBox>
@@ -193,9 +193,9 @@
                             <ComboBox fx:id="cmbEditarGenero" prefWidth="240" style="-fx-pref-height: 40; -fx-font-size: 14px;">
                                 <items>
                                     <javafx.collections.FXCollections fx:factory="observableArrayList">
-                                        <java.lang.String fx:value="M"/>
-                                        <java.lang.String fx:value="F"/>
-                                        <java.lang.String fx:value="OTRO"/>
+                                        <java.lang.String fx:value="Masculino"/>
+                                        <java.lang.String fx:value="Femenino"/>
+                                        <java.lang.String fx:value="Otro"/>
                                     </javafx.collections.FXCollections>
                                 </items>
                             </ComboBox>

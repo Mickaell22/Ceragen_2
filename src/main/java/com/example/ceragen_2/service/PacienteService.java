@@ -23,9 +23,6 @@ public class PacienteService {
         return instance;
     }
 
-    /**
-     * Obtiene todos los pacientes activos para ComboBox
-     */
     public List<Paciente> getAllPacientes() {
         List<Paciente> pacientes = new ArrayList<>();
         String sql = "SELECT id, cedula, nombres, apellidos FROM pacientes ORDER BY nombres, apellidos";
@@ -51,9 +48,7 @@ public class PacienteService {
         return pacientes;
     }
 
-    /**
-     * Obtiene un paciente por ID
-     */
+    
     public Paciente getPacienteById(Integer id) {
         String sql = "SELECT id, cedula, nombres, apellidos, telefono, email FROM pacientes WHERE id = ?";
 
@@ -80,9 +75,6 @@ public class PacienteService {
         return null;
     }
 
-    /**
-     * Obtiene un paciente por cedula
-     */
     public Paciente getPacienteByCedula(String cedula) {
         String sql = "SELECT id, cedula, nombres, apellidos, telefono, email FROM pacientes WHERE cedula = ?";
 
@@ -109,9 +101,6 @@ public class PacienteService {
         return null;
     }
 
-    /**
-     * Lista pacientes con paginación y filtros
-     */
     public List<Paciente> getPacientes(int offset, int limit, String searchText, String generoFilter) {
         List<Paciente> pacientes = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
@@ -170,9 +159,6 @@ public class PacienteService {
         return pacientes;
     }
 
-    /**
-     * Cuenta pacientes con filtros
-     */
     public int countPacientes(String searchText, String generoFilter) {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM pacientes WHERE 1=1");
         if (searchText != null && !searchText.trim().isEmpty()) {
@@ -202,9 +188,6 @@ public class PacienteService {
         return 0;
     }
 
-    /**
-     * Crea un nuevo paciente
-     */
     public boolean crearPaciente(Paciente p) {
         String sql = "INSERT INTO pacientes (cedula, nombres, apellidos, fecha_nacimiento, genero, telefono, email, direccion, grupo_sanguineo, alergias) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -232,9 +215,6 @@ public class PacienteService {
         }
     }
 
-    /**
-     * Actualiza un paciente
-     */
     public boolean actualizarPaciente(Paciente p) {
         String sql = "UPDATE pacientes SET cedula = ?, nombres = ?, apellidos = ?, fecha_nacimiento = ?, genero = ?, telefono = ?, email = ?, direccion = ?, grupo_sanguineo = ?, alergias = ? WHERE id = ?";
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
@@ -262,9 +242,6 @@ public class PacienteService {
         }
     }
 
-    /**
-     * Elimina un paciente
-     */
     public boolean eliminarPaciente(Integer id) {
         String sql = "DELETE FROM pacientes WHERE id = ?";
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
@@ -278,9 +255,6 @@ public class PacienteService {
         }
     }
 
-    /**
-     * Verifica si existe cédula
-     */
     public boolean existeCedula(String cedula) {
         String sql = "SELECT COUNT(*) FROM pacientes WHERE cedula = ?";
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
@@ -293,10 +267,7 @@ public class PacienteService {
         }
         return false;
     }
-
-    /**
-     * Verifica si existe cédula excluyendo un ID
-     */
+    
     public boolean existeCedulaExceptoId(String cedula, Integer idExcluir) {
         String sql = "SELECT COUNT(*) FROM pacientes WHERE cedula = ? AND id <> ?";
         try (Connection conn = DatabaseConfig.getInstance().getConnection();
