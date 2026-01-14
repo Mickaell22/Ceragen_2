@@ -7,14 +7,14 @@ import com.example.ceragen_2.service.AuthService;
 import com.example.ceragen_2.service.CitaService;
 import com.example.ceragen_2.service.PacienteService;
 import com.example.ceragen_2.service.ProfesionalService;
+import com.example.ceragen_2.util.DialogUtil;
+import com.example.ceragen_2.util.FormValidationUtil;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -25,6 +25,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -37,7 +38,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Optional;
 
 public class CitasController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CitasController.class);
@@ -76,7 +76,7 @@ public class CitasController {
     @FXML private TableColumn<Cita, String> colMotivo;
     @FXML private TableColumn<Cita, Void> colAcciones;
 
-    // Paginación
+    // Paginacion
     @FXML private Button btnPrimera;
     @FXML private Button btnAnterior;
     @FXML private Button btnSiguiente;
@@ -110,7 +110,7 @@ public class CitasController {
 
     @FXML
     public void initialize() {
-        LOGGER.info("Inicializando módulo de Citas");
+        LOGGER.info("Inicializando modulo de Citas");
 
         rolUsuario = authService.getCurrentUserRole();
         profesionalIdUsuario = authService.getCurrentProfesionalId();
@@ -122,7 +122,68 @@ public class CitasController {
         configurarPaginacion();
         configurarVistaHorario();
         configurarPermisosPorRol();
+        configurarValidaciones();
+        configurarTooltips();
         cargarCatalogos();
+    }
+
+    private void configurarValidaciones() {
+        // Aplicar filtros de entrada para campos de cedula (solo digitos)
+        FormValidationUtil.aplicarFiltroSoloDigitos(txtFiltroCedulaPaciente);
+        FormValidationUtil.aplicarFiltroSoloDigitos(txtFiltroCedulaProfesional);
+        FormValidationUtil.aplicarFiltroSoloDigitos(txtEditarCedulaPaciente);
+        FormValidationUtil.aplicarFiltroSoloDigitos(txtEditarCedulaProfesional);
+        FormValidationUtil.aplicarFiltroSoloDigitos(txtHorarioCedulaProfesional);
+
+        // Validacion en tiempo real para hora al perder foco
+        txtEditarHora.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal && !txtEditarHora.getText().trim().isEmpty()) {
+                validarFormatoHora(txtEditarHora);
+            }
+        });
+
+        // Validacion en tiempo real para motivo
+        txtEditarMotivo.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                FormValidationUtil.validarCampoRequerido(txtEditarMotivo, true);
+            }
+        });
+    }
+
+    private void configurarTooltips() {
+        // Tooltips para filtros
+        cmbPacienteFiltro.setTooltip(new Tooltip("Seleccione un paciente de la lista o busque por cedula"));
+        txtFiltroCedulaPaciente.setTooltip(new Tooltip("Ingrese la cedula del paciente para buscar"));
+        cmbProfesionalFiltro.setTooltip(new Tooltip("Seleccione un profesional de la lista o busque por cedula"));
+        txtFiltroCedulaProfesional.setTooltip(new Tooltip("Ingrese la cedula del profesional para buscar"));
+        cmbEstadoFiltro.setTooltip(new Tooltip("Filtrar citas por estado: Pendiente, Confirmada, Atendida o Cancelada"));
+
+        // Tooltips para formulario de edicion
+        cmbEditarPaciente.setTooltip(new Tooltip("Seleccione el paciente para la cita"));
+        txtEditarCedulaPaciente.setTooltip(new Tooltip("Buscar paciente por numero de cedula"));
+        cmbEditarProfesional.setTooltip(new Tooltip("Seleccione el profesional que atendera la cita"));
+        txtEditarCedulaProfesional.setTooltip(new Tooltip("Buscar profesional por numero de cedula"));
+        dpEditarFecha.setTooltip(new Tooltip("Seleccione la fecha de la cita"));
+        txtEditarHora.setTooltip(new Tooltip("Ingrese la hora en formato 24h (ej: 14:30, 09:00)"));
+        txtEditarMotivo.setTooltip(new Tooltip("Describa el motivo de la consulta"));
+        cmbEditarEstado.setTooltip(new Tooltip("PENDIENTE: Sin confirmar | CONFIRMADA: Paciente confirmado | ATENDIDA: Cita realizada | CANCELADA: Cita cancelada"));
+        txtEditarObservaciones.setTooltip(new Tooltip("Notas adicionales del profesional sobre la consulta"));
+
+        // Tooltips para vista de horario
+        dpFechaHorario.setTooltip(new Tooltip("Seleccione una fecha para ver la semana correspondiente"));
+        txtHorarioCedulaProfesional.setTooltip(new Tooltip("Filtrar horario por cedula de profesional (dejar vacio para ver todos)"));
+    }
+
+    private boolean validarFormatoHora(final TextField campo) {
+        final String horaStr = campo.getText().trim();
+        try {
+            LocalTime.parse(horaStr, TIME_FORMATTER);
+            FormValidationUtil.limpiarEstadoValidacion(campo);
+            return true;
+        } catch (DateTimeParseException e) {
+            FormValidationUtil.marcarCampoInvalido(campo, "Formato invalido. Use HH:mm (ej: 14:30)");
+            return false;
+        }
     }
 
     private void configurarTabla() {
@@ -135,7 +196,28 @@ public class CitasController {
             }
             return new SimpleStringProperty("");
         });
+
+        // Columna de estado con badge
+        colEstado.setCellFactory(param -> new TableCell<>() {
+            @Override
+            protected void updateItem(final String item, final boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    final Cita cita = getTableRow().getItem();
+                    final String estado = cita.getEstado();
+                    final Label badge = new Label(estado);
+                    badge.getStyleClass().add("status-badge");
+                    badge.getStyleClass().add(getBadgeClassForEstado(estado));
+                    setGraphic(badge);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
         colEstado.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getEstado()));
+
         colMotivo.setCellValueFactory(data -> new SimpleStringProperty(
             data.getValue().getMotivo() != null && data.getValue().getMotivo().length() > 50
             ? data.getValue().getMotivo().substring(0, 50) + "..."
@@ -157,6 +239,12 @@ public class CitasController {
                 btnConfirmar.getStyleClass().addAll("btn-table-action", "btn-table-confirm");
                 btnCancelar.getStyleClass().addAll("btn-table-action", "btn-table-cancel");
 
+                // Tooltips para botones de accion
+                btnEditar.setTooltip(new Tooltip("Editar los detalles de la cita"));
+                btnEliminar.setTooltip(new Tooltip("Eliminar permanentemente la cita"));
+                btnConfirmar.setTooltip(new Tooltip("Marcar la cita como confirmada"));
+                btnCancelar.setTooltip(new Tooltip("Cancelar la cita"));
+
                 btnEditar.setOnAction(event -> abrirEdicion(getTableView().getItems().get(getIndex())));
                 btnEliminar.setOnAction(event -> eliminarCita(getTableView().getItems().get(getIndex())));
                 btnConfirmar.setOnAction(event -> cambiarEstado(getTableView().getItems().get(getIndex()), "CONFIRMADA"));
@@ -169,6 +257,16 @@ public class CitasController {
                 setGraphic(empty ? null : pane);
             }
         });
+    }
+
+    private String getBadgeClassForEstado(final String estado) {
+        return switch (estado) {
+            case "PENDIENTE" -> "status-badge-pending";
+            case "CONFIRMADA" -> "status-badge-confirmed";
+            case "ATENDIDA" -> "status-badge-attended";
+            case "CANCELADA" -> "status-badge-cancelled";
+            default -> "status-badge-inactive";
+        };
     }
 
     private void configurarFiltros() {
@@ -185,17 +283,17 @@ public class CitasController {
 
     private void configurarPermisosPorRol() {
         if ("MEDICO".equals(rolUsuario)) {
-            // Si es médico, deshabilitar filtro de profesional y ocultarlo
+            // Si es medico, deshabilitar filtro de profesional y ocultarlo
             cmbProfesionalFiltro.setVisible(false);
             cmbProfesionalFiltro.setManaged(false);
             txtFiltroCedulaProfesional.setVisible(false);
             txtFiltroCedulaProfesional.setManaged(false);
 
-            // Deshabilitar selección de profesional en edición
+            // Deshabilitar seleccion de profesional en edicion
             cmbEditarProfesional.setDisable(true);
             txtEditarCedulaProfesional.setDisable(true);
 
-            LOGGER.info("Filtros configurados para MEDICO - Solo verá sus propias citas");
+            LOGGER.info("Filtros configurados para MEDICO - Solo vera sus propias citas");
         }
     }
 
@@ -226,8 +324,8 @@ public class CitasController {
         });
 
         task.setOnFailed(event -> {
-            LOGGER.error("Error al cargar catálogos", task.getException());
-            mostrarAlerta("Error", "No se pudieron cargar los catálogos", Alert.AlertType.ERROR);
+            LOGGER.error("Error al cargar catalogos", task.getException());
+            DialogUtil.mostrarError("Error de conexion", "No se pudieron cargar los catalogos. Verifique su conexion.");
         });
 
         new Thread(task).start();
@@ -243,7 +341,7 @@ public class CitasController {
         // Si es MEDICO, forzar filtro por su profesional_id
         if ("MEDICO".equals(rolUsuario) && profesionalIdUsuario != null) {
             profesionalId = profesionalIdUsuario;
-            LOGGER.info("Aplicando filtro automático para MEDICO - ProfesionalId: {}", profesionalId);
+            LOGGER.info("Aplicando filtro automatico para MEDICO - ProfesionalId: {}", profesionalId);
         }
 
         final String estadoFilter = cmbEstadoFiltro.getValue();
@@ -276,7 +374,7 @@ public class CitasController {
             tableCitas.getItems().addAll(resultado.citas);
             actualizarInfoPaginacion();
 
-            LOGGER.info("Datos cargados: {} citas en página {}/{}", resultado.citas.size(), paginaActual + 1, totalPaginas);
+            LOGGER.info("Datos cargados: {} citas en pagina {}/{}", resultado.citas.size(), paginaActual + 1, totalPaginas);
             loadingIndicator.setVisible(false);
             deshabilitarControles(false);
         });
@@ -285,7 +383,7 @@ public class CitasController {
             LOGGER.error("Error al cargar datos", task.getException());
             loadingIndicator.setVisible(false);
             deshabilitarControles(false);
-            mostrarAlerta("Error", "No se pudieron cargar los datos", Alert.AlertType.ERROR);
+            DialogUtil.mostrarError("Error de conexion", "No se pudieron cargar los datos. Verifique su conexion.");
         });
 
         new Thread(task).start();
@@ -300,7 +398,7 @@ public class CitasController {
     }
 
     private void actualizarInfoPaginacion() {
-        txtPaginacion.setText("Página " + (paginaActual + 1) + " de " + totalPaginas);
+        txtPaginacion.setText("Pagina " + (paginaActual + 1) + " de " + totalPaginas);
         btnPrimera.setDisable(paginaActual == 0);
         btnAnterior.setDisable(paginaActual == 0);
         btnSiguiente.setDisable(paginaActual >= totalPaginas - 1);
@@ -360,12 +458,12 @@ public class CitasController {
     }
 
     private void abrirEdicion(final Cita cita) {
-        LOGGER.info("Abriendo edición para cita ID: {}", cita.getId());
+        LOGGER.info("Abriendo edicion para cita ID: {}", cita.getId());
 
         // Si es MEDICO, verificar que la cita le pertenece
         if ("MEDICO".equals(rolUsuario) && profesionalIdUsuario != null) {
             if (!profesionalIdUsuario.equals(cita.getProfesionalId())) {
-                mostrarAlerta("Acceso Denegado", "Solo puede editar sus propias citas", Alert.AlertType.WARNING);
+                DialogUtil.mostrarAdvertencia("Acceso restringido", "Solo puede editar sus propias citas");
                 return;
             }
         }
@@ -399,14 +497,55 @@ public class CitasController {
         cmbEditarEstado.setValue(cita.getEstado());
         txtEditarObservaciones.setText(cita.getObservaciones());
 
+        // Limpiar estilos de validacion previos
+        limpiarValidacionesFormulario();
+
         tabEditar.setDisable(false);
         tabPane.getSelectionModel().select(tabEditar);
+    }
+
+    private void limpiarValidacionesFormulario() {
+        FormValidationUtil.limpiarEstadoValidacion(txtEditarHora);
+        FormValidationUtil.limpiarEstadoValidacion(txtEditarMotivo);
+        FormValidationUtil.limpiarEstadoValidacion(cmbEditarPaciente);
+        FormValidationUtil.limpiarEstadoValidacion(cmbEditarProfesional);
+        FormValidationUtil.limpiarEstadoValidacion(cmbEditarEstado);
     }
 
     @FXML
     @SuppressWarnings("unused")
     private void handleActualizarCita() {
         if (citaEnEdicion == null) {
+            return;
+        }
+
+        // Validaciones con feedback visual
+        boolean esValido = true;
+
+        if (!FormValidationUtil.validarComboRequerido(cmbEditarPaciente, true)) {
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarComboRequerido(cmbEditarProfesional, true)) {
+            esValido = false;
+        }
+        if (dpEditarFecha.getValue() == null) {
+            DialogUtil.mostrarAdvertencia("Campo requerido", "Debe seleccionar una fecha para la cita");
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarCampoRequerido(txtEditarHora, true)) {
+            esValido = false;
+        } else if (!validarFormatoHora(txtEditarHora)) {
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarCampoRequerido(txtEditarMotivo, true)) {
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarComboRequerido(cmbEditarEstado, true)) {
+            esValido = false;
+        }
+
+        if (!esValido) {
+            DialogUtil.mostrarError("Campos invalidos", "Por favor, corrija los campos marcados en rojo");
             return;
         }
 
@@ -419,19 +558,7 @@ public class CitasController {
         final String observaciones = txtEditarObservaciones.getText().trim();
         final Integer citaId = citaEnEdicion.getId();
 
-        if (paciente == null || profesional == null || fecha == null || horaStr.isEmpty() || motivo.isEmpty() || estado == null) {
-            mostrarAlerta("Error", "Todos los campos obligatorios deben estar llenos", Alert.AlertType.ERROR);
-            return;
-        }
-
-        final LocalTime hora;
-        try {
-            hora = LocalTime.parse(horaStr, TIME_FORMATTER);
-        } catch (DateTimeParseException e) {
-            mostrarAlerta("Error", "Formato de hora inválido. Use HH:mm (ej: 14:30)", Alert.AlertType.ERROR);
-            return;
-        }
-
+        final LocalTime hora = LocalTime.parse(horaStr, TIME_FORMATTER);
         final LocalDateTime fechaHora = LocalDateTime.of(fecha, hora);
 
         loadingIndicator.setVisible(true);
@@ -451,22 +578,22 @@ public class CitasController {
             loadingIndicator.setVisible(false);
 
             if (exito == null) {
-                mostrarAlerta("Error", "Ya existe una cita para este profesional en ese horario", Alert.AlertType.ERROR);
+                DialogUtil.mostrarError("Conflicto de horario", "Ya existe una cita para este profesional en ese horario");
             } else if (exito) {
                 LOGGER.info("Cita actualizada exitosamente");
-                mostrarAlerta("Éxito", "Cita actualizada exitosamente", Alert.AlertType.INFORMATION);
+                DialogUtil.mostrarExito("Cita actualizada", "Los datos de la cita se han actualizado correctamente");
                 cargarDatos();
                 handleCancelarEdicion();
             } else {
                 LOGGER.error("Error al actualizar cita");
-                mostrarAlerta("Error", "No se pudo actualizar la cita", Alert.AlertType.ERROR);
+                DialogUtil.mostrarError("Error", "No se pudo actualizar la cita");
             }
         });
 
         task.setOnFailed(event -> {
             LOGGER.error("Error al actualizar cita", task.getException());
             loadingIndicator.setVisible(false);
-            mostrarAlerta("Error", "No se pudo actualizar la cita", Alert.AlertType.ERROR);
+            DialogUtil.mostrarError("Error", "No se pudo actualizar la cita");
         });
 
         new Thread(task).start();
@@ -482,14 +609,15 @@ public class CitasController {
     private void eliminarCita(final Cita cita) {
         LOGGER.info("Intentando eliminar cita ID: {}", cita.getId());
 
-        final Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar Eliminación");
-        confirmacion.setHeaderText("¿Está seguro de eliminar esta cita?");
-        confirmacion.setContentText("Paciente: " + cita.getPacienteNombre() + "\nFecha: " + cita.getFechaHora().format(DATE_TIME_FORMATTER));
+        final boolean confirmar = DialogUtil.mostrarConfirmacionPersonalizada(
+                "Confirmar Eliminacion",
+                "Esta seguro de eliminar esta cita?",
+                "Paciente: " + cita.getPacienteNombre() + "\nFecha: " + cita.getFechaHora().format(DATE_TIME_FORMATTER) + "\nEsta accion no se puede deshacer.",
+                "Eliminar",
+                "Cancelar"
+        );
 
-        final Optional<ButtonType> resultado = confirmacion.showAndWait();
-
-        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+        if (confirmar) {
             final Integer citaId = cita.getId();
 
             loadingIndicator.setVisible(true);
@@ -507,18 +635,18 @@ public class CitasController {
 
                 if (exito) {
                     LOGGER.info("Cita eliminada exitosamente");
-                    mostrarAlerta("Éxito", "Cita eliminada exitosamente", Alert.AlertType.INFORMATION);
+                    DialogUtil.mostrarExito("Cita eliminada", "La cita ha sido eliminada del sistema");
                     cargarDatos();
                 } else {
                     LOGGER.error("Error al eliminar cita");
-                    mostrarAlerta("Error", "No se pudo eliminar la cita", Alert.AlertType.ERROR);
+                    DialogUtil.mostrarError("Error", "No se pudo eliminar la cita");
                 }
             });
 
             task.setOnFailed(event -> {
                 LOGGER.error("Error al eliminar cita", task.getException());
                 loadingIndicator.setVisible(false);
-                mostrarAlerta("Error", "No se pudo eliminar la cita", Alert.AlertType.ERROR);
+                DialogUtil.mostrarError("Error", "No se pudo eliminar la cita");
             });
 
             new Thread(task).start();
@@ -545,29 +673,21 @@ public class CitasController {
 
             if (exito) {
                 LOGGER.info("Estado cambiado exitosamente");
-                mostrarAlerta("Éxito", "Estado cambiado a " + nuevoEstado, Alert.AlertType.INFORMATION);
+                DialogUtil.mostrarExito("Estado actualizado", "El estado de la cita se ha cambiado a " + nuevoEstado);
                 cargarDatos();
             } else {
                 LOGGER.error("Error al cambiar estado");
-                mostrarAlerta("Error", "No se pudo cambiar el estado", Alert.AlertType.ERROR);
+                DialogUtil.mostrarError("Error", "No se pudo cambiar el estado de la cita");
             }
         });
 
         task.setOnFailed(event -> {
             LOGGER.error("Error al cambiar estado", task.getException());
             loadingIndicator.setVisible(false);
-            mostrarAlerta("Error", "No se pudo cambiar el estado", Alert.AlertType.ERROR);
+            DialogUtil.mostrarError("Error", "No se pudo cambiar el estado de la cita");
         });
 
         new Thread(task).start();
-    }
-
-    private void mostrarAlerta(final String titulo, final String mensaje, final Alert.AlertType tipo) {
-        final Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
     }
 
     private static class DatosCitasResult {
@@ -580,7 +700,7 @@ public class CitasController {
         }
     }
 
-    // Métodos de búsqueda por cédula para filtros
+    // Metodos de busqueda por cedula para filtros
     @FXML
     @SuppressWarnings("unused")
     private void handleBuscar() {
@@ -593,16 +713,16 @@ public class CitasController {
     private void handleBuscarPacienteFiltro() {
         final String cedula = txtFiltroCedulaPaciente.getText().trim();
         if (cedula.isEmpty()) {
-            mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
+            DialogUtil.mostrarAdvertencia("Campo vacio", "Ingrese una cedula para buscar");
             return;
         }
 
         final Paciente paciente = pacienteService.getPacienteByCedula(cedula);
         if (paciente != null) {
             cmbPacienteFiltro.setValue(paciente);
-            mostrarAlerta("Éxito", "Paciente encontrado: " + paciente.getNombreCompleto(), Alert.AlertType.INFORMATION);
+            DialogUtil.mostrarExito("Paciente encontrado", "Se encontro: " + paciente.getNombreCompleto());
         } else {
-            mostrarAlerta("Error", "No se encontró paciente con cédula: " + cedula, Alert.AlertType.ERROR);
+            DialogUtil.mostrarAdvertencia("No encontrado", "No se encontro paciente con cedula: " + cedula);
         }
     }
 
@@ -611,35 +731,35 @@ public class CitasController {
     private void handleBuscarProfesionalFiltro() {
         final String cedula = txtFiltroCedulaProfesional.getText().trim();
         if (cedula.isEmpty()) {
-            mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
+            DialogUtil.mostrarAdvertencia("Campo vacio", "Ingrese una cedula para buscar");
             return;
         }
 
         final Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
         if (profesional != null) {
             cmbProfesionalFiltro.setValue(profesional);
-            mostrarAlerta("Éxito", "Profesional encontrado: " + profesional.getNombreCompleto(), Alert.AlertType.INFORMATION);
+            DialogUtil.mostrarExito("Profesional encontrado", "Se encontro: " + profesional.getNombreCompleto());
         } else {
-            mostrarAlerta("Error", "No se encontró profesional con cédula: " + cedula, Alert.AlertType.ERROR);
+            DialogUtil.mostrarAdvertencia("No encontrado", "No se encontro profesional con cedula: " + cedula);
         }
     }
 
-    // Métodos de búsqueda para formulario Editar
+    // Metodos de busqueda para formulario Editar
     @FXML
     @SuppressWarnings("unused")
     private void handleBuscarPacienteEditar() {
         final String cedula = txtEditarCedulaPaciente.getText().trim();
         if (cedula.isEmpty()) {
-            mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
+            DialogUtil.mostrarAdvertencia("Campo vacio", "Ingrese una cedula para buscar");
             return;
         }
 
         final Paciente paciente = pacienteService.getPacienteByCedula(cedula);
         if (paciente != null) {
             cmbEditarPaciente.setValue(paciente);
-            mostrarAlerta("Éxito", "Paciente encontrado: " + paciente.getNombreCompleto(), Alert.AlertType.INFORMATION);
+            DialogUtil.mostrarExito("Paciente encontrado", "Se encontro: " + paciente.getNombreCompleto());
         } else {
-            mostrarAlerta("Error", "No se encontró paciente con cédula: " + cedula, Alert.AlertType.ERROR);
+            DialogUtil.mostrarAdvertencia("No encontrado", "No se encontro paciente con cedula: " + cedula);
         }
     }
 
@@ -648,20 +768,20 @@ public class CitasController {
     private void handleBuscarProfesionalEditar() {
         final String cedula = txtEditarCedulaProfesional.getText().trim();
         if (cedula.isEmpty()) {
-            mostrarAlerta("Error", "Ingrese una cédula", Alert.AlertType.ERROR);
+            DialogUtil.mostrarAdvertencia("Campo vacio", "Ingrese una cedula para buscar");
             return;
         }
 
         final Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
         if (profesional != null) {
             cmbEditarProfesional.setValue(profesional);
-            mostrarAlerta("Éxito", "Profesional encontrado: " + profesional.getNombreCompleto(), Alert.AlertType.INFORMATION);
+            DialogUtil.mostrarExito("Profesional encontrado", "Se encontro: " + profesional.getNombreCompleto());
         } else {
-            mostrarAlerta("Error", "No se encontró profesional con cédula: " + cedula, Alert.AlertType.ERROR);
+            DialogUtil.mostrarAdvertencia("No encontrado", "No se encontro profesional con cedula: " + cedula);
         }
     }
 
-    // Métodos para vista de horario
+    // Metodos para vista de horario
     @FXML
     @SuppressWarnings("unused")
     private void handleSemanaAnterior() {
@@ -693,7 +813,7 @@ public class CitasController {
                 profesionalSeleccionadoHorario = profesional;
                 lblHorarioProfesional.setText(profesional.getNombreCompleto());
             } else {
-                mostrarAlerta("Advertencia", "No se encontró profesional con cédula: " + cedula, Alert.AlertType.WARNING);
+                DialogUtil.mostrarAdvertencia("No encontrado", "No se encontro profesional con cedula: " + cedula);
                 profesionalSeleccionadoHorario = null;
                 lblHorarioProfesional.setText("No encontrado");
             }
@@ -734,7 +854,7 @@ public class CitasController {
 
         task.setOnFailed(event -> {
             LOGGER.error("Error al cargar vista de horario", task.getException());
-            mostrarAlerta("Error", "No se pudo cargar la vista de horario", Alert.AlertType.ERROR);
+            DialogUtil.mostrarError("Error", "No se pudo cargar la vista de horario");
         });
 
         new Thread(task).start();
@@ -743,7 +863,7 @@ public class CitasController {
     private void generarVistaHorario(final LocalDate inicioSemana, final LocalDate finSemana, final List<Cita> citas) {
         vboxHorario.getChildren().clear();
 
-        // Crear encabezado con días de la semana
+        // Crear encabezado con dias de la semana
         final HBox encabezado = new HBox(5);
         encabezado.setStyle("-fx-padding: 10; -fx-background-color: #34495e;");
 
@@ -779,7 +899,7 @@ public class CitasController {
                 final VBox celda = new VBox(3);
                 celda.setStyle("-fx-padding: 5; -fx-border-color: #ecf0f1; -fx-border-width: 0 1 0 0; -fx-background-color: white; -fx-pref-width: 140; -fx-min-height: 60;");
 
-                // Buscar citas para esta hora y día
+                // Buscar citas para esta hora y dia
                 final List<Cita> citasEnHora = citas.stream()
                     .filter(c -> {
                         if (c.getFechaHora() == null) {
@@ -803,6 +923,15 @@ public class CitasController {
 
                     citaBox.getChildren().addAll(txtHora, txtPaciente);
                     citaBox.setOnMouseClicked(e -> abrirEdicion(cita));
+
+                    // Tooltip para la cita en el horario
+                    Tooltip tooltip = new Tooltip(
+                        "Paciente: " + cita.getPacienteNombre() +
+                        "\nProfesional: " + cita.getProfesionalNombre() +
+                        "\nEstado: " + cita.getEstado() +
+                        "\nMotivo: " + (cita.getMotivo() != null ? cita.getMotivo() : "No especificado")
+                    );
+                    Tooltip.install(citaBox, tooltip);
 
                     celda.getChildren().add(citaBox);
                 }

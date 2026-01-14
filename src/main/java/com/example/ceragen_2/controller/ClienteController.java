@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javafx.scene.control.Tooltip;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -70,7 +71,29 @@ public class ClienteController {
 
         configurarTabla();
         configurarValidaciones();
+        configurarTooltips();
         cargarDatos();
+    }
+
+    private void configurarTooltips() {
+        // Tooltips para filtros
+        txtBuscar.setTooltip(new Tooltip("Buscar clientes por cedula, nombre o apellido"));
+
+        // Tooltips para formulario de creacion
+        txtCrearCedula.setTooltip(new Tooltip("Numero de cedula del cliente (solo digitos)"));
+        txtCrearNombres.setTooltip(new Tooltip("Nombres del cliente (solo letras)"));
+        txtCrearApellidos.setTooltip(new Tooltip("Apellidos del cliente (solo letras)"));
+        txtCrearTelefono.setTooltip(new Tooltip("Numero de telefono (7-15 digitos)"));
+        txtCrearEmail.setTooltip(new Tooltip("Correo electronico (formato: usuario@dominio.com)"));
+        txtCrearDireccion.setTooltip(new Tooltip("Direccion completa del cliente (opcional)"));
+
+        // Tooltips para formulario de edicion
+        txtEditarCedula.setTooltip(new Tooltip("Numero de cedula del cliente (solo digitos)"));
+        txtEditarNombres.setTooltip(new Tooltip("Nombres del cliente (solo letras)"));
+        txtEditarApellidos.setTooltip(new Tooltip("Apellidos del cliente (solo letras)"));
+        txtEditarTelefono.setTooltip(new Tooltip("Numero de telefono (7-15 digitos)"));
+        txtEditarEmail.setTooltip(new Tooltip("Correo electronico (formato: usuario@dominio.com)"));
+        txtEditarDireccion.setTooltip(new Tooltip("Direccion completa del cliente (opcional)"));
     }
 
     private void configurarValidaciones() {
@@ -127,6 +150,10 @@ public class ClienteController {
                 // Usar clases CSS en lugar de estilos inline
                 btnEditar.getStyleClass().addAll("btn-table-action", "btn-table-edit");
                 btnEliminar.getStyleClass().addAll("btn-table-action", "btn-table-delete");
+
+                // Tooltips para botones de accion
+                btnEditar.setTooltip(new Tooltip("Editar datos del cliente"));
+                btnEliminar.setTooltip(new Tooltip("Eliminar cliente del sistema"));
 
                 btnEditar.setOnAction(event -> {
                     final Cliente cliente = getTableView().getItems().get(getIndex());
@@ -487,11 +514,4 @@ public class ClienteController {
         }
     }
 
-    private void mostrarAlerta(final String titulo, final String mensaje, final Alert.AlertType tipo) {
-        final Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
-    }
 }
