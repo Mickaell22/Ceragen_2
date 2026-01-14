@@ -147,14 +147,15 @@ public class CitasController {
             private final Button btnEliminar = new Button("Eliminar");
             private final Button btnConfirmar = new Button("Confirmar");
             private final Button btnCancelar = new Button("Cancelar");
-            private final HBox pane = new HBox(8, btnEditar, btnEliminar, btnConfirmar, btnCancelar);
+            private final HBox pane = new HBox(6, btnEditar, btnEliminar, btnConfirmar, btnCancelar);
 
             {
                 pane.setAlignment(Pos.CENTER);
-                btnEditar.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
-                btnEliminar.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
-                btnConfirmar.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
-                btnCancelar.setStyle("-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
+                // Usar clases CSS en lugar de estilos inline
+                btnEditar.getStyleClass().addAll("btn-table-action", "btn-table-edit");
+                btnEliminar.getStyleClass().addAll("btn-table-action", "btn-table-delete");
+                btnConfirmar.getStyleClass().addAll("btn-table-action", "btn-table-confirm");
+                btnCancelar.getStyleClass().addAll("btn-table-action", "btn-table-cancel");
 
                 btnEditar.setOnAction(event -> abrirEdicion(getTableView().getItems().get(getIndex())));
                 btnEliminar.setOnAction(event -> eliminarCita(getTableView().getItems().get(getIndex())));

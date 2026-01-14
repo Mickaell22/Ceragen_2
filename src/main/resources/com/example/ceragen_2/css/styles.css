@@ -705,3 +705,414 @@
 .content-area {
     -fx-background-color: -neutral-lighter;
 }
+
+/* ============================================
+   MEJORAS UI - VALIDACIONES Y FEEDBACK
+   ============================================ */
+
+/* Estado de error para campos de texto */
+.text-field-error, .text-area-error, .combo-box-error {
+    -fx-border-color: -danger;
+    -fx-border-width: 2;
+    -fx-background-color: rgba(231, 76, 60, 0.05);
+}
+
+.text-field-error:focused, .text-area-error:focused {
+    -fx-border-color: -danger;
+    -fx-effect: dropshadow(gaussian, rgba(231, 76, 60, 0.3), 8, 0, 0, 0);
+}
+
+/* Estado de exito para campos validados */
+.text-field-success, .text-area-success {
+    -fx-border-color: -success;
+    -fx-border-width: 2;
+}
+
+/* Etiquetas de error debajo de campos */
+.field-error-label {
+    -fx-text-fill: -danger;
+    -fx-font-size: 11px;
+    -fx-padding: 3 0 0 5;
+}
+
+/* Indicador de campo requerido */
+.required-field-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -neutral-dark;
+}
+
+.required-field-label::after {
+    content: " *";
+    -fx-text-fill: -danger;
+}
+
+.required-indicator {
+    -fx-text-fill: -danger;
+    -fx-font-weight: bold;
+}
+
+/* ============================================
+   BOTONES DE ACCION EN TABLAS
+   ============================================ */
+
+.btn-table-action {
+    -fx-cursor: hand;
+    -fx-background-radius: 4px;
+    -fx-padding: 6 12;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.btn-table-edit {
+    -fx-background-color: -warning;
+}
+
+.btn-table-edit:hover {
+    -fx-background-color: derive(-warning, -15%);
+}
+
+.btn-table-delete {
+    -fx-background-color: -danger;
+}
+
+.btn-table-delete:hover {
+    -fx-background-color: derive(-danger, -15%);
+}
+
+.btn-table-view {
+    -fx-background-color: -info;
+}
+
+.btn-table-view:hover {
+    -fx-background-color: derive(-info, -15%);
+}
+
+.btn-table-confirm {
+    -fx-background-color: -success;
+}
+
+.btn-table-confirm:hover {
+    -fx-background-color: derive(-success, -15%);
+}
+
+.btn-table-cancel {
+    -fx-background-color: #95a5a6;
+}
+
+.btn-table-cancel:hover {
+    -fx-background-color: derive(#95a5a6, -15%);
+}
+
+.btn-table-docs {
+    -fx-background-color: -info;
+}
+
+.btn-table-docs:hover {
+    -fx-background-color: derive(-info, -15%);
+}
+
+.btn-table-password {
+    -fx-background-color: #9b59b6;
+}
+
+.btn-table-password:hover {
+    -fx-background-color: derive(#9b59b6, -15%);
+}
+
+/* ============================================
+   DIALOGOS Y ALERTAS MEJORADAS
+   ============================================ */
+
+.dialog-pane {
+    -fx-background-color: -neutral-white;
+    -fx-padding: 20;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: -neutral-lighter;
+    -fx-padding: 15;
+}
+
+.dialog-pane .content {
+    -fx-padding: 20 10;
+}
+
+.dialog-pane .button-bar {
+    -fx-padding: 15 10 10 10;
+}
+
+/* Alertas de exito */
+.alert.information .header-panel {
+    -fx-background-color: rgba(39, 174, 96, 0.1);
+}
+
+/* Alertas de error */
+.alert.error .header-panel {
+    -fx-background-color: rgba(231, 76, 60, 0.1);
+}
+
+/* Alertas de advertencia */
+.alert.warning .header-panel {
+    -fx-background-color: rgba(243, 156, 18, 0.1);
+}
+
+/* Alertas de confirmacion */
+.alert.confirmation .header-panel {
+    -fx-background-color: rgba(52, 152, 219, 0.1);
+}
+
+/* ============================================
+   DATEPICKER MEJORADO
+   ============================================ */
+
+.date-picker {
+    -fx-pref-height: 42;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8px;
+}
+
+.date-picker .text-field {
+    -fx-pref-height: 40;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: -primary;
+    -fx-background-radius: 0 8px 8px 0;
+    -fx-padding: 8;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
+.date-picker:focused {
+    -fx-border-color: -primary;
+    -fx-border-width: 2;
+    -fx-border-radius: 8px;
+}
+
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: -primary;
+}
+
+.date-picker-popup > .month-year-pane > .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.date-picker-popup > .calendar-grid {
+    -fx-background-color: -neutral-white;
+}
+
+.date-picker-popup .day-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 6;
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: -primary-subtle;
+}
+
+.date-picker-popup .selected {
+    -fx-background-color: -primary;
+    -fx-text-fill: white;
+}
+
+.date-picker-popup .today {
+    -fx-border-color: -primary;
+    -fx-border-width: 1;
+}
+
+/* ============================================
+   TOOLTIPS MEJORADOS
+   ============================================ */
+
+.tooltip {
+    -fx-background-color: -neutral-dark;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 8 12;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 8, 0, 0, 2);
+}
+
+/* ============================================
+   PROGRESS INDICATOR MEJORADO
+   ============================================ */
+
+.progress-indicator .indicator {
+    -fx-arc-fill: -primary;
+    -fx-arc-width: 4;
+}
+
+.progress-indicator:determinate .indicator {
+    -fx-arc-fill: -primary;
+}
+
+/* ============================================
+   TABS MEJORADOS
+   ============================================ */
+
+.tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: -neutral-lighter;
+    -fx-background-radius: 8 8 0 0;
+    -fx-padding: 10 20;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: -neutral-white;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab .tab-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -neutral-medium;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab:selected .tab-label {
+    -fx-text-fill: -primary-dark;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab:disabled {
+    -fx-opacity: 0.5;
+}
+
+/* ============================================
+   SCROLLBAR MEJORADO
+   ============================================ */
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .track {
+    -fx-background-color: -neutral-lighter;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: -neutral-light;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: -neutral-medium;
+}
+
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 2;
+}
+
+/* ============================================
+   COMBO BOX MEJORADO
+   ============================================ */
+
+.combo-box {
+    -fx-background-color: -neutral-white;
+    -fx-border-color: -neutral-light;
+    -fx-border-width: 1;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.combo-box:hover {
+    -fx-border-color: -primary-light;
+}
+
+.combo-box:focused {
+    -fx-border-color: -primary;
+    -fx-border-width: 2;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 10;
+}
+
+.combo-box .arrow {
+    -fx-background-color: -neutral-medium;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: -neutral-white;
+    -fx-border-color: -neutral-light;
+    -fx-border-radius: 0 0 8px 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 10, 0, 0, 3);
+}
+
+.combo-box-popup .list-cell {
+    -fx-padding: 10 15;
+    -fx-font-size: 14px;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: -primary-subtle;
+}
+
+.combo-box-popup .list-cell:selected {
+    -fx-background-color: -primary;
+    -fx-text-fill: white;
+}
+
+/* ============================================
+   FORMULARIOS - GRUPOS DE CAMPOS
+   ============================================ */
+
+.form-group {
+    -fx-spacing: 8;
+}
+
+.form-group-horizontal {
+    -fx-spacing: 15;
+}
+
+.form-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -neutral-dark;
+}
+
+.form-hint {
+    -fx-font-size: 11px;
+    -fx-text-fill: -neutral-medium;
+    -fx-padding: 3 0 0 5;
+}
+
+/* ============================================
+   BADGES DE ESTADO
+   ============================================ */
+
+.status-badge {
+    -fx-padding: 4 10;
+    -fx-background-radius: 12px;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.status-badge-active {
+    -fx-background-color: -success;
+}
+
+.status-badge-inactive {
+    -fx-background-color: -neutral-medium;
+}
+
+.status-badge-pending {
+    -fx-background-color: -info;
+}
+
+.status-badge-confirmed {
+    -fx-background-color: -success;
+}
+
+.status-badge-attended {
+    -fx-background-color: #9b59b6;
+}
+
+.status-badge-cancelled {
+    -fx-background-color: -neutral-medium;
+}

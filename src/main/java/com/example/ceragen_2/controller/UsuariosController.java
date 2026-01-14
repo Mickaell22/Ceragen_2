@@ -105,15 +105,16 @@ public class UsuariosController {
         colAcciones.setCellFactory(param -> new TableCell<>() {
             private final Button btnEditar = new Button("Editar");
             private final Button btnEliminar = new Button("Eliminar");
-            private final Button btnCambiarPassword = new Button("Cambiar Contraseña");
-            private final HBox pane = new HBox(10, btnEditar, btnEliminar, btnCambiarPassword);
+            private final Button btnCambiarPassword = new Button("Cambiar Clave");
+            private final HBox pane = new HBox(8, btnEditar, btnEliminar, btnCambiarPassword);
 
             {
                 pane.setAlignment(Pos.CENTER);
 
-                btnEditar.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
-                btnEliminar.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
-                btnCambiarPassword.setStyle("-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
+                // Usar clases CSS en lugar de estilos inline
+                btnEditar.getStyleClass().addAll("btn-table-action", "btn-table-edit");
+                btnEliminar.getStyleClass().addAll("btn-table-action", "btn-table-delete");
+                btnCambiarPassword.getStyleClass().addAll("btn-table-action", "btn-table-password");
 
                 btnEditar.setOnAction(event -> {
                     final Usuario usuario = getTableView().getItems().get(getIndex());

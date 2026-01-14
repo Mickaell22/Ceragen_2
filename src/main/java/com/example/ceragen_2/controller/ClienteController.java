@@ -2,6 +2,8 @@ package com.example.ceragen_2.controller;
 
 import com.example.ceragen_2.model.Cliente;
 import com.example.ceragen_2.service.ClienteService;
+import com.example.ceragen_2.util.DialogUtil;
+import com.example.ceragen_2.util.FormValidationUtil;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -14,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 public class ClienteController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClienteController.class);
@@ -68,7 +69,35 @@ public class ClienteController {
         LOGGER.info("Inicializando modulo de Clientes");
 
         configurarTabla();
+        configurarValidaciones();
         cargarDatos();
+    }
+
+    private void configurarValidaciones() {
+        // Aplicar filtros de entrada a campos de creacion
+        FormValidationUtil.aplicarFiltroSoloDigitos(txtCrearCedula);
+        FormValidationUtil.aplicarFiltroSoloDigitos(txtCrearTelefono);
+        FormValidationUtil.aplicarFiltroSoloLetras(txtCrearNombres);
+        FormValidationUtil.aplicarFiltroSoloLetras(txtCrearApellidos);
+
+        // Aplicar filtros de entrada a campos de edicion
+        FormValidationUtil.aplicarFiltroSoloDigitos(txtEditarCedula);
+        FormValidationUtil.aplicarFiltroSoloDigitos(txtEditarTelefono);
+        FormValidationUtil.aplicarFiltroSoloLetras(txtEditarNombres);
+        FormValidationUtil.aplicarFiltroSoloLetras(txtEditarApellidos);
+
+        // Configurar validacion en tiempo real para email
+        txtCrearEmail.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) { // Cuando pierde el foco
+                FormValidationUtil.validarEmail(txtCrearEmail, true);
+            }
+        });
+
+        txtEditarEmail.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                FormValidationUtil.validarEmail(txtEditarEmail, true);
+            }
+        });
     }
 
     private void configurarTabla() {
@@ -90,13 +119,14 @@ public class ClienteController {
         colAcciones.setCellFactory(param -> new TableCell<>() {
             private final Button btnEditar = new Button("Editar");
             private final Button btnEliminar = new Button("Eliminar");
-            private final HBox pane = new HBox(10, btnEditar, btnEliminar);
+            private final HBox pane = new HBox(8, btnEditar, btnEliminar);
 
             {
                 pane.setAlignment(Pos.CENTER);
 
-                btnEditar.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
-                btnEliminar.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 3; -fx-padding: 5 10;");
+                // Usar clases CSS en lugar de estilos inline
+                btnEditar.getStyleClass().addAll("btn-table-action", "btn-table-edit");
+                btnEliminar.getStyleClass().addAll("btn-table-action", "btn-table-delete");
 
                 btnEditar.setOnAction(event -> {
                     final Cliente cliente = getTableView().getItems().get(getIndex());
@@ -138,7 +168,7 @@ public class ClienteController {
         task.setOnFailed(event -> {
             LOGGER.error("Error al cargar datos", task.getException());
             loadingIndicator.setVisible(false);
-            mostrarAlerta("Error", "No se pudieron cargar los datos", Alert.AlertType.ERROR);
+            DialogUtil.mostrarError("Error de conexion", "No se pudieron cargar los datos. Verifique su conexion.");
         });
 
         new Thread(task).start();
@@ -175,7 +205,7 @@ public class ClienteController {
         task.setOnFailed(event -> {
             LOGGER.error("Error al buscar clientes", task.getException());
             loadingIndicator.setVisible(false);
-            mostrarAlerta("Error", "No se pudo realizar la busqueda", Alert.AlertType.ERROR);
+            DialogUtil.mostrarError("Error de busqueda", "No se pudo realizar la busqueda");
         });
 
         new Thread(task).start();
@@ -192,18 +222,36 @@ public class ClienteController {
     @FXML
     @SuppressWarnings("unused")
     private void handleCrearCliente() {
+        // Validaciones con feedback visual
+        boolean esValido = true;
+
+        if (!FormValidationUtil.validarCampoRequerido(txtCrearCedula, true)) {
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarCampoRequerido(txtCrearNombres, true)) {
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarCampoRequerido(txtCrearApellidos, true)) {
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarEmail(txtCrearEmail, true)) {
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarTelefono(txtCrearTelefono, true)) {
+            esValido = false;
+        }
+
+        if (!esValido) {
+            DialogUtil.mostrarError("Campos invalidos", "Por favor, corrija los campos marcados en rojo");
+            return;
+        }
+
         final String cedula = txtCrearCedula.getText().trim();
         final String nombres = txtCrearNombres.getText().trim();
         final String apellidos = txtCrearApellidos.getText().trim();
         final String telefono = txtCrearTelefono.getText().trim();
         final String email = txtCrearEmail.getText().trim();
         final String direccion = txtCrearDireccion.getText().trim();
-
-        // Validaciones
-        if (cedula.isEmpty() || nombres.isEmpty() || apellidos.isEmpty()) {
-            mostrarAlerta("Error", "Cedula, nombres y apellidos son obligatorios", Alert.AlertType.ERROR);
-            return;
-        }
 
         loadingIndicator.setVisible(true);
 
@@ -233,23 +281,24 @@ public class ClienteController {
             loadingIndicator.setVisible(false);
 
             if (exito == null) {
-                mostrarAlerta("Error", "Ya existe un cliente con esta cedula", Alert.AlertType.ERROR);
+                DialogUtil.mostrarError("Error", "Ya existe un cliente con esta cedula");
+                FormValidationUtil.marcarCampoInvalido(txtCrearCedula, "Cedula ya registrada");
             } else if (exito) {
                 LOGGER.info("Cliente creado exitosamente: {} {}", nombres, apellidos);
-                mostrarAlerta("Exito", "Cliente creado exitosamente", Alert.AlertType.INFORMATION);
+                DialogUtil.mostrarExito("Cliente creado", "El cliente se ha registrado exitosamente");
                 limpiarFormularioCrear();
                 cargarDatos();
                 tabPane.getSelectionModel().select(0);
             } else {
                 LOGGER.error("Error al crear cliente");
-                mostrarAlerta("Error", "No se pudo crear el cliente", Alert.AlertType.ERROR);
+                DialogUtil.mostrarError("Error", "No se pudo crear el cliente");
             }
         });
 
         task.setOnFailed(event -> {
             LOGGER.error("Error al crear cliente", task.getException());
             loadingIndicator.setVisible(false);
-            mostrarAlerta("Error", "No se pudo crear el cliente", Alert.AlertType.ERROR);
+            DialogUtil.mostrarError("Error", "No se pudo crear el cliente");
         });
 
         new Thread(task).start();
@@ -268,6 +317,13 @@ public class ClienteController {
         txtCrearTelefono.clear();
         txtCrearEmail.clear();
         txtCrearDireccion.clear();
+
+        // Limpiar estilos de validacion
+        FormValidationUtil.limpiarEstadoValidacion(txtCrearCedula);
+        FormValidationUtil.limpiarEstadoValidacion(txtCrearNombres);
+        FormValidationUtil.limpiarEstadoValidacion(txtCrearApellidos);
+        FormValidationUtil.limpiarEstadoValidacion(txtCrearTelefono);
+        FormValidationUtil.limpiarEstadoValidacion(txtCrearEmail);
     }
 
     private void abrirEdicion(final Cliente cliente) {
@@ -293,18 +349,36 @@ public class ClienteController {
             return;
         }
 
+        // Validaciones con feedback visual
+        boolean esValido = true;
+
+        if (!FormValidationUtil.validarCampoRequerido(txtEditarCedula, true)) {
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarCampoRequerido(txtEditarNombres, true)) {
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarCampoRequerido(txtEditarApellidos, true)) {
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarEmail(txtEditarEmail, true)) {
+            esValido = false;
+        }
+        if (!FormValidationUtil.validarTelefono(txtEditarTelefono, true)) {
+            esValido = false;
+        }
+
+        if (!esValido) {
+            DialogUtil.mostrarError("Campos invalidos", "Por favor, corrija los campos marcados en rojo");
+            return;
+        }
+
         final String cedula = txtEditarCedula.getText().trim();
         final String nombres = txtEditarNombres.getText().trim();
         final String apellidos = txtEditarApellidos.getText().trim();
         final String telefono = txtEditarTelefono.getText().trim();
         final String email = txtEditarEmail.getText().trim();
         final String direccion = txtEditarDireccion.getText().trim();
-
-        // Validaciones
-        if (cedula.isEmpty() || nombres.isEmpty() || apellidos.isEmpty()) {
-            mostrarAlerta("Error", "Cedula, nombres y apellidos son obligatorios", Alert.AlertType.ERROR);
-            return;
-        }
 
         loadingIndicator.setVisible(true);
 
@@ -337,22 +411,23 @@ public class ClienteController {
             loadingIndicator.setVisible(false);
 
             if (exito == null) {
-                mostrarAlerta("Error", "Ya existe otro cliente con esta cedula", Alert.AlertType.ERROR);
+                DialogUtil.mostrarError("Error", "Ya existe otro cliente con esta cedula");
+                FormValidationUtil.marcarCampoInvalido(txtEditarCedula, "Cedula ya registrada");
             } else if (exito) {
                 LOGGER.info("Cliente actualizado exitosamente: {} {}", nombres, apellidos);
-                mostrarAlerta("Exito", "Cliente actualizado exitosamente", Alert.AlertType.INFORMATION);
+                DialogUtil.mostrarExito("Cliente actualizado", "Los datos del cliente se han actualizado correctamente");
                 cargarDatos();
                 handleCancelarEdicion();
             } else {
                 LOGGER.error("Error al actualizar cliente");
-                mostrarAlerta("Error", "No se pudo actualizar el cliente", Alert.AlertType.ERROR);
+                DialogUtil.mostrarError("Error", "No se pudo actualizar el cliente");
             }
         });
 
         task.setOnFailed(event -> {
             LOGGER.error("Error al actualizar cliente", task.getException());
             loadingIndicator.setVisible(false);
-            mostrarAlerta("Error", "No se pudo actualizar el cliente", Alert.AlertType.ERROR);
+            DialogUtil.mostrarError("Error", "No se pudo actualizar el cliente");
         });
 
         new Thread(task).start();
@@ -368,14 +443,15 @@ public class ClienteController {
     private void eliminarCliente(final Cliente cliente) {
         LOGGER.info("Intentando eliminar cliente: {}", cliente.getNombreCompleto());
 
-        final Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar Eliminacion");
-        confirmacion.setHeaderText("Esta seguro de eliminar este cliente?");
-        confirmacion.setContentText("Cliente: " + cliente.getNombreCompleto() + "\nCedula: " + cliente.getCedula() + "\nEsta accion no se puede deshacer.");
+        final boolean confirmar = DialogUtil.mostrarConfirmacionPersonalizada(
+                "Confirmar Eliminacion",
+                "Esta seguro de eliminar este cliente?",
+                "Cliente: " + cliente.getNombreCompleto() + "\nCedula: " + cliente.getCedula() + "\nEsta accion no se puede deshacer.",
+                "Eliminar",
+                "Cancelar"
+        );
 
-        final Optional<ButtonType> resultado = confirmacion.showAndWait();
-
-        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+        if (confirmar) {
             final Integer clienteId = cliente.getId();
 
             loadingIndicator.setVisible(true);
@@ -393,18 +469,18 @@ public class ClienteController {
 
                 if (exito) {
                     LOGGER.info("Cliente eliminado exitosamente: {}", cliente.getNombreCompleto());
-                    mostrarAlerta("Exito", "Cliente eliminado exitosamente", Alert.AlertType.INFORMATION);
+                    DialogUtil.mostrarExito("Cliente eliminado", "El cliente ha sido eliminado del sistema");
                     cargarDatos();
                 } else {
                     LOGGER.error("Error al eliminar cliente: {}", cliente.getNombreCompleto());
-                    mostrarAlerta("Error", "No se pudo eliminar el cliente", Alert.AlertType.ERROR);
+                    DialogUtil.mostrarError("Error", "No se pudo eliminar el cliente");
                 }
             });
 
             task.setOnFailed(event -> {
                 LOGGER.error("Error al eliminar cliente", task.getException());
                 loadingIndicator.setVisible(false);
-                mostrarAlerta("Error", "No se pudo eliminar el cliente", Alert.AlertType.ERROR);
+                DialogUtil.mostrarError("Error", "No se pudo eliminar el cliente");
             });
 
             new Thread(task).start();
