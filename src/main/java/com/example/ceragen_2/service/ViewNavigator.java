@@ -1,5 +1,6 @@
 package com.example.ceragen_2.service;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,6 +30,7 @@ public final class ViewNavigator {
 
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
+        this.primaryStage.setMaximized(true);
     }
 
     public void navigateTo(String fxmlPath) {
@@ -46,6 +48,11 @@ public final class ViewNavigator {
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
 
+            Platform.runLater(() -> {
+                primaryStage.setMaximized(false);
+                primaryStage.setMaximized(true);
+            });
+
             LOGGER.info("Navegado a: {}", fxmlPath);
         } catch (IOException e) {
             LOGGER.error("Error al cargar vista: {}", fxmlPath, e);
@@ -55,14 +62,9 @@ public final class ViewNavigator {
 
     public void showLogin() {
         navigateTo(LOGIN_VIEW);
-        primaryStage.setMaximized(false);
-        primaryStage.setWidth(400);
-        primaryStage.setHeight(500);
-        primaryStage.centerOnScreen();
     }
 
     public void showMainView() {
         navigateTo(MAIN_VIEW);
-        primaryStage.setMaximized(true);
     }
 }
