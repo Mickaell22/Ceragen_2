@@ -37,5 +37,23 @@
                 <Insets top="10.0"/>
             </VBox.margin>
         </Button>
+
+        <VBox spacing="8.0" style="-fx-padding: 15 0 0 0; -fx-border-color: #e0e0e0; -fx-border-width: 1 0 0 0;">
+            <Label text="Credenciales de Prueba:" styleClass="text-neutral-dark-control"
+                   style="-fx-font-size: 11px; -fx-font-weight: bold;"/>
+
+            <HBox spacing="10.0">
+                <VBox spacing="2.0">
+                    <Label text="Admin:" style="-fx-font-size: 10px; -fx-text-fill: #666;"/>
+                    <Label text="Recepcion:" style="-fx-font-size: 10px; -fx-text-fill: #666;"/>
+                    <Label text="Medico:" style="-fx-font-size: 10px; -fx-text-fill: #666;"/>
+                </VBox>
+                <VBox spacing="2.0">
+                    <Label text="admin / admin123" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
+                    <Label text="recepcion1 / admin123" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #4CAF50;"/>
+                    <Label text="dr_mendoza / admin123" style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #FF9800;"/>
+                </VBox>
+            </HBox>
+        </VBox>
     </VBox>
 </VBox>
