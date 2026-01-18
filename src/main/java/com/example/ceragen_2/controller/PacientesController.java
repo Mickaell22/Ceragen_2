@@ -338,7 +338,7 @@ public class PacientesController {
         final String cedula = txtCrearCedula.getText().trim();
         final String nombres = txtCrearNombres.getText().trim();
         final String apellidos = txtCrearApellidos.getText().trim();
-        final String genero = cmbCrearGenero.getValue();
+        final String generoSeleccionado = cmbCrearGenero.getValue();
 
         if (cedula.isEmpty()) {
             mostrarAlerta("Error", "La cédula es obligatoria", Alert.AlertType.ERROR);
@@ -365,7 +365,16 @@ public class PacientesController {
                 p.setNombres(nombres);
                 p.setApellidos(apellidos);
                 p.setFechaNacimiento(dpCrearFechaNacimiento.getValue());
-                p.setGenero(genero);
+
+                String generoDB = null;
+                if ("Masculino".equals(generoSeleccionado)) {
+                    generoDB = "M";
+                } else if ("Femenino".equals(generoSeleccionado)) {
+                    generoDB = "F";
+                } else {
+                    generoDB = generoSeleccionado;
+                }
+                p.setGenero(generoDB);
                 p.setTelefono(txtCrearTelefono.getText());
                 p.setEmail(txtCrearEmail.getText());
                 p.setDireccion(txtCrearDireccion.getText());
@@ -609,7 +618,17 @@ public class PacientesController {
                 p.setNombres(nombres);
                 p.setApellidos(apellidos);
                 p.setFechaNacimiento(dpEditarFechaNacimiento.getValue());
-                p.setGenero(cmbEditarGenero.getValue());
+
+                String generoSeleccionado = cmbEditarGenero.getValue();
+                String generoDB = null;
+                if ("Masculino".equals(generoSeleccionado)) {
+                    generoDB = "M";
+                } else if ("Femenino".equals(generoSeleccionado)) {
+                    generoDB = "F";
+                } else {
+                    generoDB = generoSeleccionado;
+                }
+                p.setGenero(generoDB);
                 p.setTelefono(txtEditarTelefono.getText());
                 p.setEmail(txtEditarEmail.getText());
                 p.setDireccion(txtEditarDireccion.getText());
