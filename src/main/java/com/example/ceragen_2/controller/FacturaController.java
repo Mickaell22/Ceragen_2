@@ -9,8 +9,6 @@ import com.example.ceragen_2.model.Profesional;
 import com.example.ceragen_2.service.ClienteService;
 import com.example.ceragen_2.service.FacturaService;
 
-import com.example.ceragen_2.service.PacienteService;
-import com.example.ceragen_2.service.ProfesionalService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -64,15 +62,14 @@ public class FacturaController {
     /** Lista de facturas obtenidas del sistema. */
     private List<Factura> listaFacturas;
 
-    // --- Componentes FXML ---
+    private int idClienteSeleccionado = -1;
 
+    // --- Componentes FXML ---
     /** Panel de pestañas principal. */
     @FXML private TabPane tabPane;
 
     // --- Campos para creación de factura ---
-
-    /** Texto que muestra el número de la nueva factura. */
-    @FXML private Text txtNumeroFacturaNueva;
+    @FXML private TextField txtClienteSeleccionadoModal;
 
     /** Campo de texto para la fecha de realización de la nueva factura. */
     @FXML private TextField txtFechaRealizacionFacturaNueva;
@@ -118,12 +115,6 @@ public class FacturaController {
 
     /** Campo de texto que muestra el total de la factura. */
     @FXML private TextField txtTotalFacturaNueva;
-
-    /** Botón para guardar la nueva factura. */
-    @FXML private Button btnGuardarNuevaFactura;
-
-    /** Botón para cancelar la creación de la nueva factura. */
-    @FXML private Button btnCancelarNuevaFactura;
 
     // --- Campos para vista de factura ---
 
@@ -210,22 +201,6 @@ public class FacturaController {
     /** Combo box para filtrar facturas por estado. */
     @FXML private ComboBox<String> cmbFiltroEstado;
 
-    // --- Campos para formulario de creación de cita (no utilizados en esta vista) ---
-
-    /** Combo box para seleccionar paciente (no utilizado). */
-    @FXML private ComboBox<Paciente> cmbCrearPaciente;
-
-    /** Combo box para seleccionar profesional (no utilizado). */
-    @FXML private ComboBox<Profesional> cmbCrearProfesional;
-
-    /** Selector de fecha para creación de cita (no utilizado). */
-    @FXML private DatePicker dpCrearFecha;
-
-    /** Campo de texto para la hora de la cita (no utilizado). */
-    @FXML private TextField txtCrearHora;
-
-    /** Área de texto para el motivo de la cita (no utilizado). */
-    @FXML private TextArea txtCrearMotivo;
 
     /**
      * Método de inicialización del controlador.
@@ -711,7 +686,7 @@ public class FacturaController {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod")
     @FXML
-    private void handleModal() {
+    private void handleModalCrearCita() {
         try {
             LOGGER.info("Abriendo modal para crear cita...");
 
@@ -737,6 +712,42 @@ public class FacturaController {
         } catch (Exception e) {
             LOGGER.error("Error al abrir modal de crear cita", e);
             mostrarAlerta("Error", "No se pudo abrir la ventana para crear citas: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void agregarCliente(Cliente cliente){
+        idClienteSeleccionado = cliente.getId();
+        txtClienteSeleccionadoModal.setText(cliente.getNombreCompleto());
+    }
+
+    @FXML
+    private void handleModalCliente() {
+        try {
+            LOGGER.info("Abriendo modal para cliente...");
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ceragen_2/views/modalClientes.fxml"));
+            Parent root = loader.load();
+
+            // Obtener el controlador del modal
+            ModalClienteController modalClienteController = loader.getController();
+
+            // Pasar la referencia de FacturaController al modal
+            modalClienteController.setFacturaController(this);
+
+            Stage stage = new Stage();
+            stage.setTitle("Seleccione un cliente");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+
+            stage.showAndWait();
+
+            LOGGER.info("Modal de cliente cerrado");
+
+        } catch (Exception e) {
+            LOGGER.error("Error al abrir modal de cliente", e);
+            mostrarAlerta("Error", "No se pudo abrir la ventana para clientes: " + e.getMessage());
         }
     }
 
@@ -782,6 +793,10 @@ public class FacturaController {
         cmbClienteFacturaNueva.setValue(null);
         cmbMetodoPagoFacturaNueva.setValue(null);
 
+        // LIMPIEZA DEL MODAL
+        txtClienteSeleccionadoModal.clear();
+        idClienteSeleccionado = -1;
+
         // Limpiar campos de texto
         txtCiudadFacturaNueva.setText("Guayaquil");
 
@@ -824,7 +839,14 @@ public class FacturaController {
             return;
         }
 
-        int fctIdCliente = cmbClienteFacturaNueva.getValue().getId();
+        //nuevo
+        int fctIdCliente = 0;
+        if(cmbClienteFacturaNueva.getValue() != null){
+            //voy a dejar solo uno
+            fctIdCliente = cmbClienteFacturaNueva.getValue().getId();
+        } else if (idClienteSeleccionado != -1) {
+            fctIdCliente = idClienteSeleccionado;
+        }
         String fctCiudad = txtCiudadFacturaNueva.getText().trim();
 
         try {
@@ -873,6 +895,9 @@ public class FacturaController {
         actualizarTablaCitas();
         // Limpiar selección de cliente
         cmbClienteFacturaNueva.setValue(null);
+        //LIMPIEZA DEL MODAL
+        txtClienteSeleccionadoModal.clear();
+        idClienteSeleccionado = -1;
         // Resetear totales
         calcularTotales();
 
@@ -900,7 +925,7 @@ public class FacturaController {
      */
     private boolean validarCampos() {
         // Validar cliente seleccionado
-        if (cmbClienteFacturaNueva.getValue() == null) {
+        if ((cmbClienteFacturaNueva.getValue() == null) && (idClienteSeleccionado == -1)) {
             mostrarAlerta("Error", "Debe seleccionar un cliente");
             return false;
         }
