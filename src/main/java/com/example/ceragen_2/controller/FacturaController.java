@@ -77,9 +77,6 @@ public class FacturaController {
     /** Campo de texto para la ciudad de la nueva factura. */
     @FXML private TextField txtCiudadFacturaNueva;
 
-    /** Combo box para seleccionar el cliente de la nueva factura. */
-    @FXML private ComboBox<Cliente> cmbClienteFacturaNueva;
-
     /** Tabla que muestra las citas asociadas a la factura en creación. */
     @FXML private TableView<Cita> tableCitasFactura;
 
@@ -669,7 +666,7 @@ public class FacturaController {
             listaClientes = resultado.clientes;
 
             // Configurar ComboBox de filtros
-            cmbClienteFacturaNueva.setItems(FXCollections.observableArrayList(listaClientes));
+            //cmbClienteFacturaNueva.setItems(FXCollections.observableArrayList(listaClientes));
             cmbMetodoPagoFacturaNueva.setItems(FXCollections.observableArrayList("EFECTIVO", "TARJETA", "TRANSFERENCIA"));
         });
 
@@ -760,7 +757,7 @@ public class FacturaController {
         LOGGER.info("Cancelando creación de factura");
 
         // Verificar si hay datos no guardados
-        if (!listaCitas.isEmpty() || cmbClienteFacturaNueva.getValue() != null) {
+        if (!listaCitas.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Cancelar Factura");
             alert.setHeaderText("¿Está seguro que desea cancelar?");
@@ -790,7 +787,6 @@ public class FacturaController {
         actualizarTablaCitas();
 
         // Limpiar selecciones
-        cmbClienteFacturaNueva.setValue(null);
         cmbMetodoPagoFacturaNueva.setValue(null);
 
         // LIMPIEZA DEL MODAL
@@ -841,10 +837,7 @@ public class FacturaController {
 
         //nuevo
         int fctIdCliente = 0;
-        if(cmbClienteFacturaNueva.getValue() != null){
-            //voy a dejar solo uno
-            fctIdCliente = cmbClienteFacturaNueva.getValue().getId();
-        } else if (idClienteSeleccionado != -1) {
+        if (idClienteSeleccionado != -1) {
             fctIdCliente = idClienteSeleccionado;
         }
         String fctCiudad = txtCiudadFacturaNueva.getText().trim();
@@ -894,7 +887,6 @@ public class FacturaController {
         listaCitas.clear();
         actualizarTablaCitas();
         // Limpiar selección de cliente
-        cmbClienteFacturaNueva.setValue(null);
         //LIMPIEZA DEL MODAL
         txtClienteSeleccionadoModal.clear();
         idClienteSeleccionado = -1;
@@ -925,7 +917,7 @@ public class FacturaController {
      */
     private boolean validarCampos() {
         // Validar cliente seleccionado
-        if ((cmbClienteFacturaNueva.getValue() == null) && (idClienteSeleccionado == -1)) {
+        if (idClienteSeleccionado == -1) {
             mostrarAlerta("Error", "Debe seleccionar un cliente");
             return false;
         }
