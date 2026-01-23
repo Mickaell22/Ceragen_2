@@ -121,7 +121,7 @@ public class ProfesionalService {
                 return mapProfesional(rs);
             }
         } catch (SQLException e) {
-            logger.error("Error al obtener profesional por cédula", e);
+            logger.error("Error al obtener profesional por cedula", e);
         }
 
         return null;

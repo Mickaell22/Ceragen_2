@@ -50,13 +50,12 @@
                 <StackPane VBox.vgrow="ALWAYS">
                     <TableView fx:id="tableClientes" styleClass="table-view">
                         <columns>
-                            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
-                            <TableColumn fx:id="colCedula" text="Cedula" prefWidth="120"/>
-                            <TableColumn fx:id="colNombres" text="Nombres" prefWidth="150"/>
-                            <TableColumn fx:id="colApellidos" text="Apellidos" prefWidth="150"/>
-                            <TableColumn fx:id="colTelefono" text="Telefono" prefWidth="120"/>
+                            <TableColumn fx:id="colCedula" text="Cedula" prefWidth="130"/>
+                            <TableColumn fx:id="colNombres" text="Nombres" prefWidth="180"/>
+                            <TableColumn fx:id="colApellidos" text="Apellidos" prefWidth="180"/>
+                            <TableColumn fx:id="colTelefono" text="Telefono" prefWidth="130"/>
                             <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
-                            <TableColumn fx:id="colFechaRegistro" text="Fecha Registro" prefWidth="180"/>
+                            <TableColumn fx:id="colFechaRegistro" text="Fecha Registro" prefWidth="150"/>
                             <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="200"/>
                         </columns>
                     </TableView>
