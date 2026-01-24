@@ -1,0 +1,9 @@
+=====================================
+COMANDO PARA ACTUALIZAR EL REPOSITORIO
+=====================================
+
+--- ACTUALIZAR  ---
+
+cd Ceragen_2
+git pull origin main
+
