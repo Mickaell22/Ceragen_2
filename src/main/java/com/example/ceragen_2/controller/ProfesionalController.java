@@ -3,7 +3,6 @@ package com.example.ceragen_2.controller;
 import com.example.ceragen_2.model.Profesional;
 import com.example.ceragen_2.service.ProfesionalService;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -104,9 +103,6 @@ public final class ProfesionalController {
     /** Tabla principal de profesionales. */
     @FXML
     private TableView<Profesional> tableProfesionales;
-    /** Columna ID. */
-    @FXML
-    private TableColumn<Profesional, Integer> colId;
     /** Columna cédula. */
     @FXML
     private TableColumn<Profesional, String> colCedula;
@@ -134,9 +130,6 @@ public final class ProfesionalController {
     /** Columna estado activo. */
     @FXML
     private TableColumn<Profesional, String> colActivo;
-    /** Columna usuario asociado. */
-    @FXML
-    private TableColumn<Profesional, String> colUsuario;
     /** Columna de botones de acción. */
     @FXML
     private TableColumn<Profesional, Void> colAcciones;
@@ -284,11 +277,7 @@ public final class ProfesionalController {
      * Configura las columnas de la tabla de profesionales.
      */
     private void configurarTabla() {
-        colId.setCellValueFactory(
-                cellData -> new ReadOnlyObjectWrapper<>(
-                        cellData.getValue().getId()
-                )
-        );
+
 
         colCedula.setCellValueFactory(
                 cellData -> new SimpleStringProperty(
@@ -375,14 +364,6 @@ public final class ProfesionalController {
                 }
         );
 
-        colUsuario.setCellValueFactory(
-                cellData -> {
-                    Integer usuarioId = cellData.getValue().getUsuarioId();
-                    String textoUsuario =
-                            usuarioId == null ? "" : "ID " + usuarioId;
-                    return new SimpleStringProperty(textoUsuario);
-                }
-        );
 
         configurarColumnaAcciones();
         tableProfesionales.setItems(profesionales);

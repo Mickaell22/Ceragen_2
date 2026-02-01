@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
@@ -20,7 +19,9 @@
     <!-- TabPane -->
     <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" styleClass="content-area">
 
-        <!-- Tab Listar -->
+        <!-- =========================
+             TAB LISTAR
+        ========================== -->
         <Tab text="Listar">
             <VBox spacing="15" style="-fx-padding: 20;">
 
@@ -67,7 +68,7 @@
 
                     </HBox>
 
-                    <!-- Botones de acciones de filtros -->
+                    <!-- Botones -->
                     <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
                         <Button text="Nuevo Profesional" onAction="#handleNuevoProfesional"
                                 styleClass="btn, btn-success"
@@ -76,17 +77,18 @@
                         <Button text="Buscar" onAction="#handleBuscar"
                                 styleClass="btn, btn-primary"
                                 style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
+
                         <Button text="Limpiar" onAction="#handleLimpiarFiltros"
                                 styleClass="btn, btn-secondary"
                                 style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
                     </HBox>
                 </VBox>
 
-                <!-- Tabla Profesionales con indicador de carga -->
+                <!-- Tabla -->
                 <StackPane VBox.vgrow="ALWAYS">
                     <TableView fx:id="tableProfesionales" styleClass="table-view">
                         <columns>
-                            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                            <!-- ID y Usuario ELIMINADOS -->
                             <TableColumn fx:id="colCedula" text="Cédula" prefWidth="100"/>
                             <TableColumn fx:id="colNombres" text="Nombres" prefWidth="160"/>
                             <TableColumn fx:id="colApellidos" text="Apellidos" prefWidth="160"/>
@@ -96,12 +98,11 @@
                             <TableColumn fx:id="colNumeroLicencia" text="N° Licencia" prefWidth="120"/>
                             <TableColumn fx:id="colModalidad" text="Modalidad" prefWidth="120"/>
                             <TableColumn fx:id="colActivo" text="Activo" prefWidth="80"/>
-                            <TableColumn fx:id="colUsuario" text="Usuario" prefWidth="100"/>
                             <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="220"/>
                         </columns>
                     </TableView>
 
-                    <!-- Indicador de carga -->
+                    <!-- Loading -->
                     <VBox fx:id="loadingIndicator" alignment="CENTER" spacing="15"
                           styleClass="loading-overlay" visible="false">
                         <ProgressIndicator prefWidth="60" prefHeight="60"/>
@@ -145,7 +146,9 @@
             </VBox>
         </Tab>
 
-        <!-- Tab Crear -->
+        <!-- =========================
+             TAB CREAR
+        ========================== -->
         <Tab text="Crear" fx:id="tabCrear">
             <ScrollPane fitToWidth="true" styleClass="content-area">
                 <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
@@ -202,7 +205,7 @@
                             </VBox>
                         </HBox>
 
-                        <!-- Número Licencia (Usuario eliminado en Crear) -->
+                        <!-- Número Licencia -->
                         <HBox spacing="15">
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Text text="Número de Licencia" styleClass="text-primary-dark"
@@ -244,7 +247,9 @@
             </ScrollPane>
         </Tab>
 
-        <!-- Tab Editar -->
+        <!-- =========================
+             TAB EDITAR
+        ========================== -->
         <Tab text="Editar" fx:id="tabEditar" disable="true">
             <ScrollPane fitToWidth="true" styleClass="content-area">
                 <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
@@ -252,7 +257,7 @@
 
                         <Text text="Editar Profesional" styleClass="title-lg"/>
 
-                        <!-- ID -->
+                        <!-- ID (oculto) -->
                         <VBox spacing="8" visible="false" managed="false">
                             <Text text="ID" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
                             <TextField fx:id="txtEditarId" editable="false" styleClass="disabled-field"
@@ -281,7 +286,7 @@
                                        style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                         </VBox>
 
-                        <!-- Especialidad y Usuario -->
+                        <!-- Especialidad y Usuario (opcional) -->
                         <HBox spacing="15">
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Text text="Especialidad" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
@@ -315,7 +320,7 @@
                             </VBox>
                         </HBox>
 
-                        <!-- Número Licencia y Modalidad / Estado -->
+                        <!-- Número Licencia y Modalidad -->
                         <HBox spacing="15">
                             <VBox spacing="8" HBox.hgrow="ALWAYS">
                                 <Text text="Número de Licencia" styleClass="text-primary-dark"
