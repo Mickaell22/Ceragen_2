@@ -516,7 +516,7 @@ public class CitasController {
 
         txtEditarMotivo.setText(cita.getMotivo());
         cmbEditarEstado.setValue(cita.getEstado());
-        txtEditarObservaciones.setText(cita.getObservaciones());
+        txtEditarObservaciones.setText(cita.getObservaciones() != null ? cita.getObservaciones() : "");
 
         // Limpiar estilos de validacion previos
         limpiarValidacionesFormulario();
@@ -584,7 +584,8 @@ public class CitasController {
         final String horaStr = txtEditarHora.getText().trim();
         final String motivo = txtEditarMotivo.getText().trim();
         final String estado = cmbEditarEstado.getValue();
-        final String observaciones = txtEditarObservaciones.getText().trim();
+        final String observacionesText = txtEditarObservaciones.getText();
+        final String observaciones = observacionesText != null ? observacionesText.trim() : null;
         final Integer citaId = citaEnEdicion.getId();
 
         final LocalTime hora = LocalTime.parse(horaStr, TIME_FORMATTER);
