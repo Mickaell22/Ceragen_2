@@ -14,13 +14,27 @@
         <Text text="Crear Nueva Cita" styleClass="title-lg"/>
 
         <VBox spacing="8">
-            <Text text="Paciente" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-            <ComboBox fx:id="cmbCrearPaciente" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+            <Text text="Paciente (buscar por cedula)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+            <HBox spacing="10">
+                <TextField fx:id="txtCrearCedulaPaciente" promptText="Ingrese cedula..." prefWidth="150" style="-fx-pref-height: 40; -fx-font-size: 13px;"/>
+                <Button text="Buscar" onAction="#handleBuscarPaciente"
+                        styleClass="btn, btn-secondary"
+                        style="-fx-pref-width: 80; -fx-pref-height: 40;"/>
+                <Label fx:id="lblCrearPaciente" text="Sin seleccionar" styleClass="text-primary-dark"
+                       style="-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;"/>
+            </HBox>
         </VBox>
 
         <VBox spacing="8">
-            <Text text="Profesional" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-            <ComboBox fx:id="cmbCrearProfesional" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+            <Text text="Profesional (buscar por cedula)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+            <HBox spacing="10">
+                <TextField fx:id="txtCrearCedulaProfesional" promptText="Ingrese cedula..." prefWidth="150" style="-fx-pref-height: 40; -fx-font-size: 13px;"/>
+                <Button text="Buscar" onAction="#handleBuscarProfesional"
+                        styleClass="btn, btn-secondary"
+                        style="-fx-pref-width: 80; -fx-pref-height: 40;"/>
+                <Label fx:id="lblCrearProfesional" text="Sin seleccionar" styleClass="text-primary-dark"
+                       style="-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;"/>
+            </HBox>
         </VBox>
 
         <HBox spacing="15">
@@ -30,8 +44,32 @@
             </VBox>
 
             <VBox spacing="8" HBox.hgrow="ALWAYS">
-                <Text text="Hora (HH:mm)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                <TextField fx:id="txtCrearHora" promptText="Ej: 14:30" prefWidth="312" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                <Text text="Hora" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                <ComboBox fx:id="cmbCrearHora" prefWidth="312" style="-fx-pref-height: 40; -fx-font-size: 14px;" promptText="Seleccione hora...">
+                    <items>
+                        <javafx.collections.FXCollections fx:factory="observableArrayList">
+                            <java.lang.String fx:value="08:00"/>
+                            <java.lang.String fx:value="08:30"/>
+                            <java.lang.String fx:value="09:00"/>
+                            <java.lang.String fx:value="09:30"/>
+                            <java.lang.String fx:value="10:00"/>
+                            <java.lang.String fx:value="10:30"/>
+                            <java.lang.String fx:value="11:00"/>
+                            <java.lang.String fx:value="11:30"/>
+                            <java.lang.String fx:value="12:00"/>
+                            <java.lang.String fx:value="12:30"/>
+                            <java.lang.String fx:value="13:00"/>
+                            <java.lang.String fx:value="13:30"/>
+                            <java.lang.String fx:value="14:00"/>
+                            <java.lang.String fx:value="14:30"/>
+                            <java.lang.String fx:value="15:00"/>
+                            <java.lang.String fx:value="15:30"/>
+                            <java.lang.String fx:value="16:00"/>
+                            <java.lang.String fx:value="16:30"/>
+                            <java.lang.String fx:value="17:00"/>
+                        </javafx.collections.FXCollections>
+                    </items>
+                </ComboBox>
             </VBox>
         </HBox>
 

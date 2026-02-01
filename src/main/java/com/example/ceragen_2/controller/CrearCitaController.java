@@ -8,16 +8,17 @@ import com.example.ceragen_2.service.EspecialidadService;
 import com.example.ceragen_2.service.PacienteService;
 import com.example.ceragen_2.service.ProfesionalService;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.List;
 
 public class CrearCitaController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CrearCitaController.class);
@@ -35,60 +34,95 @@ public class CrearCitaController {
     private final PacienteService pacienteService = PacienteService.getInstance();
     private final ProfesionalService profesionalService = ProfesionalService.getInstance();
 
-    @FXML private ComboBox<Paciente> cmbCrearPaciente;
-    @FXML private ComboBox<Profesional> cmbCrearProfesional;
+    @FXML private TextField txtCrearCedulaPaciente;
+    @FXML private Label lblCrearPaciente;
+    @FXML private TextField txtCrearCedulaProfesional;
+    @FXML private Label lblCrearProfesional;
     @FXML private DatePicker dpCrearFecha;
-    @FXML private TextField txtCrearHora;
+    @FXML private ComboBox<String> cmbCrearHora;
     @FXML private TextArea txtCrearMotivo;
     @FXML private Button btnCrearCita;
     @FXML private Button btnLimpiar;
 
-    private List<Paciente> listaPacientes;
-    private List<Profesional> listaProfesionales;
-    private FacturaController facturaController; // Referencia al controlador padre
+    private Paciente pacienteSeleccionado;
+    private Profesional profesionalSeleccionado;
+    private FacturaController facturaController;
 
     @FXML
     public void initialize() {
         LOGGER.info("Inicializando CrearCitaController");
-        cargarCatalogos();
-        // Configurar fecha actual por defecto
-        dpCrearFecha.setValue(LocalDate.now());
+        configurarDatePicker();
     }
 
-    // Método para recibir la referencia del FacturaController
+    private void configurarDatePicker() {
+        final LocalDate manana = LocalDate.now().plusDays(1);
+        dpCrearFecha.setValue(manana);
+
+        final Callback<DatePicker, DateCell> dayCellFactory = new Callback<>() {
+            @Override
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(final LocalDate item, final boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item.isBefore(manana)) {
+                            setDisable(true);
+                            setStyle("-fx-background-color: #d3d3d3;");
+                        }
+                    }
+                };
+            }
+        };
+        dpCrearFecha.setDayCellFactory(dayCellFactory);
+    }
+
     public void setFacturaController(final FacturaController facturaController) {
         this.facturaController = facturaController;
         LOGGER.info("Referencia de FacturaController recibida");
     }
 
-    private void cargarCatalogos() {
-        final Task<CatalogosResult> task = new Task<>() {
-            @Override
-            protected CatalogosResult call() {
-                final List<Paciente> pacientes = pacienteService.getAllPacientes();
-                final List<Profesional> profesionales = profesionalService.getAllProfesionales();
-                return new CatalogosResult(pacientes, profesionales);
-            }
-        };
+    @FXML
+    @SuppressWarnings("unused")
+    private void handleBuscarPaciente() {
+        final String cedula = txtCrearCedulaPaciente.getText().trim();
+        if (cedula.isEmpty()) {
+            mostrarAlerta("Campo vacio", "Ingrese una cedula para buscar");
+            return;
+        }
 
-        task.setOnSucceeded(event -> {
-            final CatalogosResult resultado = task.getValue();
-            listaPacientes = resultado.pacientes;
-            listaProfesionales = resultado.profesionales;
+        final Paciente paciente = pacienteService.getPacienteByCedula(cedula);
+        if (paciente != null) {
+            pacienteSeleccionado = paciente;
+            lblCrearPaciente.setText(paciente.getNombreCompleto());
+            lblCrearPaciente.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #d4edda; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
+        } else {
+            pacienteSeleccionado = null;
+            lblCrearPaciente.setText("No encontrado");
+            lblCrearPaciente.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #f8d7da; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
+            mostrarAlerta("No encontrado", "No se encontro paciente con cedula: " + cedula);
+        }
+    }
 
-            cmbCrearPaciente.setItems(FXCollections.observableArrayList(listaPacientes));
-            cmbCrearProfesional.setItems(FXCollections.observableArrayList(listaProfesionales));
+    @FXML
+    @SuppressWarnings("unused")
+    private void handleBuscarProfesional() {
+        final String cedula = txtCrearCedulaProfesional.getText().trim();
+        if (cedula.isEmpty()) {
+            mostrarAlerta("Campo vacio", "Ingrese una cedula para buscar");
+            return;
+        }
 
-            LOGGER.info("Catálogos cargados: {} pacientes, {} profesionales",
-                    listaPacientes.size(), listaProfesionales.size());
-        });
-
-        task.setOnFailed(event -> {
-            LOGGER.error("Error al cargar catálogos", task.getException());
-            mostrarAlerta("Error", "No se pudieron cargar los catálogos");
-        });
-
-        new Thread(task).start();
+        final Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
+        if (profesional != null) {
+            profesionalSeleccionado = profesional;
+            lblCrearProfesional.setText(profesional.getNombreCompleto());
+            lblCrearProfesional.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #d4edda; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
+        } else {
+            profesionalSeleccionado = null;
+            lblCrearProfesional.setText("No encontrado");
+            lblCrearProfesional.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #f8d7da; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
+            mostrarAlerta("No encontrado", "No se encontro profesional con cedula: " + cedula);
+        }
     }
 
     @FXML
@@ -101,36 +135,21 @@ public class CrearCitaController {
         }
 
         try {
-            final Paciente paciente = cmbCrearPaciente.getValue();
-            final Profesional profesional = cmbCrearProfesional.getValue();
+            final Paciente paciente = pacienteSeleccionado;
+            final Profesional profesional = profesionalSeleccionado;
             final LocalDate fecha = dpCrearFecha.getValue();
-            final LocalTime hora = LocalTime.parse(txtCrearHora.getText().trim(), TIME_FORMATTER);
+            final LocalTime hora = LocalTime.parse(cmbCrearHora.getValue(), TIME_FORMATTER);
             final LocalDateTime fechaHora = LocalDateTime.of(fecha, hora);
             final String motivo = txtCrearMotivo.getText().trim();
 
-            // DEBUG: Mostrar todos los valores
-            //LOGGER.info("DEBUG - Paciente ID: {}", paciente != null ? paciente.getId() : "NULL");
-            //LOGGER.info("DEBUG - Profesional ID: {}", profesional != null ? profesional.getId() : "NULL");
-            //LOGGER.info("DEBUG - Profesional Especialidad: {}", profesional != null ? profesional.getEspecialidadId() : "NULL");
-            //LOGGER.info("DEBUG - FechaHora: {}", fechaHora);
-            //LOGGER.info("DEBUG - Motivo: {}", motivo);
-
-            // Obtener el costo de la especialidad
             final EspecialidadService especialidadService = EspecialidadService.getInstance();
-            //LOGGER.info("DEBUG - EspecialidadService: {}", especialidadService != null ? "especialidadService Activo" : "NULL");
-            //LOGGER.info("DEBUG - profesional: {}", profesional != null ? "existe profesional" : "NULL");
-            //LOGGER.info("DEBUG - ID de la especialidad: {}", profesional.getEspecialidadId() != null ? "existe especialidad" : "NULL");
             final Especialidad especialidad = especialidadService.getEspecialidadById(profesional.getEspecialidadId());
-
-            //LOGGER.info("DEBUG - Especialidad: {}", especialidad != null ? especialidad.getNombre() : "NULL");
-            //LOGGER.info("DEBUG - Costo: {}", especialidad != null ? especialidad.getCostoConsulta() : "NULL");
 
             if (especialidad == null) {
                 mostrarAlerta("Error", "No se pudo obtener el costo de la especialidad");
                 return;
             }
 
-            // Crear nueva cita
             final Cita nuevaCita = new Cita();
             nuevaCita.setPacienteId(paciente.getId());
             nuevaCita.setProfesionalId(profesional.getId());
@@ -140,11 +159,9 @@ public class CrearCitaController {
             nuevaCita.setPacienteNombre(paciente.getNombreCompleto());
             nuevaCita.setProfesionalNombre(profesional.getNombreCompleto());
 
-            // DEBUG: Verificar la cita creada
-            LOGGER.info("DEBUG - Cita creada - PacienteID: {}, ProfesionalID: {}, Costo: {}",
+            LOGGER.info("Cita creada - PacienteID: {}, ProfesionalID: {}, Costo: {}",
                     nuevaCita.getPacienteId(), nuevaCita.getProfesionalId(), nuevaCita.getCosto());
 
-            // Agregar cita a la factura
             if (facturaController != null) {
                 facturaController.agregarCita(nuevaCita);
                 LOGGER.info("Cita agregada exitosamente a la factura");
@@ -154,15 +171,11 @@ public class CrearCitaController {
                 return;
             }
 
-            // Mostrar éxito y cerrar
-            mostrarAlerta("Éxito", "Cita creada correctamente\nCosto: $" + nuevaCita.getCosto());
+            mostrarAlerta("Exito", "Cita creada correctamente\nCosto: $" + nuevaCita.getCosto());
             cerrarVentana();
 
-        } catch (DateTimeParseException e) {
-            LOGGER.error("Error de formato de hora: {}", e.getMessage());
-            mostrarAlerta("Error", "Formato de hora inválido. Use HH:mm (ej: 14:30)");
         } catch (Exception e) {
-            LOGGER.error("Error detallado al crear cita:", e);
+            LOGGER.error("Error al crear cita:", e);
             mostrarAlerta("Error", "No se pudo crear la cita: " + e.getMessage());
         }
     }
@@ -171,40 +184,40 @@ public class CrearCitaController {
     @SuppressWarnings("unused")
     private void handleLimpiar() {
         LOGGER.info("Limpiando formulario de cita");
-        cmbCrearPaciente.setValue(null);
-        cmbCrearProfesional.setValue(null);
-        dpCrearFecha.setValue(LocalDate.now());
-        txtCrearHora.clear();
+        pacienteSeleccionado = null;
+        profesionalSeleccionado = null;
+        txtCrearCedulaPaciente.clear();
+        txtCrearCedulaProfesional.clear();
+        lblCrearPaciente.setText("Sin seleccionar");
+        lblCrearPaciente.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
+        lblCrearProfesional.setText("Sin seleccionar");
+        lblCrearProfesional.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
+        dpCrearFecha.setValue(LocalDate.now().plusDays(1));
+        cmbCrearHora.setValue(null);
         txtCrearMotivo.clear();
     }
 
     private boolean validarCampos() {
-        if (cmbCrearPaciente.getValue() == null) {
-            mostrarAlerta("Error", "Seleccione un paciente");
+        if (pacienteSeleccionado == null) {
+            mostrarAlerta("Error", "Debe buscar y seleccionar un paciente por cedula");
+            lblCrearPaciente.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #f8d7da; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
             return false;
         }
-        if (cmbCrearProfesional.getValue() == null) {
-            mostrarAlerta("Error", "Seleccione un profesional");
+        if (profesionalSeleccionado == null) {
+            mostrarAlerta("Error", "Debe buscar y seleccionar un profesional por cedula");
+            lblCrearProfesional.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #f8d7da; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
             return false;
         }
         if (dpCrearFecha.getValue() == null) {
             mostrarAlerta("Error", "Seleccione una fecha");
             return false;
         }
-        if (txtCrearHora.getText().isBlank()) {
-            mostrarAlerta("Error", "Ingrese la hora");
+        if (cmbCrearHora.getValue() == null) {
+            mostrarAlerta("Error", "Seleccione una hora");
             return false;
         }
         if (txtCrearMotivo.getText().isBlank()) {
             mostrarAlerta("Error", "Ingrese el motivo de la consulta");
-            return false;
-        }
-
-        // Validar formato de hora
-        try {
-            LocalTime.parse(txtCrearHora.getText().trim(), TIME_FORMATTER);
-        } catch (DateTimeParseException e) {
-            mostrarAlerta("Error", "Formato de hora inválido. Use HH:mm (ej: 14:30)");
             return false;
         }
 
@@ -214,13 +227,11 @@ public class CrearCitaController {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     private void cerrarVentana() {
         try {
-            // Obtener el Stage desde cualquier nodo de la escena
-            final Stage stage = (Stage) txtCrearMotivo.getScene().getWindow(); // Usa cualquier control que sí esté inicializado
+            final Stage stage = (Stage) txtCrearMotivo.getScene().getWindow();
             stage.close();
             LOGGER.info("Ventana cerrada exitosamente");
         } catch (Exception e) {
             LOGGER.error("Error al cerrar ventana: {}", e.getMessage());
-            // Fallback: cerrar la aplicación si no se puede obtener el stage
             Platform.exit();
         }
     }
@@ -231,8 +242,5 @@ public class CrearCitaController {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
-    }
-
-    private record CatalogosResult(List<Paciente> pacientes, List<Profesional> profesionales) {
     }
 }

@@ -26,33 +26,27 @@
                 <VBox spacing="10" styleClass="card">
                     <HBox spacing="15" alignment="CENTER_LEFT">
                         <VBox spacing="5">
-                            <Text text="Paciente" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
-                            <ComboBox fx:id="cmbPacienteFiltro" prefWidth="200" style="-fx-pref-height: 35;"/>
-                        </VBox>
-
-                        <VBox spacing="5" alignment="BOTTOM_LEFT">
-                            <Text text="O buscar por cédula" styleClass="text-neutral-medium" style="-fx-font-size: 11px;"/>
+                            <Text text="Paciente (buscar por cedula)" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
                             <HBox spacing="5">
-                                <TextField fx:id="txtFiltroCedulaPaciente" promptText="Cédula..." prefWidth="120" style="-fx-pref-height: 35;"/>
+                                <TextField fx:id="txtFiltroCedulaPaciente" promptText="Cedula..." prefWidth="120" style="-fx-pref-height: 35;"/>
                                 <Button text="Buscar" onAction="#handleBuscarPacienteFiltro"
                                         styleClass="btn, btn-secondary"
                                         style="-fx-pref-width: 80; -fx-pref-height: 35;"/>
                             </HBox>
+                            <Label fx:id="lblPacienteFiltro" text="Sin seleccionar" styleClass="text-primary-dark"
+                                   style="-fx-font-size: 11px; -fx-padding: 5; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 200;"/>
                         </VBox>
 
                         <VBox spacing="5">
-                            <Text text="Profesional" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
-                            <ComboBox fx:id="cmbProfesionalFiltro" prefWidth="200" style="-fx-pref-height: 35;"/>
-                        </VBox>
-
-                        <VBox spacing="5" alignment="BOTTOM_LEFT">
-                            <Text text="O buscar por cédula" styleClass="text-neutral-medium" style="-fx-font-size: 11px;"/>
+                            <Text text="Profesional (buscar por cedula)" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
                             <HBox spacing="5">
-                                <TextField fx:id="txtFiltroCedulaProfesional" promptText="Cédula..." prefWidth="120" style="-fx-pref-height: 35;"/>
+                                <TextField fx:id="txtFiltroCedulaProfesional" promptText="Cedula..." prefWidth="120" style="-fx-pref-height: 35;"/>
                                 <Button text="Buscar" onAction="#handleBuscarProfesionalFiltro"
                                         styleClass="btn, btn-secondary"
                                         style="-fx-pref-width: 80; -fx-pref-height: 35;"/>
                             </HBox>
+                            <Label fx:id="lblProfesionalFiltro" text="Sin seleccionar" styleClass="text-primary-dark"
+                                   style="-fx-font-size: 11px; -fx-padding: 5; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 200;"/>
                         </VBox>
 
                         <VBox spacing="5">
@@ -85,12 +79,11 @@
                 <StackPane VBox.vgrow="ALWAYS">
                     <TableView fx:id="tableCitas" styleClass="table-view">
                         <columns>
-                            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
-                            <TableColumn fx:id="colPaciente" text="Paciente" prefWidth="200"/>
-                            <TableColumn fx:id="colProfesional" text="Profesional" prefWidth="200"/>
+                            <TableColumn fx:id="colPaciente" text="Paciente" prefWidth="220"/>
+                            <TableColumn fx:id="colProfesional" text="Profesional" prefWidth="220"/>
                             <TableColumn fx:id="colFechaHora" text="Fecha/Hora" prefWidth="150"/>
                             <TableColumn fx:id="colEstado" text="Estado" prefWidth="120"/>
-                            <TableColumn fx:id="colMotivo" text="Motivo" prefWidth="200"/>
+                            <TableColumn fx:id="colMotivo" text="Motivo" prefWidth="220"/>
                             <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="380"/>
                         </columns>
                     </TableView>
@@ -221,26 +214,26 @@
                         </VBox>
 
                         <VBox spacing="8">
-                            <Text text="Paciente" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                            <ComboBox fx:id="cmbEditarPaciente" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
-                            <HBox spacing="10" style="-fx-padding: 5 0 0 0;">
-                                <Text text="O buscar por cédula:" styleClass="text-neutral-medium" style="-fx-font-size: 12px; -fx-padding: 8 0 0 0;"/>
-                                <TextField fx:id="txtEditarCedulaPaciente" promptText="Ingrese cédula..." prefWidth="150" style="-fx-pref-height: 35; -fx-font-size: 13px;"/>
+                            <Text text="Paciente (buscar por cedula)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <HBox spacing="10">
+                                <TextField fx:id="txtEditarCedulaPaciente" promptText="Ingrese cedula..." prefWidth="150" style="-fx-pref-height: 40; -fx-font-size: 13px;"/>
                                 <Button text="Buscar" onAction="#handleBuscarPacienteEditar"
                                         styleClass="btn, btn-secondary"
-                                        style="-fx-pref-width: 80; -fx-pref-height: 35;"/>
+                                        style="-fx-pref-width: 80; -fx-pref-height: 40;"/>
+                                <Label fx:id="lblEditarPaciente" text="Sin seleccionar" styleClass="text-primary-dark"
+                                       style="-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;"/>
                             </HBox>
                         </VBox>
 
                         <VBox spacing="8">
-                            <Text text="Profesional" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
-                            <ComboBox fx:id="cmbEditarProfesional" prefWidth="640" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
-                            <HBox spacing="10" style="-fx-padding: 5 0 0 0;">
-                                <Text text="O buscar por cédula:" styleClass="text-neutral-medium" style="-fx-font-size: 12px; -fx-padding: 8 0 0 0;"/>
-                                <TextField fx:id="txtEditarCedulaProfesional" promptText="Ingrese cédula..." prefWidth="150" style="-fx-pref-height: 35; -fx-font-size: 13px;"/>
+                            <Text text="Profesional (buscar por cedula)" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <HBox spacing="10">
+                                <TextField fx:id="txtEditarCedulaProfesional" promptText="Ingrese cedula..." prefWidth="150" style="-fx-pref-height: 40; -fx-font-size: 13px;"/>
                                 <Button text="Buscar" onAction="#handleBuscarProfesionalEditar"
                                         styleClass="btn, btn-secondary"
-                                        style="-fx-pref-width: 80; -fx-pref-height: 35;"/>
+                                        style="-fx-pref-width: 80; -fx-pref-height: 40;"/>
+                                <Label fx:id="lblEditarProfesional" text="Sin seleccionar" styleClass="text-primary-dark"
+                                       style="-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;"/>
                             </HBox>
                         </VBox>
 

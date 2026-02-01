@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.ceragen_2.controller.ModalClienteController"
+            spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;"
+            stylesheets="@../css/styles.css">
+
+    <VBox styleClass="card-lg" style="-fx-max-width: 700;">
+        <Text text="Agregar cliente" styleClass="title-lg"/>
+
+            <!-- Filtros -->
+            <HBox spacing="15" styleClass="card">
+                <VBox spacing="5">
+                    <Text text="Buscar por Cedula, Nombre o Apellido" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
+                    <TextField fx:id="txtBuscar" promptText="Ingrese criterio de busqueda..." prefWidth="350"/>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <VBox spacing="5" alignment="BOTTOM_RIGHT">
+                    <Text text=" " style="-fx-font-size: 12px;"/>
+                    <Button text="Buscar" onAction="#handleBuscar"
+                            styleClass="btn, btn-primary"
+                            style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
+                </VBox>
+
+                <VBox spacing="5" alignment="BOTTOM_RIGHT">
+                    <Text text=" " style="-fx-font-size: 12px;"/>
+                    <Button text="Limpiar" onAction="#handleLimpiarFiltros"
+                            styleClass="btn, btn-secondary"
+                            style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Tabla de Clientes con indicador de carga -->
+            <StackPane VBox.vgrow="ALWAYS">
+                <TableView fx:id="tableClientes" styleClass="table-view">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                        <TableColumn fx:id="colCedula" text="Cedula" prefWidth="120"/>
+                        <TableColumn fx:id="colNombres" text="Nombres" prefWidth="150"/>
+                        <TableColumn fx:id="colApellidos" text="Apellidos" prefWidth="150"/>
+                        <TableColumn fx:id="colTelefono" text="Telefono" prefWidth="120"/>
+                        <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
+                        <TableColumn fx:id="colFechaRegistro" text="Fecha Registro" prefWidth="180"/>
+                        <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="200"/>
+                    </columns>
+                </TableView>
+
+                <!-- Indicador de carga -->
+                <VBox fx:id="loadingIndicator" alignment="CENTER" spacing="15"
+                      styleClass="loading-overlay" visible="false">
+                    <ProgressIndicator prefWidth="60" prefHeight="60"/>
+                    <Text text="Cargando datos..." styleClass="title-lg"/>
+                </VBox>
+            </StackPane>
+    </VBox>
+
+</VBox>

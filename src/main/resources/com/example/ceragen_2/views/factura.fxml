@@ -75,7 +75,7 @@
 
                         <HBox spacing="10" HBox.hgrow="ALWAYS">
                             <Label text="Ciudad:" styleClass="text-primary-dark-control" minWidth="100"/>
-                            <TextField fx:id="txtCiudadFacturaNueva" HBox.hgrow="ALWAYS"/>
+                            <TextField fx:id="txtCiudadFacturaNueva" editable="false"  styleClass="disabled-field" HBox.hgrow="ALWAYS"/>
                         </HBox>
                     </HBox>
 
@@ -83,13 +83,16 @@
                     <HBox spacing="20" alignment="CENTER">
                         <HBox spacing="10" HBox.hgrow="ALWAYS">
                             <Label text="Cliente:" styleClass="text-primary-dark-control" minWidth="150"/>
-                            <ComboBox fx:id="cmbClienteFacturaNueva" prefWidth="150"/>
+                            <TextField fx:id="txtClienteSeleccionadoModal" HBox.hgrow="ALWAYS" editable="false" styleClass="disabled-field"/>
+                            <Button fx:id="btnAbrirModalCliente" text="Buscar cliente"
+                                    styleClass="btn, btn-secondary" onAction="#handleModalCliente"
+                                    style="-fx-pref-width: 150; -fx-pref-height: 40;"/>
                         </HBox>
                     </HBox>
 
                     <!-- Botón para agregar cita -->
                     <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-padding: 10 0;">
-                        <Button text="Agregar Cita" onAction="#handleModal"
+                        <Button text="Agregar Cita" onAction="#handleModalCrearCita"
                                 styleClass="btn, btn-success"
                                 style="-fx-pref-width: 150; -fx-pref-height: 35;"/>
                     </HBox>

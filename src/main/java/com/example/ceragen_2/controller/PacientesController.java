@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -175,7 +176,17 @@ public class PacientesController {
         colId.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getId().toString()));
         colCedula.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getCedula()));
         colNombreCompleto.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNombreCompleto()));
-        colGenero.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getGenero() == null ? "" : data.getValue().getGenero()));
+        colGenero.setCellValueFactory(data -> {
+            String genero = data.getValue().getGenero();
+            if (genero == null) {
+                return new SimpleStringProperty("");
+            }
+            return switch (genero) {
+                case "M" -> new SimpleStringProperty("Masculino");
+                case "F" -> new SimpleStringProperty("Femenino");
+                default -> new SimpleStringProperty(genero);
+            };
+        });
         colTelefono.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTelefono() == null ? "" : data.getValue().getTelefono()));
         colEmail.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getEmail() == null ? "" : data.getValue().getEmail()));
         colFechaRegistro.setCellValueFactory(data -> new SimpleStringProperty(
@@ -338,18 +349,55 @@ public class PacientesController {
         final String cedula = txtCrearCedula.getText().trim();
         final String nombres = txtCrearNombres.getText().trim();
         final String apellidos = txtCrearApellidos.getText().trim();
-        final String genero = cmbCrearGenero.getValue();
+        final String generoSeleccionado = cmbCrearGenero.getValue();
+        final String telefono = txtCrearTelefono.getText().trim();
+        final String grupoSanguineo = txtCrearGrupoSanguineo.getText().trim();
+
+        StringBuilder errores = new StringBuilder();
 
         if (cedula.isEmpty()) {
-            mostrarAlerta("Error", "La cédula es obligatoria", Alert.AlertType.ERROR);
-            return;
+            errores.append("- La cédula es obligatoria.\n");
+        } else if (cedula.length() < 9 || cedula.length() > 10) {
+            errores.append("- La cédula debe tener entre 9 y 10 dígitos.\n");
         }
         if (nombres.isEmpty()) {
-            mostrarAlerta("Error", "Los nombres son obligatorios", Alert.AlertType.ERROR);
-            return;
+            errores.append("- Los nombres son obligatorios.\n");
         }
         if (apellidos.isEmpty()) {
-            mostrarAlerta("Error", "Los apellidos son obligatorios", Alert.AlertType.ERROR);
+            errores.append("- Los apellidos son obligatorios.\n");
+        }
+
+        LocalDate fechaNacimiento = dpCrearFechaNacimiento.getValue();
+        if (fechaNacimiento == null) {
+            errores.append("- La fecha de nacimiento es obligatoria.\n");
+        } else {
+            LocalDate minimoFecha = LocalDate.now().minusYears(12);
+            if (fechaNacimiento.isAfter(minimoFecha)) {
+                errores.append("- El paciente debe tener al menos 12 años.\n");
+            }
+        }
+
+        if (generoSeleccionado == null || generoSeleccionado.trim().isEmpty()) {
+            errores.append("- El género es obligatorio.\n");
+        }
+
+        if (telefono.isEmpty()) {
+            errores.append("- El teléfono es obligatorio.\n");
+        } else if (telefono.length() != 10) {
+            errores.append("- El teléfono debe tener exactamente 10 dígitos.\n");
+        }
+
+        if (grupoSanguineo.isEmpty()) {
+            errores.append("- El grupo sanguíneo es obligatorio.\n");
+        } else {
+            String gs = grupoSanguineo.toUpperCase();
+            if (!gs.matches("(A|B|AB|O)[+-]")) {
+                errores.append("- El grupo sanguíneo debe ser uno válido (A+, A-, B+, B-, AB+, AB-, O+, O-).\n");
+            }
+        }
+
+        if (errores.length() > 0) {
+            mostrarAlerta("Error en el formulario", errores.toString(), Alert.AlertType.ERROR);
             return;
         }
 
@@ -365,11 +413,20 @@ public class PacientesController {
                 p.setNombres(nombres);
                 p.setApellidos(apellidos);
                 p.setFechaNacimiento(dpCrearFechaNacimiento.getValue());
-                p.setGenero(genero);
-                p.setTelefono(txtCrearTelefono.getText());
+
+                String generoDB = null;
+                if ("Masculino".equals(generoSeleccionado)) {
+                    generoDB = "M";
+                } else if ("Femenino".equals(generoSeleccionado)) {
+                    generoDB = "F";
+                } else {
+                    generoDB = generoSeleccionado;
+                }
+                p.setGenero(generoDB);
+                p.setTelefono(telefono);
                 p.setEmail(txtCrearEmail.getText());
                 p.setDireccion(txtCrearDireccion.getText());
-                p.setGrupoSanguineo(txtCrearGrupoSanguineo.getText());
+                p.setGrupoSanguineo(grupoSanguineo.toUpperCase());
                 p.setAlergias(txtCrearAlergias.getText());
 
                 return pacienteService.crearPaciente(p);
@@ -590,12 +647,55 @@ public class PacientesController {
         final String cedula = txtEditarCedula.getText().trim();
         final String nombres = txtEditarNombres.getText().trim();
         final String apellidos = txtEditarApellidos.getText().trim();
-        if (cedula.isEmpty() || nombres.isEmpty() || apellidos.isEmpty()) {
-            mostrarAlerta(
-                    "Error",
-                    "Cédula, nombres y apellidos son obligatorios",
-                    Alert.AlertType.ERROR
-            );
+        final String telefono = txtEditarTelefono.getText().trim();
+        final String grupoSanguineo = txtEditarGrupoSanguineo.getText().trim();
+
+        StringBuilder errores = new StringBuilder();
+
+        if (cedula.isEmpty()) {
+            errores.append("- La cédula es obligatoria.\n");
+        } else if (cedula.length() < 9 || cedula.length() > 10) {
+            errores.append("- La cédula debe tener entre 9 y 10 dígitos.\n");
+        }
+        if (nombres.isEmpty()) {
+            errores.append("- Los nombres son obligatorios.\n");
+        }
+        if (apellidos.isEmpty()) {
+            errores.append("- Los apellidos son obligatorios.\n");
+        }
+
+        LocalDate fechaNacimiento = dpEditarFechaNacimiento.getValue();
+        if (fechaNacimiento == null) {
+            errores.append("- La fecha de nacimiento es obligatoria.\n");
+        } else {
+            LocalDate minimoFecha = LocalDate.now().minusYears(12);
+            if (fechaNacimiento.isAfter(minimoFecha)) {
+                errores.append("- El paciente debe tener al menos 12 años.\n");
+            }
+        }
+
+        String generoSeleccionadoLocal = cmbEditarGenero.getValue();
+        if (generoSeleccionadoLocal == null || generoSeleccionadoLocal.trim().isEmpty()) {
+            errores.append("- El género es obligatorio.\n");
+        }
+
+        if (telefono.isEmpty()) {
+            errores.append("- El teléfono es obligatorio.\n");
+        } else if (telefono.length() != 10) {
+            errores.append("- El teléfono debe tener exactamente 10 dígitos.\n");
+        }
+
+        if (grupoSanguineo.isEmpty()) {
+            errores.append("- El grupo sanguíneo es obligatorio.\n");
+        } else {
+            String gs = grupoSanguineo.toUpperCase();
+            if (!gs.matches("(A|B|AB|O)[+-]")) {
+                errores.append("- El grupo sanguíneo debe ser uno válido (A+, A-, B+, B-, AB+, AB-, O+, O-).\n");
+            }
+        }
+
+        if (errores.length() > 0) {
+            mostrarAlerta("Error en el formulario", errores.toString(), Alert.AlertType.ERROR);
             return;
         }
         loadingIndicator.setVisible(true);
@@ -609,11 +709,21 @@ public class PacientesController {
                 p.setNombres(nombres);
                 p.setApellidos(apellidos);
                 p.setFechaNacimiento(dpEditarFechaNacimiento.getValue());
-                p.setGenero(cmbEditarGenero.getValue());
-                p.setTelefono(txtEditarTelefono.getText());
+
+                String generoSeleccionado = generoSeleccionadoLocal;
+                String generoDB = null;
+                if ("Masculino".equals(generoSeleccionado)) {
+                    generoDB = "M";
+                } else if ("Femenino".equals(generoSeleccionado)) {
+                    generoDB = "F";
+                } else {
+                    generoDB = generoSeleccionado;
+                }
+                p.setGenero(generoDB);
+                p.setTelefono(telefono);
                 p.setEmail(txtEditarEmail.getText());
                 p.setDireccion(txtEditarDireccion.getText());
-                p.setGrupoSanguineo(txtEditarGrupoSanguineo.getText());
+                p.setGrupoSanguineo(grupoSanguineo.toUpperCase());
                 p.setAlergias(txtEditarAlergias.getText());
                 return pacienteService.actualizarPaciente(p);
             }
@@ -695,7 +805,13 @@ public class PacientesController {
 
         UnaryOperator<TextFormatter.Change> digitsFilter = change -> {
             String newText = change.getControlNewText();
-            return newText.matches("\\d*") ? change : null;
+            if (!newText.matches("\\d*")) {
+                return null;
+            }
+            if (newText.length() > 10) {
+                return null;
+            }
+            return change;
         };
         Pattern lettersPattern = Pattern.compile("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]*");
         UnaryOperator<TextFormatter.Change> lettersFilter = change -> {

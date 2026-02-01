@@ -10,12 +10,12 @@ import com.example.ceragen_2.service.ProfesionalService;
 import com.example.ceragen_2.util.DialogUtil;
 import com.example.ceragen_2.util.FormValidationUtil;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -26,6 +26,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.util.Callback;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -60,15 +61,18 @@ public class CitasController {
     @FXML private Tab tabEditar;
 
     // Filtros
-    @FXML private ComboBox<Paciente> cmbPacienteFiltro;
     @FXML private TextField txtFiltroCedulaPaciente;
-    @FXML private ComboBox<Profesional> cmbProfesionalFiltro;
+    @FXML private Label lblPacienteFiltro;
     @FXML private TextField txtFiltroCedulaProfesional;
+    @FXML private Label lblProfesionalFiltro;
     @FXML private ComboBox<String> cmbEstadoFiltro;
+
+    // Variables para almacenar paciente/profesional seleccionados en filtros
+    private Paciente pacienteFiltroSeleccionado;
+    private Profesional profesionalFiltroSeleccionado;
 
     // Tabla
     @FXML private TableView<Cita> tableCitas;
-    @FXML private TableColumn<Cita, String> colId;
     @FXML private TableColumn<Cita, String> colPaciente;
     @FXML private TableColumn<Cita, String> colProfesional;
     @FXML private TableColumn<Cita, String> colFechaHora;
@@ -87,15 +91,19 @@ public class CitasController {
 
     // Formulario Editar
     @FXML private TextField txtEditarId;
-    @FXML private ComboBox<Paciente> cmbEditarPaciente;
     @FXML private TextField txtEditarCedulaPaciente;
-    @FXML private ComboBox<Profesional> cmbEditarProfesional;
+    @FXML private Label lblEditarPaciente;
     @FXML private TextField txtEditarCedulaProfesional;
+    @FXML private Label lblEditarProfesional;
     @FXML private DatePicker dpEditarFecha;
     @FXML private TextField txtEditarHora;
     @FXML private TextArea txtEditarMotivo;
     @FXML private ComboBox<String> cmbEditarEstado;
     @FXML private TextArea txtEditarObservaciones;
+
+    // Variables para almacenar paciente/profesional seleccionados en edicion
+    private Paciente pacienteEditarSeleccionado;
+    private Profesional profesionalEditarSeleccionado;
 
     // Vista Horario
     @FXML private DatePicker dpFechaHorario;
@@ -104,8 +112,6 @@ public class CitasController {
     @FXML private VBox vboxHorario;
 
     private Cita citaEnEdicion;
-    private List<Paciente> listaPacientes;
-    private List<Profesional> listaProfesionales;
     private Profesional profesionalSeleccionadoHorario;
 
     @FXML
@@ -148,23 +154,43 @@ public class CitasController {
                 FormValidationUtil.validarCampoRequerido(txtEditarMotivo, true);
             }
         });
+
+        // Configurar DatePicker para no permitir fechas pasadas (solo desde hoy)
+        configurarDatePickerEdicion();
+    }
+
+    private void configurarDatePickerEdicion() {
+        final LocalDate hoy = LocalDate.now();
+        final Callback<DatePicker, DateCell> dayCellFactory = new Callback<>() {
+            @Override
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(final LocalDate item, final boolean empty) {
+                        super.updateItem(item, empty);
+                        // Deshabilitar fechas anteriores a hoy
+                        if (item.isBefore(hoy)) {
+                            setDisable(true);
+                            setStyle("-fx-background-color: #d3d3d3;");
+                        }
+                    }
+                };
+            }
+        };
+        dpEditarFecha.setDayCellFactory(dayCellFactory);
     }
 
     private void configurarTooltips() {
         // Tooltips para filtros
-        cmbPacienteFiltro.setTooltip(new Tooltip("Seleccione un paciente de la lista o busque por cedula"));
         txtFiltroCedulaPaciente.setTooltip(new Tooltip("Ingrese la cedula del paciente para buscar"));
-        cmbProfesionalFiltro.setTooltip(new Tooltip("Seleccione un profesional de la lista o busque por cedula"));
         txtFiltroCedulaProfesional.setTooltip(new Tooltip("Ingrese la cedula del profesional para buscar"));
         cmbEstadoFiltro.setTooltip(new Tooltip("Filtrar citas por estado: Pendiente, Confirmada, Atendida o Cancelada"));
 
         // Tooltips para formulario de edicion
-        cmbEditarPaciente.setTooltip(new Tooltip("Seleccione el paciente para la cita"));
         txtEditarCedulaPaciente.setTooltip(new Tooltip("Buscar paciente por numero de cedula"));
-        cmbEditarProfesional.setTooltip(new Tooltip("Seleccione el profesional que atendera la cita"));
         txtEditarCedulaProfesional.setTooltip(new Tooltip("Buscar profesional por numero de cedula"));
-        dpEditarFecha.setTooltip(new Tooltip("Seleccione la fecha de la cita"));
-        txtEditarHora.setTooltip(new Tooltip("Ingrese la hora en formato 24h (ej: 14:30, 09:00)"));
+        dpEditarFecha.setTooltip(new Tooltip("Seleccione la fecha de la cita (solo fechas futuras)"));
+        txtEditarHora.setTooltip(new Tooltip("Ingrese la hora en formato 24h (ej: 14:30) - Horario: 08:00-17:00"));
         txtEditarMotivo.setTooltip(new Tooltip("Describa el motivo de la consulta"));
         cmbEditarEstado.setTooltip(new Tooltip("PENDIENTE: Sin confirmar | CONFIRMADA: Paciente confirmado | ATENDIDA: Cita realizada | CANCELADA: Cita cancelada"));
         txtEditarObservaciones.setTooltip(new Tooltip("Notas adicionales del profesional sobre la consulta"));
@@ -186,8 +212,25 @@ public class CitasController {
         }
     }
 
+    private boolean validarHorarioLaboral(final TextField campo) {
+        final String horaStr = campo.getText().trim();
+        try {
+            final LocalTime hora = LocalTime.parse(horaStr, TIME_FORMATTER);
+            final LocalTime horaInicio = LocalTime.of(8, 0);
+            final LocalTime horaFin = LocalTime.of(17, 0);
+
+            if (hora.isBefore(horaInicio) || hora.isAfter(horaFin)) {
+                FormValidationUtil.marcarCampoInvalido(campo, "Horario laboral: 08:00 - 17:00");
+                DialogUtil.mostrarAdvertencia("Horario invalido", "La hora debe estar en horario laboral (08:00 - 17:00)");
+                return false;
+            }
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
     private void configurarTabla() {
-        colId.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getId().toString()));
         colPaciente.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPacienteNombre()));
         colProfesional.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getProfesionalNombre()));
         colFechaHora.setCellValueFactory(data -> {
@@ -284,13 +327,12 @@ public class CitasController {
     private void configurarPermisosPorRol() {
         if ("MEDICO".equals(rolUsuario)) {
             // Si es medico, deshabilitar filtro de profesional y ocultarlo
-            cmbProfesionalFiltro.setVisible(false);
-            cmbProfesionalFiltro.setManaged(false);
             txtFiltroCedulaProfesional.setVisible(false);
             txtFiltroCedulaProfesional.setManaged(false);
+            lblProfesionalFiltro.setVisible(false);
+            lblProfesionalFiltro.setManaged(false);
 
             // Deshabilitar seleccion de profesional en edicion
-            cmbEditarProfesional.setDisable(true);
             txtEditarCedulaProfesional.setDisable(true);
 
             LOGGER.info("Filtros configurados para MEDICO - Solo vera sus propias citas");
@@ -298,45 +340,17 @@ public class CitasController {
     }
 
     private void cargarCatalogos() {
-        final Task<CatalogosResult> task = new Task<>() {
-            @Override
-            protected CatalogosResult call() {
-                final List<Paciente> pacientes = pacienteService.getAllPacientes();
-                final List<Profesional> profesionales = profesionalService.getAllProfesionales();
-                return new CatalogosResult(pacientes, profesionales);
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            final CatalogosResult resultado = task.getValue();
-            listaPacientes = resultado.pacientes;
-            listaProfesionales = resultado.profesionales;
-
-            // Configurar ComboBox de filtros
-            cmbPacienteFiltro.setItems(FXCollections.observableArrayList(listaPacientes));
-            cmbProfesionalFiltro.setItems(FXCollections.observableArrayList(listaProfesionales));
-
-            // Configurar ComboBox de formulario editar
-            cmbEditarPaciente.setItems(FXCollections.observableArrayList(listaPacientes));
-            cmbEditarProfesional.setItems(FXCollections.observableArrayList(listaProfesionales));
-
-            cargarDatos();
-        });
-
-        task.setOnFailed(event -> {
-            LOGGER.error("Error al cargar catalogos", task.getException());
-            DialogUtil.mostrarError("Error de conexion", "No se pudieron cargar los catalogos. Verifique su conexion.");
-        });
-
-        new Thread(task).start();
+        // Ya no se cargan todos los pacientes/profesionales
+        // Se usa busqueda por cedula para seleccionar
+        cargarDatos();
     }
 
     private void cargarDatos() {
         loadingIndicator.setVisible(true);
         deshabilitarControles(true);
 
-        final Integer pacienteId = cmbPacienteFiltro.getValue() != null ? cmbPacienteFiltro.getValue().getId() : null;
-        Integer profesionalId = cmbProfesionalFiltro.getValue() != null ? cmbProfesionalFiltro.getValue().getId() : null;
+        final Integer pacienteId = pacienteFiltroSeleccionado != null ? pacienteFiltroSeleccionado.getId() : null;
+        Integer profesionalId = profesionalFiltroSeleccionado != null ? profesionalFiltroSeleccionado.getId() : null;
 
         // Si es MEDICO, forzar filtro por su profesional_id
         if ("MEDICO".equals(rolUsuario) && profesionalIdUsuario != null) {
@@ -408,8 +422,10 @@ public class CitasController {
     @FXML
     @SuppressWarnings("unused")
     private void handleLimpiarFiltros() {
-        cmbPacienteFiltro.setValue(null);
-        cmbProfesionalFiltro.setValue(null);
+        pacienteFiltroSeleccionado = null;
+        profesionalFiltroSeleccionado = null;
+        lblPacienteFiltro.setText("Sin seleccionar");
+        lblProfesionalFiltro.setText("Sin seleccionar");
         txtFiltroCedulaPaciente.clear();
         txtFiltroCedulaProfesional.clear();
         cmbEstadoFiltro.setValue("TODOS");
@@ -472,20 +488,25 @@ public class CitasController {
 
         txtEditarId.setText(cita.getId().toString());
 
-        // Buscar y seleccionar paciente en ComboBox
-        for (final Paciente p : listaPacientes) {
-            if (p.getId().equals(cita.getPacienteId())) {
-                cmbEditarPaciente.setValue(p);
-                break;
-            }
+        // Obtener paciente y profesional por ID para mostrar en labels
+        final Paciente paciente = pacienteService.getPacienteById(cita.getPacienteId());
+        if (paciente != null) {
+            pacienteEditarSeleccionado = paciente;
+            lblEditarPaciente.setText(paciente.getNombreCompleto());
+            txtEditarCedulaPaciente.setText(paciente.getCedula());
+        } else {
+            pacienteEditarSeleccionado = null;
+            lblEditarPaciente.setText(cita.getPacienteNombre());
         }
 
-        // Buscar y seleccionar profesional en ComboBox
-        for (final Profesional p : listaProfesionales) {
-            if (p.getId().equals(cita.getProfesionalId())) {
-                cmbEditarProfesional.setValue(p);
-                break;
-            }
+        final Profesional profesional = profesionalService.getProfesionalById(cita.getProfesionalId());
+        if (profesional != null) {
+            profesionalEditarSeleccionado = profesional;
+            lblEditarProfesional.setText(profesional.getNombreCompleto());
+            txtEditarCedulaProfesional.setText(profesional.getCedula());
+        } else {
+            profesionalEditarSeleccionado = null;
+            lblEditarProfesional.setText(cita.getProfesionalNombre());
         }
 
         if (cita.getFechaHora() != null) {
@@ -507,9 +528,9 @@ public class CitasController {
     private void limpiarValidacionesFormulario() {
         FormValidationUtil.limpiarEstadoValidacion(txtEditarHora);
         FormValidationUtil.limpiarEstadoValidacion(txtEditarMotivo);
-        FormValidationUtil.limpiarEstadoValidacion(cmbEditarPaciente);
-        FormValidationUtil.limpiarEstadoValidacion(cmbEditarProfesional);
         FormValidationUtil.limpiarEstadoValidacion(cmbEditarEstado);
+        lblEditarPaciente.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
+        lblEditarProfesional.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
     }
 
     @FXML
@@ -522,11 +543,17 @@ public class CitasController {
         // Validaciones con feedback visual
         boolean esValido = true;
 
-        if (!FormValidationUtil.validarComboRequerido(cmbEditarPaciente, true)) {
+        if (pacienteEditarSeleccionado == null) {
+            lblEditarPaciente.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ffcccc; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
             esValido = false;
+        } else {
+            lblEditarPaciente.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
         }
-        if (!FormValidationUtil.validarComboRequerido(cmbEditarProfesional, true)) {
+        if (profesionalEditarSeleccionado == null) {
+            lblEditarProfesional.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ffcccc; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
             esValido = false;
+        } else {
+            lblEditarProfesional.setStyle("-fx-font-size: 14px; -fx-padding: 10; -fx-background-color: #ecf0f1; -fx-background-radius: 3; -fx-pref-width: 380; -fx-pref-height: 40;");
         }
         if (dpEditarFecha.getValue() == null) {
             DialogUtil.mostrarAdvertencia("Campo requerido", "Debe seleccionar una fecha para la cita");
@@ -535,6 +562,8 @@ public class CitasController {
         if (!FormValidationUtil.validarCampoRequerido(txtEditarHora, true)) {
             esValido = false;
         } else if (!validarFormatoHora(txtEditarHora)) {
+            esValido = false;
+        } else if (!validarHorarioLaboral(txtEditarHora)) {
             esValido = false;
         }
         if (!FormValidationUtil.validarCampoRequerido(txtEditarMotivo, true)) {
@@ -549,8 +578,8 @@ public class CitasController {
             return;
         }
 
-        final Paciente paciente = cmbEditarPaciente.getValue();
-        final Profesional profesional = cmbEditarProfesional.getValue();
+        final Paciente paciente = pacienteEditarSeleccionado;
+        final Profesional profesional = profesionalEditarSeleccionado;
         final LocalDate fecha = dpEditarFecha.getValue();
         final String horaStr = txtEditarHora.getText().trim();
         final String motivo = txtEditarMotivo.getText().trim();
@@ -560,6 +589,12 @@ public class CitasController {
 
         final LocalTime hora = LocalTime.parse(horaStr, TIME_FORMATTER);
         final LocalDateTime fechaHora = LocalDateTime.of(fecha, hora);
+
+        // Validar que la cita no sea en el pasado
+        if (fechaHora.isBefore(LocalDateTime.now())) {
+            DialogUtil.mostrarAdvertencia("Fecha/hora invalida", "No se puede agendar una cita en el pasado");
+            return;
+        }
 
         loadingIndicator.setVisible(true);
 
@@ -719,9 +754,14 @@ public class CitasController {
 
         final Paciente paciente = pacienteService.getPacienteByCedula(cedula);
         if (paciente != null) {
-            cmbPacienteFiltro.setValue(paciente);
-            DialogUtil.mostrarExito("Paciente encontrado", "Se encontro: " + paciente.getNombreCompleto());
+            pacienteFiltroSeleccionado = paciente;
+            lblPacienteFiltro.setText(paciente.getNombreCompleto());
+            // Filtrar automaticamente al encontrar
+            paginaActual = 0;
+            cargarDatos();
         } else {
+            pacienteFiltroSeleccionado = null;
+            lblPacienteFiltro.setText("No encontrado");
             DialogUtil.mostrarAdvertencia("No encontrado", "No se encontro paciente con cedula: " + cedula);
         }
     }
@@ -737,9 +777,14 @@ public class CitasController {
 
         final Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
         if (profesional != null) {
-            cmbProfesionalFiltro.setValue(profesional);
-            DialogUtil.mostrarExito("Profesional encontrado", "Se encontro: " + profesional.getNombreCompleto());
+            profesionalFiltroSeleccionado = profesional;
+            lblProfesionalFiltro.setText(profesional.getNombreCompleto());
+            // Filtrar automaticamente al encontrar
+            paginaActual = 0;
+            cargarDatos();
         } else {
+            profesionalFiltroSeleccionado = null;
+            lblProfesionalFiltro.setText("No encontrado");
             DialogUtil.mostrarAdvertencia("No encontrado", "No se encontro profesional con cedula: " + cedula);
         }
     }
@@ -756,9 +801,12 @@ public class CitasController {
 
         final Paciente paciente = pacienteService.getPacienteByCedula(cedula);
         if (paciente != null) {
-            cmbEditarPaciente.setValue(paciente);
+            pacienteEditarSeleccionado = paciente;
+            lblEditarPaciente.setText(paciente.getNombreCompleto());
             DialogUtil.mostrarExito("Paciente encontrado", "Se encontro: " + paciente.getNombreCompleto());
         } else {
+            pacienteEditarSeleccionado = null;
+            lblEditarPaciente.setText("No encontrado");
             DialogUtil.mostrarAdvertencia("No encontrado", "No se encontro paciente con cedula: " + cedula);
         }
     }
@@ -774,9 +822,12 @@ public class CitasController {
 
         final Profesional profesional = profesionalService.getProfesionalByCedula(cedula);
         if (profesional != null) {
-            cmbEditarProfesional.setValue(profesional);
+            profesionalEditarSeleccionado = profesional;
+            lblEditarProfesional.setText(profesional.getNombreCompleto());
             DialogUtil.mostrarExito("Profesional encontrado", "Se encontro: " + profesional.getNombreCompleto());
         } else {
+            profesionalEditarSeleccionado = null;
+            lblEditarProfesional.setText("No encontrado");
             DialogUtil.mostrarAdvertencia("No encontrado", "No se encontro profesional con cedula: " + cedula);
         }
     }
@@ -953,6 +1004,4 @@ public class CitasController {
         };
     }
 
-    private record CatalogosResult(List<Paciente> pacientes, List<Profesional> profesionales) {
-    }
 }
