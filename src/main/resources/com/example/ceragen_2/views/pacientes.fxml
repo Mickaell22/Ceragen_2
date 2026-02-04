@@ -7,32 +7,24 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.ceragen_2.controller.PacientesController"
-      spacing="0"
-      styleClass="content-area"
+      spacing="0" styleClass="content-area"
       stylesheets="@../css/styles.css">
 
-    <!-- HEADER -->
     <HBox styleClass="page-header">
         <Text text="Gestión de Pacientes" styleClass="title-xl"/>
     </HBox>
 
-    <TabPane fx:id="tabPane"
-             tabClosingPolicy="UNAVAILABLE"
-             VBox.vgrow="ALWAYS"
-             styleClass="content-area">
-
-        <!-- ================= TAB LISTAR ================= -->
+    <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" styleClass="content-area">
         <Tab text="Listar">
             <VBox spacing="15" style="-fx-padding: 20;">
-
                 <HBox spacing="15" styleClass="card">
                     <VBox spacing="5">
-                        <Text text="Buscar por Cédula/Nombre" styleClass="text-neutral-medium"/>
+                        <Text text="Buscar por Cédula/Nombre" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
                         <TextField fx:id="txtBuscar" promptText="Ingrese cédula o nombre..." prefWidth="300"/>
                     </VBox>
 
                     <VBox spacing="5">
-                        <Text text="Género" styleClass="text-neutral-medium"/>
+                        <Text text="Género" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
                         <ComboBox fx:id="cmbGeneroFiltro" prefWidth="150">
                             <items>
                                 <javafx.collections.FXCollections fx:factory="observableArrayList">
@@ -47,10 +39,15 @@
 
                     <Region HBox.hgrow="ALWAYS"/>
 
-                    <Button text="Buscar" onAction="#handleBuscar"
-                            styleClass="btn, btn-primary" prefWidth="120"/>
-                    <Button text="Limpiar" onAction="#handleLimpiarFiltros"
-                            styleClass="btn, btn-secondary" prefWidth="120"/>
+                    <VBox spacing="5" alignment="BOTTOM_RIGHT">
+                        <Text text=" " style="-fx-font-size: 12px;"/>
+                        <Button text="Buscar" onAction="#handleBuscar" styleClass="btn, btn-primary" style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
+                    </VBox>
+
+                    <VBox spacing="5" alignment="BOTTOM_RIGHT">
+                        <Text text=" " style="-fx-font-size: 12px;"/>
+                        <Button text="Limpiar" onAction="#handleLimpiarFiltros" styleClass="btn, btn-secondary" style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
+                    </VBox>
                 </HBox>
 
                 <StackPane VBox.vgrow="ALWAYS">
@@ -67,31 +64,26 @@
                         </columns>
                     </TableView>
 
-                    <VBox fx:id="loadingIndicator"
-                          alignment="CENTER"
-                          spacing="15"
-                          styleClass="loading-overlay"
-                          visible="false">
-                        <ProgressIndicator prefWidth="60"/>
+                    <VBox fx:id="loadingIndicator" alignment="CENTER" spacing="15" styleClass="loading-overlay" visible="false">
+                        <ProgressIndicator prefWidth="60" prefHeight="60"/>
                         <Text text="Cargando datos..." styleClass="title-lg"/>
                     </VBox>
                 </StackPane>
 
                 <HBox spacing="15" alignment="CENTER" styleClass="card">
-                    <Button fx:id="btnPrimera" text="Primera" onAction="#handlePrimeraPagina" styleClass="btn, btn-primary"/>
-                    <Button fx:id="btnAnterior" text="Anterior" onAction="#handlePaginaAnterior" styleClass="btn, btn-primary"/>
+                    <Button fx:id="btnPrimera" text="Primera" onAction="#handlePrimeraPagina" styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
+                    <Button fx:id="btnAnterior" text="Anterior" onAction="#handlePaginaAnterior" styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
 
-                    <Text fx:id="txtPaginacion" text="Página 1 de 1" styleClass="text-primary-dark"/>
+                    <Text fx:id="txtPaginacion" text="Página 1 de 1" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
 
-                    <Button fx:id="btnSiguiente" text="Siguiente" onAction="#handlePaginaSiguiente" styleClass="btn, btn-primary"/>
-                    <Button fx:id="btnUltima" text="Última" onAction="#handleUltimaPagina" styleClass="btn, btn-primary"/>
+                    <Button fx:id="btnSiguiente" text="Siguiente" onAction="#handlePaginaSiguiente" styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
+                    <Button fx:id="btnUltima" text="Última" onAction="#handleUltimaPagina" styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
 
                     <Region HBox.hgrow="ALWAYS"/>
 
-                    <VBox spacing="5">
-                        <Text text="Registros por página" styleClass="text-neutral-medium"/>
-                        <ComboBox fx:id="cmbRegistrosPorPagina" prefWidth="80"
-                                  onAction="#handleCambioRegistrosPorPagina">
+                    <VBox spacing="5" alignment="CENTER_RIGHT">
+                        <Text text="Registros por página" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
+                        <ComboBox fx:id="cmbRegistrosPorPagina" prefWidth="80" onAction="#handleCambioRegistrosPorPagina">
                             <items>
                                 <javafx.collections.FXCollections fx:factory="observableArrayList">
                                     <java.lang.String fx:value="10"/>
@@ -106,74 +98,194 @@
             </VBox>
         </Tab>
 
-        <!-- ================= TAB CREAR ================= -->
         <Tab text="Crear" fx:id="tabCrear">
-            <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
-                <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
-                    <VBox spacing="20" styleClass="card-lg">
-                        <Text text="Crear Nuevo Paciente" styleClass="title-lg"/>
+            <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
+                <VBox spacing="20" styleClass="card-lg">
+                    <Text text="Crear Nuevo Paciente" styleClass="title-lg"/>
 
-                        <!-- TODO: contenido intacto -->
-                        <!-- (formulario completo sin cambios) -->
+                    <HBox spacing="15">
+                        <VBox spacing="8">
+                            <Text text="Cédula" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtCrearCedula" promptText="Ingrese cédula..." style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                        <VBox spacing="8">
+                            <Text text="Género" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <ComboBox fx:id="cmbCrearGenero" prefWidth="240" style="-fx-pref-height: 40; -fx-font-size: 14px;">
+                                <items>
+                                    <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                        <java.lang.String fx:value="Masculino"/>
+                                        <java.lang.String fx:value="Femenino"/>
+                                        <java.lang.String fx:value="Otro"/>
+                                    </javafx.collections.FXCollections>
+                                </items>
+                            </ComboBox>
+                        </VBox>
+                    </HBox>
 
-                        <!-- Botones visibles siempre -->
-                        <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
-                            <Button text="Crear Paciente" onAction="#handleCrearPaciente"
-                                    styleClass="btn, btn-success" prefWidth="180"/>
-                            <Button text="Limpiar Campos" onAction="#handleLimpiarFormCrear"
-                                    styleClass="btn, btn-secondary" prefWidth="180"/>
-                        </HBox>
+                    <HBox spacing="15">
+                        <VBox spacing="8">
+                            <Text text="Nombres" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtCrearNombres" promptText="Ingrese nombres..." style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                        <VBox spacing="8">
+                            <Text text="Apellidos" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtCrearApellidos" promptText="Ingrese apellidos..." style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="15">
+                        <VBox spacing="8">
+                            <Text text="Fecha Nacimiento" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <DatePicker fx:id="dpCrearFechaNacimiento"/>
+                        </VBox>
+                        <VBox spacing="8">
+                            <Text text="Teléfono" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtCrearTelefono" promptText="Ingrese teléfono..." style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="15">
+                        <VBox spacing="8">
+                            <Text text="Email" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtCrearEmail" promptText="Ingrese email..." style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                        <VBox spacing="8">
+                            <Text text="Grupo Sanguíneo" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtCrearGrupoSanguineo" promptText="O+, A-, etc." style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="8">
+                        <Text text="Dirección" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                        <TextArea fx:id="txtCrearDireccion" promptText="Ingrese dirección..." prefRowCount="2"/>
                     </VBox>
+
+                    <VBox spacing="8">
+                        <Text text="Alergias" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                        <TextArea fx:id="txtCrearAlergias" promptText="Ingrese alergias..." prefRowCount="2"/>
+                    </VBox>
+
+                    <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                        <Button text="Crear Paciente" onAction="#handleCrearPaciente" styleClass="btn, btn-success" style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
+                        <Button text="Limpiar Campos" onAction="#handleLimpiarFormCrear" styleClass="btn, btn-secondary" style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
+                    </HBox>
                 </VBox>
-            </ScrollPane>
+            </VBox>
         </Tab>
 
-        <!-- ================= TAB EDITAR ================= -->
         <Tab text="Editar" fx:id="tabEditar" disable="true">
-            <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
-                <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
-                    <VBox spacing="20" styleClass="card-lg">
-                        <Text text="Editar Paciente" styleClass="title-lg"/>
+            <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
+                <VBox spacing="20" styleClass="card-lg">
+                    <Text text="Editar Paciente" styleClass="title-lg"/>
 
-                        <!-- formulario intacto -->
-
-                        <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
-                            <Button text="Actualizar Paciente" onAction="#handleActualizarPaciente"
-                                    styleClass="btn, btn-warning" prefWidth="180"/>
-                            <Button text="Cancelar" onAction="#handleCancelarEdicion"
-                                    styleClass="btn, btn-secondary" prefWidth="180"/>
-                        </HBox>
+                    <VBox spacing="8">
+                        <Text text="ID" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                        <TextField fx:id="txtEditarId" editable="false" styleClass="disabled-field" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                     </VBox>
+
+                    <HBox spacing="15">
+                        <VBox spacing="8">
+                            <Text text="Cédula" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtEditarCedula" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                        <VBox spacing="8">
+                            <Text text="Género" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <ComboBox fx:id="cmbEditarGenero" prefWidth="240" style="-fx-pref-height: 40; -fx-font-size: 14px;">
+                                <items>
+                                    <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                        <java.lang.String fx:value="Masculino"/>
+                                        <java.lang.String fx:value="Femenino"/>
+                                        <java.lang.String fx:value="Otro"/>
+                                    </javafx.collections.FXCollections>
+                                </items>
+                            </ComboBox>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="15">
+                        <VBox spacing="8">
+                            <Text text="Nombres" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtEditarNombres" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                        <VBox spacing="8">
+                            <Text text="Apellidos" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtEditarApellidos" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="15">
+                        <VBox spacing="8">
+                            <Text text="Fecha Nacimiento" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <DatePicker fx:id="dpEditarFechaNacimiento"/>
+                        </VBox>
+                        <VBox spacing="8">
+                            <Text text="Teléfono" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtEditarTelefono" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="15">
+                        <VBox spacing="8">
+                            <Text text="Email" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtEditarEmail" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                        <VBox spacing="8">
+                            <Text text="Grupo Sanguíneo" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtEditarGrupoSanguineo" style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="8">
+                        <Text text="Dirección" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                        <TextArea fx:id="txtEditarDireccion" prefRowCount="2"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Text text="Alergias" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                        <TextArea fx:id="txtEditarAlergias" prefRowCount="2"/>
+                    </VBox>
+
+                    <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                        <Button text="Actualizar Paciente" onAction="#handleActualizarPaciente" styleClass="btn, btn-warning" style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
+                        <Button text="Cancelar" onAction="#handleCancelarEdicion" styleClass="btn, btn-secondary" style="-fx-pref-width: 180; -fx-pref-height: 45;"/>
+                    </HBox>
                 </VBox>
-            </ScrollPane>
+            </VBox>
         </Tab>
 
-        <!-- ================= TAB DOCUMENTOS ================= -->
+        <!-- Tab Documentos -->
         <Tab text="Documentos" fx:id="tabDocumentos" disable="true">
-            <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
-                <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
-                    <VBox spacing="10" styleClass="card" VBox.vgrow="ALWAYS">
-                        <Text text="Documentos del Paciente" styleClass="title-lg"/>
+            <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
+                <VBox spacing="10" styleClass="card" style="-fx-padding: 15;" VBox.vgrow="ALWAYS">
+                    <Text text="Documentos del Paciente" styleClass="title-lg"/>
 
-                        <HBox spacing="10">
-                            <ComboBox fx:id="cmbTipoDocumento" prefWidth="220"/>
-                            <Button text="Subir Documento" onAction="#handleSubirDocumento"
-                                    styleClass="btn, btn-primary"/>
-                        </HBox>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Text text="Tipo de Documento" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
+                        <ComboBox fx:id="cmbTipoDocumento" prefWidth="220">
+                            <items>
+                                <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                    <java.lang.String fx:value="HISTORIA_CLINICA"/>
+                                    <java.lang.String fx:value="EXAMEN"/>
+                                    <java.lang.String fx:value="RECETA"/>
+                                    <java.lang.String fx:value="OTRO"/>
+                                </javafx.collections.FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Button text="Subir Documento" onAction="#handleSubirDocumento"
+                                styleClass="btn, btn-primary" style="-fx-pref-height: 32;"/>
+                    </HBox>
 
-                        <TableView fx:id="tableDocumentos" VBox.vgrow="ALWAYS">
-                            <columns>
-                                <TableColumn fx:id="colDocNombre" text="Nombre" prefWidth="420"/>
-                                <TableColumn fx:id="colDocTipo" text="Tipo" prefWidth="140"/>
-                                <TableColumn fx:id="colDocFecha" text="Fecha Subida" prefWidth="180"/>
-                                <TableColumn fx:id="colDocRuta" text="Ruta" prefWidth="480"/>
-                                <TableColumn fx:id="colDocAcciones" text="Acciones" prefWidth="140"/>
-                            </columns>
-                        </TableView>
-                    </VBox>
+                    <TableView fx:id="tableDocumentos" styleClass="table-view" VBox.vgrow="ALWAYS" prefHeight="520.0">
+                        <columns>
+                            <TableColumn fx:id="colDocNombre" text="Nombre" prefWidth="420"/>
+                            <TableColumn fx:id="colDocTipo" text="Tipo" prefWidth="140"/>
+                            <TableColumn fx:id="colDocFecha" text="Fecha Subida" prefWidth="180"/>
+                            <TableColumn fx:id="colDocRuta" text="Ruta" prefWidth="480"/>
+                            <TableColumn fx:id="colDocAcciones" text="Acciones" prefWidth="140"/>
+                        </columns>
+                    </TableView>
                 </VBox>
-            </ScrollPane>
+            </VBox>
         </Tab>
-
     </TabPane>
 </VBox>
