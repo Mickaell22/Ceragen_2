@@ -123,6 +123,98 @@ public final class ClienteService {
     }
 
     /**
+     * Obtiene clientes con paginacion y filtros separados
+     */
+    public List<Cliente> getClientesPaginadosConFiltros(int offset, int limit, String cedula, String nombre, String apellido) {
+        List<Cliente> clientes = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT id, cedula, nombres, apellidos, telefono, email, direccion, activo, fecha_registro " +
+            "FROM clientes WHERE activo = TRUE"
+        );
+
+        List<String> params = new ArrayList<>();
+
+        if (cedula != null && !cedula.trim().isEmpty()) {
+            sql.append(" AND cedula LIKE ?");
+            params.add("%" + cedula.trim() + "%");
+        }
+        if (nombre != null && !nombre.trim().isEmpty()) {
+            sql.append(" AND nombres LIKE ?");
+            params.add("%" + nombre.trim() + "%");
+        }
+        if (apellido != null && !apellido.trim().isEmpty()) {
+            sql.append(" AND apellidos LIKE ?");
+            params.add("%" + apellido.trim() + "%");
+        }
+
+        sql.append(" ORDER BY fecha_registro DESC LIMIT ? OFFSET ?");
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+            for (String param : params) {
+                stmt.setString(paramIndex++, param);
+            }
+            stmt.setInt(paramIndex++, limit);
+            stmt.setInt(paramIndex, offset);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Cliente cliente = mapResultSetToCliente(rs);
+                    clientes.add(cliente);
+                }
+                LOGGER.info("Se obtuvieron {} clientes paginados con filtros", clientes.size());
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Error al obtener clientes paginados con filtros", e);
+        }
+
+        return clientes;
+    }
+
+    /**
+     * Cuenta el total de clientes con filtros separados
+     */
+    public int countClientesConFiltros(String cedula, String nombre, String apellido) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM clientes WHERE activo = TRUE");
+
+        List<String> params = new ArrayList<>();
+
+        if (cedula != null && !cedula.trim().isEmpty()) {
+            sql.append(" AND cedula LIKE ?");
+            params.add("%" + cedula.trim() + "%");
+        }
+        if (nombre != null && !nombre.trim().isEmpty()) {
+            sql.append(" AND nombres LIKE ?");
+            params.add("%" + nombre.trim() + "%");
+        }
+        if (apellido != null && !apellido.trim().isEmpty()) {
+            sql.append(" AND apellidos LIKE ?");
+            params.add("%" + apellido.trim() + "%");
+        }
+
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+            for (String param : params) {
+                stmt.setString(paramIndex++, param);
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Error al contar clientes con filtros", e);
+        }
+
+        return 0;
+    }
+
+    /**
      * Cuenta el total de clientes con filtros aplicados
      */
     public int countClientes(String searchText) {

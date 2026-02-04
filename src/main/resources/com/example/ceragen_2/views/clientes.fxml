@@ -27,34 +27,50 @@
             <VBox spacing="15" style="-fx-padding: 20;">
 
                 <!-- Filtros -->
-                <HBox spacing="15" styleClass="card">
-                    <VBox spacing="5">
-                        <Text text="Buscar por Cedula, Nombre o Apellido"
-                              styleClass="text-neutral-medium"
-                              style="-fx-font-size: 12px;"/>
-                        <TextField fx:id="txtBuscar"
-                                   promptText="Ingrese criterio de busqueda..."
-                                   prefWidth="350"/>
-                    </VBox>
+                <VBox spacing="10" styleClass="card">
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <VBox spacing="5">
+                            <Text text="Buscar por Cedula"
+                                  styleClass="text-neutral-medium"
+                                  style="-fx-font-size: 12px;"/>
+                            <TextField fx:id="txtBuscarCedula"
+                                       promptText="Ingrese cedula..."
+                                       prefWidth="180"
+                                       style="-fx-pref-height: 35;"/>
+                        </VBox>
 
-                    <Region HBox.hgrow="ALWAYS"/>
+                        <VBox spacing="5">
+                            <Text text="Buscar por Nombre"
+                                  styleClass="text-neutral-medium"
+                                  style="-fx-font-size: 12px;"/>
+                            <TextField fx:id="txtBuscarNombre"
+                                       promptText="Ingrese nombre..."
+                                       prefWidth="200"
+                                       style="-fx-pref-height: 35;"/>
+                        </VBox>
 
-                    <VBox spacing="5" alignment="BOTTOM_RIGHT">
-                        <Text text=" " style="-fx-font-size: 12px;"/>
+                        <VBox spacing="5">
+                            <Text text="Buscar por Apellido"
+                                  styleClass="text-neutral-medium"
+                                  style="-fx-font-size: 12px;"/>
+                            <TextField fx:id="txtBuscarApellido"
+                                       promptText="Ingrese apellido..."
+                                       prefWidth="200"
+                                       style="-fx-pref-height: 35;"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
                         <Button text="Buscar"
                                 onAction="#handleBuscar"
                                 styleClass="btn, btn-primary"
                                 style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
-                    </VBox>
-
-                    <VBox spacing="5" alignment="BOTTOM_RIGHT">
-                        <Text text=" " style="-fx-font-size: 12px;"/>
                         <Button text="Limpiar"
                                 onAction="#handleLimpiarFiltros"
                                 styleClass="btn, btn-secondary"
                                 style="-fx-pref-width: 120; -fx-pref-height: 35;"/>
-                    </VBox>
-                </HBox>
+                    </HBox>
+                </VBox>
 
                 <!-- Tabla -->
                 <StackPane VBox.vgrow="ALWAYS">
@@ -80,49 +96,84 @@
                         <Text text="Cargando datos..." styleClass="title-lg"/>
                     </VBox>
                 </StackPane>
+
+                <!-- Paginacion -->
+                <HBox spacing="15" alignment="CENTER" styleClass="card">
+                    <Button fx:id="btnPrimera" text="Primera" onAction="#handlePrimeraPagina"
+                            styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
+                    <Button fx:id="btnAnterior" text="Anterior" onAction="#handlePaginaAnterior"
+                            styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
+
+                    <Text fx:id="txtPaginacion" text="Pagina 1 de 1" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+
+                    <Button fx:id="btnSiguiente" text="Siguiente" onAction="#handlePaginaSiguiente"
+                            styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
+                    <Button fx:id="btnUltima" text="Ultima" onAction="#handleUltimaPagina"
+                            styleClass="btn, btn-primary" style="-fx-pref-width: 100;"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <VBox spacing="5" alignment="CENTER_RIGHT">
+                        <Text text="Registros por pagina" styleClass="text-neutral-medium" style="-fx-font-size: 12px;"/>
+                        <ComboBox fx:id="cmbRegistrosPorPagina" prefWidth="80" onAction="#handleCambioRegistrosPorPagina">
+                            <items>
+                                <javafx.collections.FXCollections fx:factory="observableArrayList">
+                                    <java.lang.String fx:value="10"/>
+                                    <java.lang.String fx:value="25"/>
+                                    <java.lang.String fx:value="50"/>
+                                </javafx.collections.FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+                </HBox>
+
             </VBox>
         </Tab>
 
         <!-- ================= TAB CREAR ================= -->
         <Tab text="Crear" fx:id="tabCrear">
-            <ScrollPane fitToWidth="true"
-                        hbarPolicy="NEVER"
-                        vbarPolicy="AS_NEEDED">
-
-                <VBox spacing="20"
-                      style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
-
-                    <VBox spacing="20" styleClass="card-lg">
+            <ScrollPane fitToWidth="true" styleClass="content-area">
+                <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
+                    <VBox spacing="20" styleClass="card-lg" style="-fx-max-width: 700;">
                         <Text text="Crear Nuevo Cliente" styleClass="title-lg"/>
 
                         <VBox spacing="8">
-                            <Text text="Cedula *" styleClass="text-primary-dark"/>
-                            <TextField fx:id="txtCrearCedula" promptText="Ingrese cedula..."/>
+                            <Text text="Cedula *" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtCrearCedula" promptText="Ingrese cedula..."
+                                       style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                         </VBox>
 
-                        <VBox spacing="8">
-                            <Text text="Nombres *" styleClass="text-primary-dark"/>
-                            <TextField fx:id="txtCrearNombres" promptText="Ingrese nombres..."/>
-                        </VBox>
+                        <HBox spacing="15">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Text text="Nombres *" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <TextField fx:id="txtCrearNombres" promptText="Ingrese nombres..."
+                                           style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Text text="Apellidos *" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <TextField fx:id="txtCrearApellidos" promptText="Ingrese apellidos..."
+                                           style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="15">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Text text="Telefono" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <TextField fx:id="txtCrearTelefono" promptText="Ingrese telefono..."
+                                           style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Text text="Email" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <TextField fx:id="txtCrearEmail" promptText="Ingrese email..."
+                                           style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                            </VBox>
+                        </HBox>
 
                         <VBox spacing="8">
-                            <Text text="Apellidos *" styleClass="text-primary-dark"/>
-                            <TextField fx:id="txtCrearApellidos" promptText="Ingrese apellidos..."/>
-                        </VBox>
-
-                        <VBox spacing="8">
-                            <Text text="Telefono" styleClass="text-primary-dark"/>
-                            <TextField fx:id="txtCrearTelefono" promptText="Ingrese telefono..."/>
-                        </VBox>
-
-                        <VBox spacing="8">
-                            <Text text="Email" styleClass="text-primary-dark"/>
-                            <TextField fx:id="txtCrearEmail" promptText="Ingrese email..."/>
-                        </VBox>
-
-                        <VBox spacing="8">
-                            <Text text="Direccion" styleClass="text-primary-dark"/>
-                            <TextArea fx:id="txtCrearDireccion" prefRowCount="3"/>
+                            <Text text="Direccion" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextArea fx:id="txtCrearDireccion" prefRowCount="3" style="-fx-font-size: 14px;" wrapText="true"/>
                         </VBox>
 
                         <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
@@ -142,49 +193,54 @@
 
         <!-- ================= TAB EDITAR ================= -->
         <Tab text="Editar" fx:id="tabEditar" disable="true">
-            <ScrollPane fitToWidth="true"
-                        hbarPolicy="NEVER"
-                        vbarPolicy="AS_NEEDED">
-
-                <VBox spacing="20"
-                      style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
-
-                    <VBox spacing="20" styleClass="card-lg">
+            <ScrollPane fitToWidth="true" styleClass="content-area">
+                <VBox spacing="20" style="-fx-padding: 30; -fx-alignment: TOP_CENTER;">
+                    <VBox spacing="20" styleClass="card-lg" style="-fx-max-width: 700;">
                         <Text text="Editar Cliente" styleClass="title-lg"/>
 
                         <VBox spacing="8" visible="false" managed="false">
-                            <Text text="ID"/>
-                            <TextField fx:id="txtEditarId" editable="false"/>
+                            <Text text="ID" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtEditarId" editable="false" styleClass="disabled-field"
+                                       style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                         </VBox>
 
                         <VBox spacing="8">
-                            <Text text="Cedula *"/>
-                            <TextField fx:id="txtEditarCedula"/>
+                            <Text text="Cedula *" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextField fx:id="txtEditarCedula"
+                                       style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
                         </VBox>
 
-                        <VBox spacing="8">
-                            <Text text="Nombres *"/>
-                            <TextField fx:id="txtEditarNombres"/>
-                        </VBox>
+                        <HBox spacing="15">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Text text="Nombres *" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <TextField fx:id="txtEditarNombres"
+                                           style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Text text="Apellidos *" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <TextField fx:id="txtEditarApellidos"
+                                           style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="15">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Text text="Telefono" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <TextField fx:id="txtEditarTelefono"
+                                           style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Text text="Email" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                                <TextField fx:id="txtEditarEmail"
+                                           style="-fx-pref-height: 40; -fx-font-size: 14px;"/>
+                            </VBox>
+                        </HBox>
 
                         <VBox spacing="8">
-                            <Text text="Apellidos *"/>
-                            <TextField fx:id="txtEditarApellidos"/>
-                        </VBox>
-
-                        <VBox spacing="8">
-                            <Text text="Telefono"/>
-                            <TextField fx:id="txtEditarTelefono"/>
-                        </VBox>
-
-                        <VBox spacing="8">
-                            <Text text="Email"/>
-                            <TextField fx:id="txtEditarEmail"/>
-                        </VBox>
-
-                        <VBox spacing="8">
-                            <Text text="Direccion"/>
-                            <TextArea fx:id="txtEditarDireccion" prefRowCount="3"/>
+                            <Text text="Direccion" styleClass="text-primary-dark" style="-fx-font-size: 14px;"/>
+                            <TextArea fx:id="txtEditarDireccion" prefRowCount="3" style="-fx-font-size: 14px;" wrapText="true"/>
                         </VBox>
 
                         <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">

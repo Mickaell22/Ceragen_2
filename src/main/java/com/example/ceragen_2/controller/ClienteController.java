@@ -11,9 +11,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javafx.scene.control.Tooltip;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -30,7 +30,9 @@ public class ClienteController {
     @FXML private Tab tabEditar;
 
     // Filtros
-    @FXML private TextField txtBuscar;
+    @FXML private TextField txtBuscarCedula;
+    @FXML private TextField txtBuscarNombre;
+    @FXML private TextField txtBuscarApellido;
 
     // Tabla
     @FXML private TableView<Cliente> tableClientes;
@@ -41,6 +43,14 @@ public class ClienteController {
     @FXML private TableColumn<Cliente, String> colEmail;
     @FXML private TableColumn<Cliente, String> colFechaRegistro;
     @FXML private TableColumn<Cliente, Void> colAcciones;
+
+    // Paginacion
+    @FXML private Button btnPrimera;
+    @FXML private Button btnAnterior;
+    @FXML private Button btnSiguiente;
+    @FXML private Button btnUltima;
+    @FXML private Text txtPaginacion;
+    @FXML private ComboBox<String> cmbRegistrosPorPagina;
 
     // Formulario Crear
     @FXML private TextField txtCrearCedula;
@@ -64,6 +74,12 @@ public class ClienteController {
 
     private Cliente clienteEnEdicion;
 
+    // Variables de paginacion
+    private int paginaActual = 1;
+    private int registrosPorPagina = 10;
+    private int totalRegistros = 0;
+    private int totalPaginas = 1;
+
     @FXML
     public void initialize() {
         LOGGER.info("Inicializando modulo de Clientes");
@@ -71,12 +87,19 @@ public class ClienteController {
         configurarTabla();
         configurarValidaciones();
         configurarTooltips();
+        configurarPaginacion();
         cargarDatos();
+    }
+
+    private void configurarPaginacion() {
+        cmbRegistrosPorPagina.setValue("10");
     }
 
     private void configurarTooltips() {
         // Tooltips para filtros
-        txtBuscar.setTooltip(new Tooltip("Buscar clientes por cedula, nombre o apellido"));
+        txtBuscarCedula.setTooltip(new Tooltip("Buscar clientes por cedula"));
+        txtBuscarNombre.setTooltip(new Tooltip("Buscar clientes por nombre"));
+        txtBuscarApellido.setTooltip(new Tooltip("Buscar clientes por apellido"));
 
         // Tooltips para formulario de creacion
         txtCrearCedula.setTooltip(new Tooltip("Numero de cedula del cliente (solo digitos)"));
@@ -175,10 +198,16 @@ public class ClienteController {
     private void cargarDatos() {
         loadingIndicator.setVisible(true);
 
+        final String cedula = txtBuscarCedula.getText().trim();
+        final String nombre = txtBuscarNombre.getText().trim();
+        final String apellido = txtBuscarApellido.getText().trim();
+        final int offset = (paginaActual - 1) * registrosPorPagina;
+
         final Task<List<Cliente>> task = new Task<>() {
             @Override
             protected List<Cliente> call() {
-                return clienteService.getAllClientesCompletos();
+                totalRegistros = clienteService.countClientesConFiltros(cedula, nombre, apellido);
+                return clienteService.getClientesPaginadosConFiltros(offset, registrosPorPagina, cedula, nombre, apellido);
             }
         };
 
@@ -186,7 +215,14 @@ public class ClienteController {
             final List<Cliente> clientes = task.getValue();
             tableClientes.getItems().clear();
             tableClientes.getItems().addAll(clientes);
-            LOGGER.info("Datos cargados: {} clientes", clientes.size());
+
+            // Calcular total de paginas
+            totalPaginas = (int) Math.ceil((double) totalRegistros / registrosPorPagina);
+            if (totalPaginas == 0) totalPaginas = 1;
+
+            actualizarControlesPaginacion();
+
+            LOGGER.info("Datos cargados: {} clientes (Pagina {} de {})", clientes.size(), paginaActual, totalPaginas);
             loadingIndicator.setVisible(false);
         });
 
@@ -199,48 +235,78 @@ public class ClienteController {
         new Thread(task).start();
     }
 
+    private void actualizarControlesPaginacion() {
+        txtPaginacion.setText("Pagina " + paginaActual + " de " + totalPaginas);
+
+        btnPrimera.setDisable(paginaActual <= 1);
+        btnAnterior.setDisable(paginaActual <= 1);
+        btnSiguiente.setDisable(paginaActual >= totalPaginas);
+        btnUltima.setDisable(paginaActual >= totalPaginas);
+    }
+
+    @FXML
+    @SuppressWarnings("unused")
+    private void handlePrimeraPagina() {
+        if (paginaActual > 1) {
+            paginaActual = 1;
+            cargarDatos();
+        }
+    }
+
+    @FXML
+    @SuppressWarnings("unused")
+    private void handlePaginaAnterior() {
+        if (paginaActual > 1) {
+            paginaActual--;
+            cargarDatos();
+        }
+    }
+
+    @FXML
+    @SuppressWarnings("unused")
+    private void handlePaginaSiguiente() {
+        if (paginaActual < totalPaginas) {
+            paginaActual++;
+            cargarDatos();
+        }
+    }
+
+    @FXML
+    @SuppressWarnings("unused")
+    private void handleUltimaPagina() {
+        if (paginaActual < totalPaginas) {
+            paginaActual = totalPaginas;
+            cargarDatos();
+        }
+    }
+
+    @FXML
+    @SuppressWarnings("unused")
+    private void handleCambioRegistrosPorPagina() {
+        String valor = cmbRegistrosPorPagina.getValue();
+        if (valor != null) {
+            registrosPorPagina = Integer.parseInt(valor);
+            paginaActual = 1;
+            cargarDatos();
+        }
+    }
+
     @FXML
     @SuppressWarnings("unused")
     private void handleBuscar() {
-        final String criterio = txtBuscar.getText().trim();
-
-        if (criterio.isEmpty()) {
-            cargarDatos();
-            return;
-        }
-
-        LOGGER.info("Buscando clientes con criterio: {}", criterio);
-        loadingIndicator.setVisible(true);
-
-        final Task<List<Cliente>> task = new Task<>() {
-            @Override
-            protected List<Cliente> call() {
-                return clienteService.buscarClientes(criterio);
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            final List<Cliente> clientes = task.getValue();
-            tableClientes.getItems().clear();
-            tableClientes.getItems().addAll(clientes);
-            LOGGER.info("Busqueda completa: {} clientes encontrados", clientes.size());
-            loadingIndicator.setVisible(false);
-        });
-
-        task.setOnFailed(event -> {
-            LOGGER.error("Error al buscar clientes", task.getException());
-            loadingIndicator.setVisible(false);
-            DialogUtil.mostrarError("Error de busqueda", "No se pudo realizar la busqueda");
-        });
-
-        new Thread(task).start();
+        LOGGER.info("Buscando clientes con filtros");
+        paginaActual = 1;
+        cargarDatos();
     }
 
     @FXML
     @SuppressWarnings("unused")
     private void handleLimpiarFiltros() {
         LOGGER.info("Limpiando filtros");
-        txtBuscar.clear();
+        txtBuscarCedula.clear();
+        txtBuscarNombre.clear();
+        txtBuscarApellido.clear();
+        paginaActual = 1;
         cargarDatos();
     }
 
@@ -463,6 +529,13 @@ public class ClienteController {
         clienteEnEdicion = null;
         tabEditar.setDisable(true);
         tabPane.getSelectionModel().select(0);
+
+        // Limpiar estilos de validacion
+        FormValidationUtil.limpiarEstadoValidacion(txtEditarCedula);
+        FormValidationUtil.limpiarEstadoValidacion(txtEditarNombres);
+        FormValidationUtil.limpiarEstadoValidacion(txtEditarApellidos);
+        FormValidationUtil.limpiarEstadoValidacion(txtEditarTelefono);
+        FormValidationUtil.limpiarEstadoValidacion(txtEditarEmail);
     }
 
     private void eliminarCliente(final Cliente cliente) {
