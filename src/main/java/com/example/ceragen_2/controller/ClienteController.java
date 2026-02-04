@@ -102,42 +102,71 @@ public class ClienteController {
         txtBuscarApellido.setTooltip(new Tooltip("Buscar clientes por apellido"));
 
         // Tooltips para formulario de creacion
-        txtCrearCedula.setTooltip(new Tooltip("Numero de cedula del cliente (solo digitos)"));
+        txtCrearCedula.setTooltip(new Tooltip("Numero de cedula del cliente (10 digitos)"));
         txtCrearNombres.setTooltip(new Tooltip("Nombres del cliente (solo letras)"));
         txtCrearApellidos.setTooltip(new Tooltip("Apellidos del cliente (solo letras)"));
-        txtCrearTelefono.setTooltip(new Tooltip("Numero de telefono (7-15 digitos)"));
+        txtCrearTelefono.setTooltip(new Tooltip("Numero de telefono (10 digitos)"));
         txtCrearEmail.setTooltip(new Tooltip("Correo electronico (formato: usuario@dominio.com)"));
         txtCrearDireccion.setTooltip(new Tooltip("Direccion completa del cliente (opcional)"));
 
         // Tooltips para formulario de edicion
-        txtEditarCedula.setTooltip(new Tooltip("Numero de cedula del cliente (solo digitos)"));
+        txtEditarCedula.setTooltip(new Tooltip("Numero de cedula del cliente (10 digitos)"));
         txtEditarNombres.setTooltip(new Tooltip("Nombres del cliente (solo letras)"));
         txtEditarApellidos.setTooltip(new Tooltip("Apellidos del cliente (solo letras)"));
-        txtEditarTelefono.setTooltip(new Tooltip("Numero de telefono (7-15 digitos)"));
+        txtEditarTelefono.setTooltip(new Tooltip("Numero de telefono (10 digitos)"));
         txtEditarEmail.setTooltip(new Tooltip("Correo electronico (formato: usuario@dominio.com)"));
         txtEditarDireccion.setTooltip(new Tooltip("Direccion completa del cliente (opcional)"));
     }
 
     private void configurarValidaciones() {
-        // Aplicar filtros de entrada a campos de creacion
-        FormValidationUtil.aplicarFiltroSoloDigitos(txtCrearCedula);
-        FormValidationUtil.aplicarFiltroSoloDigitos(txtCrearTelefono);
+        // Aplicar filtros de entrada a campos de creacion (solo digitos, max 10)
+        FormValidationUtil.aplicarFiltroSoloDigitosConLongitud(txtCrearCedula, 10);
+        FormValidationUtil.aplicarFiltroSoloDigitosConLongitud(txtCrearTelefono, 10);
         FormValidationUtil.aplicarFiltroSoloLetras(txtCrearNombres);
         FormValidationUtil.aplicarFiltroSoloLetras(txtCrearApellidos);
 
-        // Aplicar filtros de entrada a campos de edicion
-        FormValidationUtil.aplicarFiltroSoloDigitos(txtEditarCedula);
-        FormValidationUtil.aplicarFiltroSoloDigitos(txtEditarTelefono);
+        // Aplicar filtros de entrada a campos de edicion (solo digitos, max 10)
+        FormValidationUtil.aplicarFiltroSoloDigitosConLongitud(txtEditarCedula, 10);
+        FormValidationUtil.aplicarFiltroSoloDigitosConLongitud(txtEditarTelefono, 10);
         FormValidationUtil.aplicarFiltroSoloLetras(txtEditarNombres);
         FormValidationUtil.aplicarFiltroSoloLetras(txtEditarApellidos);
 
-        // Configurar validacion en tiempo real para email
+        // Validacion en tiempo real para cedula (crear)
+        txtCrearCedula.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                FormValidationUtil.validarCedula(txtCrearCedula, true);
+            }
+        });
+
+        // Validacion en tiempo real para cedula (editar)
+        txtEditarCedula.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                FormValidationUtil.validarCedula(txtEditarCedula, true);
+            }
+        });
+
+        // Validacion en tiempo real para telefono (crear)
+        txtCrearTelefono.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                FormValidationUtil.validarTelefono(txtCrearTelefono, true);
+            }
+        });
+
+        // Validacion en tiempo real para telefono (editar)
+        txtEditarTelefono.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                FormValidationUtil.validarTelefono(txtEditarTelefono, true);
+            }
+        });
+
+        // Validacion en tiempo real para email (crear)
         txtCrearEmail.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) { // Cuando pierde el foco
+            if (!newVal) {
                 FormValidationUtil.validarEmail(txtCrearEmail, true);
             }
         });
 
+        // Validacion en tiempo real para email (editar)
         txtEditarEmail.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal) {
                 FormValidationUtil.validarEmail(txtEditarEmail, true);
@@ -316,7 +345,7 @@ public class ClienteController {
         // Validaciones con feedback visual
         boolean esValido = true;
 
-        if (!FormValidationUtil.validarCampoRequerido(txtCrearCedula, true)) {
+        if (!FormValidationUtil.validarCedula(txtCrearCedula, true)) {
             esValido = false;
         }
         if (!FormValidationUtil.validarCampoRequerido(txtCrearNombres, true)) {
@@ -443,7 +472,7 @@ public class ClienteController {
         // Validaciones con feedback visual
         boolean esValido = true;
 
-        if (!FormValidationUtil.validarCampoRequerido(txtEditarCedula, true)) {
+        if (!FormValidationUtil.validarCedula(txtEditarCedula, true)) {
             esValido = false;
         }
         if (!FormValidationUtil.validarCampoRequerido(txtEditarNombres, true)) {

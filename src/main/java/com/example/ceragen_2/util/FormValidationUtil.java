@@ -25,10 +25,11 @@ public final class FormValidationUtil {
     private static final Pattern DIGITS_ONLY_PATTERN = Pattern.compile("\\d*");
 
     private static final Pattern LETTERS_ONLY_PATTERN = Pattern.compile(
-            "[a-zA-ZaeiouAEIOUuU\\s]*"
+            "[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\\s]*"
     );
 
-    private static final Pattern PHONE_PATTERN = Pattern.compile("^\\d{7,15}$");
+    private static final Pattern PHONE_PATTERN = Pattern.compile("^\\d{10}$");
+    private static final Pattern CEDULA_PATTERN = Pattern.compile("^\\d{10}$");
 
     // Clases CSS para estados
     private static final String CSS_ERROR = "text-field-error";
@@ -127,7 +128,7 @@ public final class FormValidationUtil {
     }
 
     /**
-     * Valida formato de telefono.
+     * Valida formato de telefono (10 digitos).
      *
      * @param campo       Campo a validar
      * @param mostrarFeedback Si es true, aplica estilos visuales
@@ -149,7 +150,37 @@ public final class FormValidationUtil {
         if (mostrarFeedback) {
             aplicarEstadoValidacion(campo, esValido);
             if (!esValido) {
-                mostrarTooltipError(campo, "Telefono debe tener entre 7 y 15 digitos");
+                mostrarTooltipError(campo, "Telefono debe tener exactamente 10 digitos");
+            }
+        }
+
+        return esValido;
+    }
+
+    /**
+     * Valida formato de cedula (10 digitos).
+     *
+     * @param campo       Campo a validar
+     * @param mostrarFeedback Si es true, aplica estilos visuales
+     * @return true si la cedula es valida
+     */
+    public static boolean validarCedula(final TextField campo, final boolean mostrarFeedback) {
+        final String texto = campo.getText();
+
+        if (texto == null || texto.trim().isEmpty()) {
+            if (mostrarFeedback) {
+                aplicarEstadoValidacion(campo, false);
+                mostrarTooltipError(campo, "Cedula es requerida");
+            }
+            return false;
+        }
+
+        final boolean esValido = CEDULA_PATTERN.matcher(texto.trim()).matches();
+
+        if (mostrarFeedback) {
+            aplicarEstadoValidacion(campo, esValido);
+            if (!esValido) {
+                mostrarTooltipError(campo, "Cedula debe tener exactamente 10 digitos");
             }
         }
 
@@ -218,6 +249,23 @@ public final class FormValidationUtil {
     public static void aplicarFiltroSoloDigitos(final TextField campo) {
         final UnaryOperator<TextFormatter.Change> filter = change -> {
             final String newText = change.getControlNewText();
+            return DIGITS_ONLY_PATTERN.matcher(newText).matches() ? change : null;
+        };
+        campo.setTextFormatter(new TextFormatter<>(filter));
+    }
+
+    /**
+     * Aplica un filtro que solo permite digitos con longitud maxima.
+     *
+     * @param campo     Campo a filtrar
+     * @param maxLength Longitud maxima permitida
+     */
+    public static void aplicarFiltroSoloDigitosConLongitud(final TextField campo, final int maxLength) {
+        final UnaryOperator<TextFormatter.Change> filter = change -> {
+            final String newText = change.getControlNewText();
+            if (newText.length() > maxLength) {
+                return null;
+            }
             return DIGITS_ONLY_PATTERN.matcher(newText).matches() ? change : null;
         };
         campo.setTextFormatter(new TextFormatter<>(filter));
